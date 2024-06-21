@@ -1,4 +1,4 @@
-package com.drowsynomad.mirrovision.ui.theme
+package com.drowsynomad.mirrovision.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

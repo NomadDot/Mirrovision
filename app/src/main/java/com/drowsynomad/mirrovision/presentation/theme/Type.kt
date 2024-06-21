@@ -1,4 +1,4 @@
-package com.drowsynomad.mirrovision.ui.theme
+package com.drowsynomad.mirrovision.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
