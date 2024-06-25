@@ -19,3 +19,5 @@ inline fun <reified T : Any> NavGraphBuilder.composableOf(
         content(args, it)
     }
 }
+
+fun String?.clearRoute(): String = this?.substringAfterLast(".") ?: "$this"

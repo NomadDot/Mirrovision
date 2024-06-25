@@ -8,6 +8,22 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class Routes {
+    val name = this.toString().substringAfterLast(".")
+
+    @Serializable
+    data object MainTestScreen: Routes()
+
     @Serializable
     data object SplashScreen: Routes()
+
+    @Serializable
+    data object TimerScreen: Routes()
+    @Serializable
+    data object NotesScreen: Routes()
+    @Serializable
+    data object HomeScreen: Routes()
+    @Serializable
+    data object GuideScreen: Routes()
+    @Serializable
+    data object StatisticScreen: Routes()
 }
