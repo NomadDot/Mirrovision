@@ -1,8 +1,6 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
-import android.annotation.SuppressLint
-import android.view.MotionEvent
-import androidx.compose.animation.core.animateFloatAsState
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,16 +17,11 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,7 +29,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.presentation.navigation.MainBottomNavItem
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
@@ -58,12 +50,13 @@ data class BottomNavigationActions(
     val onTutorialNavigation: Navigation? = null
 ) {
     fun getNavigationByRoute(route: Routes): Navigation? {
+        Log.i("!!!!", "!!!!!")
         return when(route) {
-            Routes.GuideScreen -> onTutorialNavigation
-            Routes.HomeScreen -> onHomeNavigation
-            Routes.NotesScreen -> onNotesNavigation
-            Routes.StatisticScreen -> onStatisticNavigation
-            Routes.TimerScreen -> onTimerNavigation
+            is Routes.GuideScreen -> onTutorialNavigation
+            is Routes.HomeScreen -> onHomeNavigation
+            is Routes.NotesScreen -> onNotesNavigation
+            is Routes.StatisticScreen -> onStatisticNavigation
+            is Routes.TimerScreen -> onTimerNavigation
             else -> onHomeNavigation
         }
     }
@@ -82,7 +75,6 @@ fun BottomNavigationBar(
         modifier = modifier
             .fillMaxWidth()
             .padding(bottom = 10.dp)
-            .padding(horizontal = 10.dp)
             .background(color = Color.Transparent),
         containerColor = Color.Transparent
     ) {
@@ -122,35 +114,12 @@ fun BottomNavigationBar(
                 }
             }
             Semicircle(Modifier.align(Alignment.Center))
-            HomeButton(modifier.align(Alignment.Center))
+            HomeButton(Modifier.align(Alignment.Center).offset(y = (-15).dp)) {
+                bottomNavigationActions
+                    ?.getNavigationByRoute(Routes.HomeScreen)?.invoke()
+            }
         }
     }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-private fun HomeButton(modifier: Modifier = Modifier) {
-    val selected = remember { mutableStateOf(false) }
-    val scale = animateFloatAsState(if (selected.value) 0.7f else 1f, label = emptyString())
-
-    Icon(
-        painter = painterResource(id = R.drawable.ic_home),
-        contentDescription = emptyString(),
-        modifier = modifier
-            .scale(scale.value)
-            .offset(y = (-15).dp)
-            .size(50.dp)
-            .gradient(GradientMain)
-            .padding(12.dp)
-            .pointerInteropFilter {
-                when (it.action) {
-                    MotionEvent.ACTION_DOWN -> selected.value = true
-                    MotionEvent.ACTION_UP -> selected.value = false
-                }
-                true
-            },
-        tint = Color.White
-    )
 }
 
 @Composable
@@ -177,7 +146,6 @@ private fun NavigationBarPreview() {
         .fillMaxSize()
         .background(color = Color.White), contentAlignment = Alignment.BottomCenter
     ) {
-        // NavigationBar(modifier = Modifier.align(Alignment.BottomCenter))
         BottomNavigationBar()
     }
 }

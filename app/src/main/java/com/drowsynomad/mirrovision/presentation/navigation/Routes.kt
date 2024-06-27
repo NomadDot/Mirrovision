@@ -12,6 +12,8 @@ sealed class Routes {
 
     @Serializable
     data object MainTestScreen: Routes()
+    @Serializable
+    data object SecondaryTestScreen: Routes()
 
     @Serializable
     data object SplashScreen: Routes()

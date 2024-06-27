@@ -1,0 +1,87 @@
+package com.drowsynomad.mirrovision.presentation.core.components
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.drowsynomad.mirrovision.core.emptyString
+import com.drowsynomad.mirrovision.presentation.theme.LightMainTextColor
+import com.drowsynomad.mirrovision.presentation.utils.roundBox
+
+/**
+ * @author Roman Voloshyn (Created on 26.06.2024)
+ */
+
+@Composable
+fun InputField(
+    modifier: Modifier = Modifier,
+    hint: String = emptyString(),
+    maxLimit: Int? = null,
+    isSingleLine: Boolean = false,
+    onValueChanged: ((String) -> Unit)? = null,
+) {
+    var textState by remember { mutableStateOf(TextFieldValue("")) }
+
+    BasicTextField(
+        value = textState,
+        onValueChange = {
+            if(maxLimit != null) {
+                if(it.text.length <= maxLimit) {
+                    textState = it
+                    onValueChanged?.invoke(it.text)
+                }
+            } else {
+                textState = it
+                onValueChanged?.invoke(it.text)
+            }
+        },
+        singleLine = isSingleLine,
+        modifier = modifier.roundBox(MaterialTheme.colorScheme.primaryContainer),
+        textStyle = MaterialTheme.typography.bodyMedium,
+        cursorBrush = SolidColor(value = LightMainTextColor),
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+    ) { innerTextField ->
+        if(textState.text.isEmpty())
+            Text(text = hint, style = MaterialTheme.typography.labelSmall)
+
+        maxLimit?.let {
+            if(textState.text.isNotEmpty())
+                Text(
+                    text = "${textState.text.length}/$maxLimit",
+                    textAlign = TextAlign.End,
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.width(15.dp)
+                )
+        }
+
+        Box(
+            modifier =
+                if(maxLimit != null) Modifier.padding(end = 16.dp)
+                else Modifier
+        ) {
+            innerTextField()
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun InputFieldPreview() {
+    InputField(maxLimit = 12, hint = "Введіть назву звички!", modifier = Modifier.fillMaxWidth())
+}
