@@ -15,6 +15,9 @@ val LightMainBackground = Color(0xFFF9F9FF)
 val LightMainTextColor = Color(0xFF68509A)
 val LightMainHintColor = Color(0xFFA48EFF)
 
+val LightPrimaryInactive = Color(0xFFC0B3F0)
+val LightTextInactive = Color(0xFFF2F4F5)
+
 // Category colors
 val BlueCategory = Color(0xFFCDDAFD)
 val GreenCategory = Color(0xFFCADBBB)
@@ -55,4 +58,9 @@ val CategoryAccentPairsColor = mapOf(
 val GradientMain = listOf(
     Color(0xFFA58EFF),
     Color(0xFFFFC9DE)
+)
+
+val GradientAccent = listOf(
+    Color(0xFF8161FF),
+    Color(0xFFEE4098)
 )

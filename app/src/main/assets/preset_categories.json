@@ -1,0 +1,23 @@
+[
+  {
+    "id" : "CATEGORY_SPORT"
+  },
+  {
+    "id" : "CATEGORY_DIET"
+  },
+  {
+    "id" : "CATEGORY_SELF_EDUCATION "
+  },
+  {
+    "id" : "CATEGORY_ART"
+  },
+  {
+    "id" : "CATEGORY_MEDITATION"
+  },
+  {
+    "id" : "CATEGORY_WORK"
+  },
+  {
+    "id" : "CATEGORY_RELATIONSHIPS"
+  }
+]

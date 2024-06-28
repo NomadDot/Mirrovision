@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_category_sport">Спорт</string>
+    <string name="default_category_diet">Харчування</string>
+    <string name="default_category_self_education">Саморозвиток</string>
+    <string name="default_category_art">Творчість</string>
+    <string name="default_category_meditation">Медитація</string>
+    <string name="default_category_work">Робота</string>
+    <string name="default_category_relationship">Стосунки</string>
+    <string name="default_category_own">Створити власну категорію</string>
+</resources>

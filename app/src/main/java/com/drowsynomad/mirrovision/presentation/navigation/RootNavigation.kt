@@ -2,12 +2,14 @@ package com.drowsynomad.mirrovision.presentation.navigation
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.components.MainTestScreen
-import com.drowsynomad.mirrovision.presentation.utils.composableOf
+import com.drowsynomad.mirrovision.presentation.screens.introCategories.IntroCategoriesScreen
 import kotlin.reflect.KClass
 
 /**
@@ -19,13 +21,20 @@ typealias Navigation = () -> Unit
 @Composable
 fun RootNavigation(
     navController: NavHostController = rememberNavController(),
-    startDestination: KClass<Routes.MainTestScreen> = Routes.MainTestScreen::class
+    startDestination: KClass<Routes.IntroCategoriesScreen> = Routes.IntroCategoriesScreen::class
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-        composableOf<Routes.MainTestScreen> { _, _ ->
+        composable<Routes.IntroCategoriesScreen> {
+            IntroCategoriesScreen(
+                viewModel = hiltViewModel(),
+                onNavigateNext = {}
+            )
+        }
+
+        composable<Routes.MainTestScreen> {
             MainTestScreen()
         }
     }

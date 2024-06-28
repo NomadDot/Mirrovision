@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
@@ -26,6 +25,8 @@ import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.presentation.theme.GradientMain
 import com.drowsynomad.mirrovision.presentation.theme.LightPrimary
+import com.drowsynomad.mirrovision.presentation.theme.LightPrimaryInactive
+import com.drowsynomad.mirrovision.presentation.theme.LightTextInactive
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 import com.drowsynomad.mirrovision.presentation.utils.gradient
 import com.drowsynomad.mirrovision.presentation.utils.gradientStroke
@@ -36,23 +37,22 @@ import com.drowsynomad.mirrovision.presentation.utils.roundBox
  */
 
 @Composable
-fun PrimaryButton(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    Box(modifier = modifier) {
-        Button(
-            onClick = onClick::invoke,
-            modifier = modifier
-                .fillMaxWidth()
-                .height(40.dp)
-                .bounceClick()
-                .background(
-                    color = LightPrimary,
-                    shape = RoundedCornerShape(25.dp)
-                ),
-            colors = ButtonColors(containerColor = LightPrimary, contentColor = Color.White,
-                disabledContentColor = Color.Transparent, disabledContainerColor = Color.Transparent)
-        ) {
-            Text(text = text)
-        }
+fun PrimaryButton(
+    text: String,
+    modifier: Modifier = Modifier,
+    isEnabled: Boolean = true,
+    onClick: (() -> Unit)? = null
+) {
+    Button(
+        onClick = { onClick?.invoke() } ,
+        modifier = modifier
+            .bounceClick(enableBound = isEnabled)
+            .height(40.dp),
+        enabled = isEnabled,
+        colors = ButtonColors(containerColor = LightPrimary, contentColor = Color.White,
+            disabledContentColor = LightTextInactive, disabledContainerColor = LightPrimaryInactive)
+    ) {
+        Text(text = text, style = MaterialTheme.typography.bodyMedium, color = Color.White)
     }
 }
 
@@ -62,16 +62,12 @@ fun SecondaryButton(text: String, modifier: Modifier = Modifier, onClick: () -> 
         onClick = onClick::invoke,
         modifier = modifier
             .height(40.dp)
-            .background(
-                color = Color.Transparent,
-                shape = RoundedCornerShape(25.dp)
-            )
             .bounceClick()
             .gradientStroke(GradientMain),
         colors = ButtonColors(containerColor = Color.Transparent, contentColor = MaterialTheme.colorScheme.primary,
             disabledContentColor = Color.Transparent, disabledContainerColor = Color.Transparent)
     ) {
-        Text(text = text)
+        Text(text = text, style = MaterialTheme.typography.bodyMedium)
     }
 }
 
@@ -120,7 +116,7 @@ private fun Buttons() {
             .background(color = Color.Gray),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        PrimaryButton(text = "Зберегти", modifier = Modifier.fillMaxWidth()) {}
+        PrimaryButton(text = "Зберегти", modifier = Modifier.fillMaxWidth(), isEnabled = false) {}
         SecondaryButton(text = "Скасувати", modifier = Modifier.fillMaxWidth()) {}
         HomeButton {}
         AddingButton(modifier = Modifier.fillMaxWidth())

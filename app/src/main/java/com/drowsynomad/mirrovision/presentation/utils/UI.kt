@@ -48,31 +48,33 @@ fun Modifier.roundBox(
 }
 
 enum class ButtonState { Pressed, Idle }
-fun Modifier.bounceClick(onClick: (() -> Unit)? = null) = composed {
+fun Modifier.bounceClick(scaledOnPressed: Float = 0.8f, enableBound: Boolean = true, onClick: (() -> Unit)? = null) = composed {
     var buttonState by remember { mutableStateOf(ButtonState.Idle) }
     val scale by animateFloatAsState(
-        if (buttonState == ButtonState.Pressed) 0.8f else 1f,
+        if (buttonState == ButtonState.Pressed) scaledOnPressed else 1f,
         label = ""
     )
 
-    this
-        .scale(scale = scale)
-        .clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null,
-            onClick = { onClick?.invoke() }
-        )
-        .pointerInput(buttonState) {
-            awaitPointerEventScope {
-                buttonState = if (buttonState == ButtonState.Pressed) {
-                    waitForUpOrCancellation()
-                    ButtonState.Idle
-                } else {
-                    awaitFirstDown(false)
-                    ButtonState.Pressed
+    if(enableBound) {
+        this
+            .scale(scale = scale)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = { onClick?.invoke() }
+            )
+            .pointerInput(buttonState) {
+                awaitPointerEventScope {
+                    buttonState = if (buttonState == ButtonState.Pressed) {
+                        waitForUpOrCancellation()
+                        ButtonState.Idle
+                    } else {
+                        awaitFirstDown(false)
+                        ButtonState.Pressed
+                    }
                 }
             }
-        }
+    } else this
 }
 
 @Composable

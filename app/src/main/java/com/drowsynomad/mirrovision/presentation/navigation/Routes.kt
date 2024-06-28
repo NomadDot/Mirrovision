@@ -19,6 +19,9 @@ sealed class Routes {
     data object SplashScreen: Routes()
 
     @Serializable
+    data object IntroCategoriesScreen: Routes()
+
+    @Serializable
     data object TimerScreen: Routes()
     @Serializable
     data object NotesScreen: Routes()

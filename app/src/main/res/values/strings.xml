@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Mirrovision</string>
+    
+    <string name="default_category_sport">Sport</string>
+    <string name="default_category_diet">Diet</string>
+    <string name="default_category_self_education">Self education</string>
+    <string name="default_category_art">Art</string>
+    <string name="default_category_meditation">Meditation</string>
+    <string name="default_category_work">Work</string>
+    <string name="default_category_relationship">Relationship</string>
+    <string name="default_category_own">Create own category</string>
 </resources>
