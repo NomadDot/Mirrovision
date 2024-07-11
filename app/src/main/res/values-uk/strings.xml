@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mirrovision</string>
+    <string name="default_category_sport">Спорт</string>
+    <string name="default_category_diet">Харчування</string>
+    <string name="default_category_self_education">Саморозвиток</string>
+    <string name="default_category_art">Творчість</string>
+    <string name="default_category_meditation">Медитація</string>
+    <string name="default_category_work">Робота</string>
+    <string name="default_category_relationship">Стосунки</string>
+    <string name="default_category_own">Створити власну категорію</string>
+    <string name="label_choose_color">Оберіть колір</string>
+    <string name="label_enter_category_name">Введіть назву категорії</string>
+    <string name="label_category">Категорія</string>
+    <string name="button_cancel">Скасувати</string>
+    <string name="button_save">Зберегти</string>
+    <string name="button_continue">Продовжити</string>
+    <string name="label_choose_category">Оберіть категорії</string>
+    <string name="label_choose_at_least_one_category">Оберіть хоча б одну категорію</string>
+    <string name="label_my_habits">Мої звички</string>
+    <string name="label_create_your_first_habit">*Створіть першу звичку в цій категорії</string>
+</resources>

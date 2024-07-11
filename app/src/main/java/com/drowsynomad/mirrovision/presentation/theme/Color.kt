@@ -1,6 +1,8 @@
 package com.drowsynomad.mirrovision.presentation.theme
 
 import androidx.compose.ui.graphics.Color
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor.*
+import kotlinx.serialization.Serializable
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
@@ -12,8 +14,11 @@ val Pink40 = Color(0xFF7D5260)
 
 val LightPrimary = Color(0xFFA58EFF)
 val LightMainBackground = Color(0xFFF9F9FF)
-val LightMainTextColor = Color(0xFF68509A)
+val LightPrimaryAccentColor = Color(0xFF68509A)
 val LightMainHintColor = Color(0xFFA48EFF)
+
+val LightPrimaryInactive = Color(0xFFC0B3F0)
+val LightTextInactive = Color(0xFFF2F4F5)
 
 // Category colors
 val BlueCategory = Color(0xFFCDDAFD)
@@ -34,25 +39,93 @@ val OrangeCategoryAccent = Color(0xFFAB4C00)
 val RedCategoryAccent = Color(0xFF8F0009)
 val BrownCategoryAccent = Color(0xFF78431A)
 
-val CategoryColors = listOf(
-    BlueCategory, GreenCategory,
-    YellowCategory, PinkCategory,
-    PurpleCategory, OrangeCategory,
-    RedCategory, BrownCategory
-)
+@Serializable
+enum class CategoryMainColor {
+    Blue, Green, Yellow, Pink, Purple, Orange, Red, Brown;
+    val pureColor  by lazy { CategoryMainColorsMap[this] ?: BlueCategory }
+    val accent by lazy { CategoryMainToAccentColors[this] ?: CategoryAccentColor.BlueAccent }
+}
 
-val CategoryAccentPairsColor = mapOf(
-    BlueCategory to BlueCategoryAccent,
-    GreenCategory to GreenCategoryAccent,
-    YellowCategory to YellowCategoryAccent,
-    PinkCategory to PinkCategoryAccent,
-    PurpleCategory to PurpleCategoryAccent,
-    OrangeCategory to OrangeCategoryAccent,
-    RedCategory to RedCategoryAccent,
-    BrownCategory to BrownCategoryAccent
-)
+@Serializable
+enum class CategoryAccentColor {
+    BlueAccent, GreenAccent, YellowAccent, PinkAccent, PurpleAccent, OrangeAccent, RedAccent, BrownAccent;
+    val pureColor by lazy { CategoryAccentColorsMap[this] ?: BlueCategoryAccent }
+}
 
-val GradientMain = listOf(
-    Color(0xFFA58EFF),
-    Color(0xFFFFC9DE)
-)
+val CategoryColors by lazy { CategoryMainColor.entries.toTypedArray() }
+
+val CategoryMainColorsMap by lazy {
+    mapOf(
+        Blue to BlueCategory,
+        Green to GreenCategory,
+        Yellow to YellowCategory,
+        Pink to PinkCategory,
+        Purple to PurpleCategory,
+        Orange to OrangeCategory,
+        Red to RedCategory,
+        Brown to BrownCategory,
+    )
+}
+
+@Serializable
+val CategoryAccentColorsMap by lazy {
+    mapOf(
+        CategoryAccentColor.BlueAccent to BlueCategoryAccent,
+        CategoryAccentColor.GreenAccent to GreenCategoryAccent,
+        CategoryAccentColor.YellowAccent to YellowCategoryAccent,
+        CategoryAccentColor.PinkAccent to PinkCategoryAccent,
+        CategoryAccentColor.PurpleAccent to PurpleCategoryAccent,
+        CategoryAccentColor.OrangeAccent to OrangeCategoryAccent,
+        CategoryAccentColor.RedAccent to RedCategoryAccent,
+        CategoryAccentColor.BrownAccent to BrownCategoryAccent,
+    )
+}
+
+@Serializable
+val CategoryMainToAccentColors by lazy {
+    mapOf(
+        Blue to CategoryAccentColor.BlueAccent,
+        Green to CategoryAccentColor.GreenAccent,
+        Yellow to CategoryAccentColor.YellowAccent,
+        Pink to CategoryAccentColor.PinkAccent,
+        Purple to CategoryAccentColor.PurpleAccent,
+        Orange to CategoryAccentColor.OrangeAccent,
+        Red to CategoryAccentColor.RedAccent,
+        Brown to CategoryAccentColor.BrownAccent
+    )
+}
+
+val CategoryAccentPairsColor by lazy {
+    mapOf(
+        Blue to BlueCategoryAccent,
+        Green to GreenCategoryAccent,
+        Yellow to YellowCategoryAccent,
+        Pink to PinkCategoryAccent,
+        Purple to PurpleCategoryAccent,
+        Orange to OrangeCategoryAccent,
+        Red to RedCategoryAccent,
+        Brown to BrownCategoryAccent
+    )
+}
+
+val GradientMain by lazy {
+    listOf(
+        Color(0xFFA58EFF),
+        Color(0xFFFFC9DE)
+    )
+}
+
+val GradientAccent by lazy {
+    listOf(
+        Color(0xFF8161FF),
+        Color(0xFFEE4098)
+    )
+}
+
+fun convertToMainCategoryColor(color: Color): CategoryMainColor {
+    return CategoryMainColorsMap.filter { entry -> entry.value == color }.entries.first().key
+}
+
+fun convertToAccentCategoryColor(color: Color): CategoryAccentColor {
+    return CategoryAccentColorsMap.filter { entry -> entry.value == color }.entries.first().key
+}

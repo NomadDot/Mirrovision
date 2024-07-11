@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">Mirrovision</string>
+    <string name="default_category_sport">Sport</string>
+    <string name="default_category_diet">Diet</string>
+    <string name="default_category_self_education">Self education</string>
+    <string name="default_category_art">Art</string>
+    <string name="default_category_meditation">Meditation</string>
+    <string name="default_category_work">Work</string>
+    <string name="default_category_relationship">Relationship</string>
+    <string name="default_category_own">Create own category</string>
+    <string name="label_choose_color">Choose color</string>
+    <string name="label_enter_category_name">Enter the name of category</string>
+    <string name="label_category">Category</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_save">Save</string>
+    <string name="button_continue">Continue</string>
+    <string name="label_choose_category">Choose category</string>
+    <string name="label_choose_at_least_one_category">Choose at least one category</string>
+    <string name="label_my_habits">My habits</string>
+    <string name="label_create_your_first_habit">Create your first habit in this category</string>
 </resources>
