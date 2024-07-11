@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import com.drowsynomad.mirrovision.presentation.theme.LightPrimary
 import com.drowsynomad.mirrovision.presentation.theme.PinkCategoryAccent
 
 /**
@@ -15,7 +16,19 @@ import com.drowsynomad.mirrovision.presentation.theme.PinkCategoryAccent
 
 @Composable
 fun BigTitle(text: String, modifier: Modifier = Modifier) {
-    Text(text = text, modifier = modifier, style = MaterialTheme.typography.titleMedium)
+    Text(text = text,
+        modifier = modifier,
+        style = MaterialTheme.typography.titleMedium,
+    )
+}
+
+@Composable
+fun BigTitle(text: String, color: Color, modifier: Modifier = Modifier) {
+    Text(text = text,
+        modifier = modifier,
+        style = MaterialTheme.typography.titleMedium,
+        color = color
+    )
 }
 
 @Composable
@@ -29,6 +42,20 @@ fun CategoryTitle(
         color = color,
         text = text,
         style = MaterialTheme.typography.titleSmall,
+    )
+}
+
+@Composable
+fun AdviceText(
+    text: String,
+    modifier: Modifier,
+    color: Color = LightPrimary
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        color = color,
+        style = MaterialTheme.typography.headlineSmall,
     )
 }
 

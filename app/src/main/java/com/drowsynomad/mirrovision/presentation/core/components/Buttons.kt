@@ -1,6 +1,7 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
@@ -41,6 +43,7 @@ fun PrimaryButton(
     text: String,
     modifier: Modifier = Modifier,
     isEnabled: Boolean = true,
+    containerColor: Color = LightPrimary,
     onClick: (() -> Unit)? = null
 ) {
     Button(
@@ -49,25 +52,41 @@ fun PrimaryButton(
             .bounceClick(enableBound = isEnabled)
             .height(40.dp),
         enabled = isEnabled,
-        colors = ButtonColors(containerColor = LightPrimary, contentColor = Color.White,
-            disabledContentColor = LightTextInactive, disabledContainerColor = LightPrimaryInactive)
+        colors = ButtonColors(containerColor = containerColor, contentColor = Color.White,
+            disabledContentColor = LightTextInactive, disabledContainerColor = containerColor.copy(alpha = 0.4f))
     ) {
         Text(text = text, style = MaterialTheme.typography.bodyMedium, color = Color.White)
     }
 }
 
 @Composable
-fun SecondaryButton(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun SecondaryButton(
+    text: String,
+    modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.primary,
+    onClick: () -> Unit
+) {
+    val isCustomContainerColor = containerColor != LightPrimary
+  /*  val buttonModifier = modifier.bounceClick()
+    if(isCustomContainerColor)
+        buttonModifier.border(width = 2.dp, color = containerColor, shape = RoundedCornerShape(25.dp))
+    else
+        buttonModifier.gradientStroke(GradientMain)
+    */
     Button(
         onClick = onClick::invoke,
         modifier = modifier
-            .height(40.dp)
             .bounceClick()
-            .gradientStroke(GradientMain),
+            .border(width = 2.dp, color = containerColor, shape = RoundedCornerShape(25.dp))
+            .height(40.dp),
         colors = ButtonColors(containerColor = Color.Transparent, contentColor = MaterialTheme.colorScheme.primary,
             disabledContentColor = Color.Transparent, disabledContainerColor = Color.Transparent)
     ) {
-        Text(text = text, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = if(isCustomContainerColor) containerColor else MaterialTheme.colorScheme.primary
+        )
     }
 }
 
@@ -90,6 +109,7 @@ fun HomeButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 @Composable
 fun AddingButton(
     modifier: Modifier = Modifier,
+    color: Color? = null,
     onClick: (() -> Unit)? = null
 ){
     Box(
@@ -102,7 +122,7 @@ fun AddingButton(
             painter = painterResource(id = R.drawable.ic_add),
             contentDescription = emptyString(),
             modifier = Modifier.align(Alignment.Center),
-            tint = MaterialTheme.colorScheme.secondary
+            tint = color ?: MaterialTheme.colorScheme.secondary
         )
     }
 }

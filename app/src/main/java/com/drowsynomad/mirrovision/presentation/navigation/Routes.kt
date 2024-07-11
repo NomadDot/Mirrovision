@@ -1,5 +1,7 @@
 package com.drowsynomad.mirrovision.presentation.navigation
 
+import com.drowsynomad.mirrovision.core.emptyString
+import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import kotlinx.serialization.Serializable
 
 /**
@@ -20,6 +22,10 @@ sealed class Routes {
 
     @Serializable
     data object IntroCategoriesScreen: Routes()
+    @Serializable
+    data class PresetHabitScreen(
+        val rawCategoryList: String = emptyString()
+    ): Routes()
 
     @Serializable
     data object TimerScreen: Routes()

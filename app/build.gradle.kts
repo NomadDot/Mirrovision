@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
+    id("kotlin-parcelize")
     id("com.google.gms.google-services")
 }
 
@@ -87,4 +88,8 @@ dependencies {
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+
+    implementation(libs.androidx.constraintlayout.compose)
+
+    implementation(libs.gson)
 }

@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
@@ -21,7 +22,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.core.emptyString
-import com.drowsynomad.mirrovision.presentation.theme.LightMainTextColor
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
 
 /**
@@ -33,10 +33,13 @@ fun InputField(
     modifier: Modifier = Modifier,
     hint: String = emptyString(),
     maxLimit: Int? = null,
+    color: Color? = null,
     isSingleLine: Boolean = false,
     onValueChanged: ((String) -> Unit)? = null,
 ) {
     var textState by remember { mutableStateOf(TextFieldValue("")) }
+
+    val textColor = color ?: MaterialTheme.colorScheme.secondary
 
     BasicTextField(
         value = textState,
@@ -53,12 +56,15 @@ fun InputField(
         },
         singleLine = isSingleLine,
         modifier = modifier.roundBox(MaterialTheme.colorScheme.primaryContainer),
-        textStyle = MaterialTheme.typography.bodyMedium,
-        cursorBrush = SolidColor(value = LightMainTextColor),
-        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+        textStyle = MaterialTheme.typography.bodyMedium.copy(textColor),
+        cursorBrush = SolidColor(value = textColor),
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
     ) { innerTextField ->
         if(textState.text.isEmpty())
-            Text(text = hint, style = MaterialTheme.typography.labelSmall)
+            Text(text = hint,
+                style = MaterialTheme.typography.labelSmall,
+                color = color ?: MaterialTheme.colorScheme.tertiary
+            )
 
         maxLimit?.let {
             if(textState.text.isNotEmpty())
@@ -66,7 +72,8 @@ fun InputField(
                     text = "${textState.text.length}/$maxLimit",
                     textAlign = TextAlign.End,
                     style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.width(15.dp)
+                    modifier = Modifier.width(15.dp),
+                    color = color ?: MaterialTheme.colorScheme.tertiary
                 )
         }
 

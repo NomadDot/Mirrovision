@@ -15,9 +15,10 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
     primary = LightPrimary,
-    secondary = LightMainTextColor,
-    tertiary = Pink40,
-    primaryContainer = Color.White
+    secondary = LightPrimaryAccentColor,
+    tertiary = LightMainHintColor,
+    primaryContainer = Color.White,
+    surfaceContainer = LightMainBackground
 )
 
 @Composable

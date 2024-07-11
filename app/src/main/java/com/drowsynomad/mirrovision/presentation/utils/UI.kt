@@ -24,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentPairsColor
 
 /**
  * @author Roman Voloshyn (Created on 25.06.2024)
@@ -85,8 +84,4 @@ fun RowScope.EmptyNavigationBarItem() {
         selected = false,
         enabled = false
     )
-}
-
-fun Color.accent(): Color {
-    return CategoryAccentPairsColor[this] ?: Color.White
 }

@@ -13,7 +13,8 @@ enum class CategoriesId {
     CATEGORY_ART,
     CATEGORY_MEDITATION,
     CATEGORY_WORK,
-    CATEGORY_RELATIONSHIPS;
+    CATEGORY_RELATIONSHIPS,
+    CATEGORY_NONE;
 
     companion object {
         fun toEnum(stringId: StringId): CategoriesId {
@@ -25,7 +26,7 @@ enum class CategoriesId {
                 "CATEGORY_MEDITATION" -> CATEGORY_MEDITATION
                 "CATEGORY_WORK" -> CATEGORY_WORK
                 "CATEGORY_RELATIONSHIPS" -> CATEGORY_RELATIONSHIPS
-                else -> CATEGORY_SPORT
+                else -> CATEGORY_NONE
             }
         }
     }

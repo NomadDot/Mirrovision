@@ -8,4 +8,6 @@ import com.voloshynroman.zirkon.presentation.core.common.UiEvent
 
 sealed class IntroCategoriesEvent: UiEvent {
     data object LoadLocalizedCategories: IntroCategoriesEvent()
+    data class SelectCategory(val category: IntroCategoryUI): IntroCategoriesEvent()
+    data class InsertCustomCategory(val category: IntroCategoryUI): IntroCategoriesEvent()
 }

@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.R
 
 private val mainFonts = FontFamily(
+    Font(R.font.ibm_cursive, FontWeight.ExtraLight),
     Font(R.font.ibm_light, FontWeight.Light),
     Font(R.font.ibm_medium, FontWeight.Medium),
     Font(R.font.ibm_semibold, FontWeight.SemiBold),
@@ -17,19 +18,19 @@ private val mainFonts = FontFamily(
 
 val MirrovisionTypography = Typography(
     bodyMedium = TextStyle(
-        color = LightMainTextColor,
+        color = LightPrimaryAccentColor,
         fontSize = 14.sp,
         fontFamily = mainFonts,
         fontWeight = FontWeight.Medium,
     ),
     titleSmall = TextStyle(
-        color = LightMainTextColor,
+        color = LightPrimaryAccentColor,
         fontSize = 16.sp,
         fontFamily = mainFonts,
         fontWeight = FontWeight.SemiBold,
     ),
     titleMedium = TextStyle(
-        color = LightMainTextColor,
+        color = LightPrimaryAccentColor,
         fontSize = 24.sp,
         fontFamily = mainFonts,
         fontWeight = FontWeight.Bold,
@@ -39,6 +40,10 @@ val MirrovisionTypography = Typography(
         fontSize = 14.sp,
         fontFamily = mainFonts,
         fontWeight = FontWeight.Light,
-
     ),
-)
+    headlineSmall = TextStyle(
+        color = LightPrimary,
+        fontSize = 12.sp,
+        fontFamily = mainFonts,
+        fontWeight = FontWeight.ExtraLight,
+    ),)

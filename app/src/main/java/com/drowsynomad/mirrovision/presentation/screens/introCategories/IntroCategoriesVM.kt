@@ -1,12 +1,14 @@
 package com.drowsynomad.mirrovision.presentation.screens.introCategories
 
 import com.drowsynomad.mirrovision.R
+import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.domain.categories.ICategoryRepository
-import com.drowsynomad.mirrovision.presentation.core.base.BaseViewModel
+import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
 import com.drowsynomad.mirrovision.presentation.screens.introCategories.model.CategoriesId
 import com.drowsynomad.mirrovision.presentation.screens.introCategories.model.IntroCategoriesEvent
 import com.drowsynomad.mirrovision.presentation.screens.introCategories.model.IntroCategoriesState
-import com.drowsynomad.mirrovision.presentation.screens.introCategories.model.IntroCategory
+import com.drowsynomad.mirrovision.presentation.screens.introCategories.model.IntroCategoryUI
+import com.drowsynomad.mirrovision.presentation.utils.IStringConverterManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -20,44 +22,54 @@ import javax.inject.Inject
 
 @HiltViewModel
 class IntroCategoriesVM @Inject constructor(
-    private val categoryRepository: ICategoryRepository
-): BaseViewModel<IntroCategoriesState, IntroCategoriesEvent>() {
-
+    private val stringManager: IStringConverterManager,
+    private val categoryRepository: ICategoryRepository,
+): StateViewModel<IntroCategoriesState, IntroCategoriesEvent>(
+    IntroCategoriesState(isProgress = true)
+) {
     override fun handleUiEvent(uiEvent: IntroCategoriesEvent) {
         when(uiEvent) {
-            is IntroCategoriesEvent.LoadLocalizedCategories -> loadCategories()
+            is IntroCategoriesEvent.LoadLocalizedCategories -> loadCategoriesPreset()
+            is IntroCategoriesEvent.SelectCategory -> clickOnCategory(uiEvent.category)
+            is IntroCategoriesEvent.InsertCustomCategory -> insertCustomCategory(uiEvent.category)
         }
     }
 
-    private fun loadCategories() {
-        updateState {
-            it.value = IntroCategoriesState(isProgress = true)
-        }
+    private fun clickOnCategory(introCategoryUI: IntroCategoryUI) {
+        uiState.value.categories.find { it == introCategoryUI }?.selection?.value = !introCategoryUI.selection.value
+    }
 
-        launch {
-            delay(1000L)
-            categoryRepository.getCategoriesId()
-                .map {
-                    it.map {
-                        val (nameRes, iconRes) = when(CategoriesId.toEnum(it)) {
-                            CategoriesId.CATEGORY_SPORT -> R.string.default_category_sport to R.drawable.ic_category_art
-                            CategoriesId.CATEGORY_DIET -> R.string.default_category_diet to R.drawable.ic_category_art
-                            CategoriesId.CATEGORY_SELF_EDUCATION -> R.string.default_category_self_education to R.drawable.ic_category_art
-                            CategoriesId.CATEGORY_ART -> R.string.default_category_art to R.drawable.ic_category_art
-                            CategoriesId.CATEGORY_MEDITATION -> R.string.default_category_meditation to R.drawable.ic_category_art
-                            CategoriesId.CATEGORY_WORK -> R.string.default_category_work to R.drawable.ic_category_art
-                            CategoriesId.CATEGORY_RELATIONSHIPS -> R.string.default_category_relationship to R.drawable.ic_category_art
+    private fun insertCustomCategory(introCategoryUI: IntroCategoryUI) {
+        val lastPosition = uiState.value.categories.lastIndex
+        uiState.value.categories.add(lastPosition, introCategoryUI)
+    }
+
+    private fun loadCategoriesPreset() {
+        if(uiState.value.categories.isEmpty())
+            launch {
+                delay(300L)
+                categoryRepository.getCategoriesId()
+                    .map {
+                        it.map { stringId ->
+                            val (name: String?, iconRes: Int) = when(CategoriesId.toEnum(stringId)) {
+                                CategoriesId.CATEGORY_SPORT -> stringManager.getString(R.string.default_category_sport) to R.drawable.ic_category_art
+                                CategoriesId.CATEGORY_DIET -> stringManager.getString(R.string.default_category_diet) to R.drawable.ic_category_art
+                                CategoriesId.CATEGORY_SELF_EDUCATION -> stringManager.getString(R.string.default_category_self_education) to R.drawable.ic_category_art
+                                CategoriesId.CATEGORY_ART -> stringManager.getString(R.string.default_category_art) to R.drawable.ic_category_art
+                                CategoriesId.CATEGORY_MEDITATION -> stringManager.getString(R.string.default_category_meditation) to R.drawable.ic_category_art
+                                CategoriesId.CATEGORY_WORK -> stringManager.getString(R.string.default_category_work) to R.drawable.ic_category_art
+                                CategoriesId.CATEGORY_RELATIONSHIPS -> stringManager.getString(R.string.default_category_relationship) to R.drawable.ic_category_art
+                                CategoriesId.CATEGORY_NONE -> null to 0
+                            }
+                            IntroCategoryUI(name ?: emptyString(), icon = iconRes)
                         }
-                        IntroCategory(nameRes, iconRes)
                     }
-                }
-                .flowOn(Dispatchers.IO)
-                .collect { categories ->
-                    val a = categories.toMutableList() + IntroCategory(R.string.default_category_own)
-                    updateState {
-                        it.value = IntroCategoriesState(categories = a)
+                    .flowOn(Dispatchers.IO)
+                    .collect { categories ->
+                        val finalData = categories.filter { it.name.isNotEmpty() } + IntroCategoryUI(stringManager.getString(R.string.default_category_own))
+                        uiState.value.categories.addAll(finalData)
+                        uiState.value = uiState.value.copy(isProgress = false)
                     }
-                }
-        }
+            }
     }
 }

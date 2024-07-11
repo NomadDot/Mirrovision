@@ -21,10 +21,8 @@ import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.presentation.theme.CategoryColors
-import com.drowsynomad.mirrovision.presentation.utils.accent
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
-import kotlin.random.Random
 
 /**
  * @author Roman Voloshyn (Created on 26.06.2024)
@@ -33,8 +31,9 @@ import kotlin.random.Random
 @Composable
 fun ColorPicker(
     modifier: Modifier = Modifier,
-    colors: List<ColoredCategory>,
-    onColorClick: ((ColoredCategory) -> Unit)? = null
+    colors: List<ColorShades>,
+    colorsAlignment: Alignment = Alignment.CenterStart,
+    onColorClick: ((ColorShades) -> Unit)? = null
 ) {
     Box(
         modifier = modifier
@@ -42,10 +41,10 @@ fun ColorPicker(
     ) {
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(5.dp),
-            modifier = Modifier.align(Alignment.CenterStart)
+            modifier = Modifier.align(colorsAlignment)
         ) {
-            items(colors, key = { category -> category.id }) { category ->
-                CategoryColorItem(coloredCategory = category) {
+            items(colors, key = { colorShade -> colorShade.id }) { colorShade ->
+                CategoryColorItem(colorShade = colorShade) {
                     onColorClick?.invoke(it)
                 }
             }
@@ -56,12 +55,12 @@ fun ColorPicker(
 @Composable
 private fun CategoryColorItem(
     modifier: Modifier = Modifier,
-    coloredCategory: ColoredCategory,
-    onColorClick: ((ColoredCategory) -> Unit)? = null
+    colorShade: ColorShades,
+    onColorClick: ((ColorShades) -> Unit)? = null
 ) {
     Box(modifier = modifier
         .bounceClick {
-            onColorClick?.invoke(coloredCategory)
+            onColorClick?.invoke(colorShade)
         }
     ) {
         Canvas(
@@ -69,10 +68,10 @@ private fun CategoryColorItem(
                 .size(30.dp)
                 .clipToBounds()
         ) {
-            drawCircle(coloredCategory.color.main)
+            drawCircle(colorShade.main.pureColor)
         }
         AnimatedVisibility(
-            visible = coloredCategory.selected,
+            visible = colorShade.selected,
             enter = fadeIn(),
             exit = fadeOut(),
             modifier = Modifier.align(Alignment.Center)
@@ -80,7 +79,7 @@ private fun CategoryColorItem(
             Icon(
                 painter = painterResource(id = R.drawable.ic_checkmark),
                 contentDescription = emptyString(),
-                tint = coloredCategory.color.accent,
+                tint = colorShade.accent.pureColor,
             )
         }
     }
@@ -90,8 +89,6 @@ private fun CategoryColorItem(
 @Composable
 private fun ColorPickerPreview() {
     ColorPicker(
-        colors = CategoryColors.map { color ->
-            ColoredCategory(ColorShades(color, color.accent()), initialSelection = Random.nextBoolean())
-        }
+        colors = CategoryColors.map { color -> ColorShades(color, color.accent) }
     )
 }

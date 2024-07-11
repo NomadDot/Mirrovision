@@ -8,8 +8,4 @@ import dagger.hilt.android.HiltAndroidApp
  */
 
 @HiltAndroidApp
-class MirrovisionApp: Application() {
-    override fun onCreate() {
-        super.onCreate()
-    }
-}
+class MirrovisionApp: Application()

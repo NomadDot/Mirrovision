@@ -21,13 +21,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColorPicker
 import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColorShades
 import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColoredCategory
 import com.drowsynomad.mirrovision.presentation.navigation.TestNavigation
 import com.drowsynomad.mirrovision.presentation.theme.CategoryColors
 import com.drowsynomad.mirrovision.presentation.theme.GreenCategoryAccent
-import com.drowsynomad.mirrovision.presentation.utils.accent
 
 /**
  * @author Roman Voloshyn (Created on 25.06.2024)
@@ -89,7 +87,7 @@ private fun ComponentsPreview(
         }
 
         val colors = CategoryColors.map { color ->
-            ColoredCategory(ColorShades(color, color.accent()))
+            ColoredCategory(ColorShades(color, color.accent))
         }.dropLast(5).toMutableStateList()
 
         fun selectCategory(selectedOption: ColoredCategory) {
@@ -98,14 +96,14 @@ private fun ComponentsPreview(
                 ?.selected = true
         }
 
-        ColorPicker(
+      /*  ColorPicker(
             colors = colors,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
         ) { innerColor ->
             selectCategory(innerColor)
-        }
+        }*/
         AddingButton(modifier = Modifier
             .fillMaxWidth()
             .padding(top = 16.dp)

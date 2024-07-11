@@ -7,9 +7,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.drowsynomad.mirrovision.R
+import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.components.MainTestScreen
 import com.drowsynomad.mirrovision.presentation.screens.introCategories.IntroCategoriesScreen
+import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.PresetHabitScreen
+import com.drowsynomad.mirrovision.presentation.utils.fromJsonList
+import com.drowsynomad.mirrovision.presentation.utils.toJson
 import kotlin.reflect.KClass
 
 /**
@@ -30,12 +35,24 @@ fun RootNavigation(
         composable<Routes.IntroCategoriesScreen> {
             IntroCategoriesScreen(
                 viewModel = hiltViewModel(),
-                onNavigateNext = {}
+                onNavigateNext = {
+                    navController.navigate(Routes.PresetHabitScreen(it.toJson()))
+                }
             )
         }
 
         composable<Routes.MainTestScreen> {
             MainTestScreen()
+        }
+
+        composable<Routes.PresetHabitScreen> {
+            val categories = it
+                .toRoute<Routes.PresetHabitScreen>()
+                .rawCategoryList
+                .fromJsonList<Array<CategoryUI>>().toList()
+            PresetHabitScreen(categories = categories, viewModel = hiltViewModel()) {
+                navController.popBackStack()
+            }
         }
     }
 }

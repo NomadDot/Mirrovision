@@ -1,6 +1,8 @@
 package com.drowsynomad.mirrovision.presentation.screens.introCategories.model
 
-import com.voloshynroman.zirkon.presentation.core.common.UiState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.drowsynomad.mirrovision.presentation.core.common.UiState
 
 /**
  * @author Roman Voloshyn (Created on 27.06.2024)
@@ -8,5 +10,5 @@ import com.voloshynroman.zirkon.presentation.core.common.UiState
 
 data class IntroCategoriesState(
     val isProgress: Boolean = false,
-    val categories: List<IntroCategory> = emptyList()
+    val categories: SnapshotStateList<IntroCategoryUI> = mutableStateListOf()
 ): UiState
