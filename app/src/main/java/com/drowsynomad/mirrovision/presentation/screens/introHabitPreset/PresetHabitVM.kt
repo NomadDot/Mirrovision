@@ -23,7 +23,11 @@ class PresetHabitVM @Inject constructor(
     }
 
     private fun presetCategories(categories: List<CategoryUI>) {
-        val categoriesWithSingleHabit = categories.map { it.copy(habits = listOf(HabitUI(backgroundColor = it.backgroundColor))) }
+        val categoriesWithSingleHabit = categories.map {
+            it.copy(
+                habits = listOf(HabitUI(backgroundColor = it.backgroundColor, attachedCategoryId = it.id))
+            )
+        }
         uiState.value = PresetHabitState(categories = categoriesWithSingleHabit)
     }
 }

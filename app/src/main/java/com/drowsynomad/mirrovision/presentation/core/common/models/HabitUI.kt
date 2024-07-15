@@ -18,7 +18,8 @@ data class HabitUI(
     val description: String = emptyString(),
     @DrawableRes val icon: Int = R.drawable.ic_add,
     val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
-    val accentColor: CategoryAccentColor = backgroundColor.accent
+    val accentColor: CategoryAccentColor = backgroundColor.accent,
+    val attachedCategoryId: Int,
 ) {
     val isDefaultIcon = icon == R.drawable.ic_add
 }

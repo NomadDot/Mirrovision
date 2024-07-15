@@ -13,7 +13,7 @@ import kotlin.random.Random
 
 @Serializable
 data class CategoryUI(
-    val id: Long = Random.nextLong(),
+    val id: Int = Random.nextInt(),
     val name: String = emptyString(),
     val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
     @DrawableRes val iconRes: Int = R.drawable.ic_add,

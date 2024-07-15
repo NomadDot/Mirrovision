@@ -18,4 +18,11 @@
     <string name="label_choose_at_least_one_category">Choose at least one category</string>
     <string name="label_my_habits">My habits</string>
     <string name="label_create_your_first_habit">Create your first habit in this category</string>
+    <string name="label_habit_name">Habit</string>
+    <string name="label_description">Description</string>
+    <string name="label_habit_enter_the_name">Enter the name of habit</string>
+    <string name="label_add_habit_description">Add short description</string>
+    <string name="label_regularity">Regularity</string>
+    <string name="label_amount">Amount</string>
+    <string name="label_per_day">(per day)</string>
 </resources>

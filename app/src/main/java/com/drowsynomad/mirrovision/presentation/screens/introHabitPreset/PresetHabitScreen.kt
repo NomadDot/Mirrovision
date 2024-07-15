@@ -15,6 +15,7 @@ import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCategory
 import com.drowsynomad.mirrovision.presentation.core.components.Toolbar
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
+import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CategoryAssets
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitState
 
@@ -26,13 +27,18 @@ import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.P
 fun PresetHabitScreen(
     categories: List<CategoryUI>,
     viewModel: PresetHabitVM,
+    onCreateHabit: (CategoryAssets) -> Unit,
     onBackNavigation: Navigation
 ) {
     StateContent(
         viewModel = viewModel,
         launchedEffect = { viewModel.handleUiEvent(PresetHabitEvent.PresetCategories(categories)) }
     ) {
-        PresetHabitContent(it, onBackNavigation = onBackNavigation)
+        PresetHabitContent(
+            it,
+            onBackNavigation = onBackNavigation,
+            onCreateHabit = onCreateHabit
+        )
     }
 }
 
@@ -40,6 +46,7 @@ fun PresetHabitScreen(
 fun PresetHabitContent(
     state: PresetHabitState,
     modifier: Modifier = Modifier,
+    onCreateHabit: (CategoryAssets) -> Unit,
     onBackNavigation: Navigation
 ) {
     Column {
@@ -48,7 +55,7 @@ fun PresetHabitContent(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(state.categories, key = { item -> item.id }) {
-                HabitCategory(category = it)
+                HabitCategory(category = it, onCreateHabit = onCreateHabit)
             }
         }
     }
@@ -57,5 +64,5 @@ fun PresetHabitContent(
 @Preview
 @Composable
 private fun Preview() {
-    PresetHabitContent(state = PresetHabitState()) {}
+    PresetHabitContent(state = PresetHabitState(), onCreateHabit = {}) {}
 }

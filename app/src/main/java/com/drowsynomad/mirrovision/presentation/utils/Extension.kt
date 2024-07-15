@@ -8,10 +8,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import kotlinx.serialization.Serializable
 
 /**
  * @author Roman Voloshyn (Created on 21.06.2024)
  */
+
+val GlobalGson = Gson()
 
 inline fun <reified T : Any> NavGraphBuilder.composableOf(
     noinline content: @Composable AnimatedContentScope.(T, NavBackStackEntry) -> Unit
@@ -22,14 +25,26 @@ inline fun <reified T : Any> NavGraphBuilder.composableOf(
     }
 }
 
-fun Any.toJson(): String = Gson().toJson(this)
+fun Any.toJson(): String = GlobalGson.toJson(this)
+//fun <T> T.toJsonArgument(): JsonArgument = JsonArgument(Gson().toJson(this))
 
 //inline fun <reified T> String.fromJson(): T = Gson().fromJson(this, T::class.java)
-inline fun <reified T> String.fromJsonList(): T =
-    GsonBuilder().create().fromJson(
+inline fun <reified T> String.fromJson(): T =
+    GlobalGson.newBuilder().create().fromJson(
         this,
         T::class.java
     )
 
 fun String?.clearRoute(): String = this?.substringAfterLast(".") ?: "$this"
+/*
+
+@Serializable
+data class JsonArgument(
+    val json: String
+) {
+    inline fun <reified OUT> createObject(): OUT {
+        return json.fromJson<OUT>()
+    }
+}
+*/
 

@@ -20,6 +20,8 @@ val LightMainHintColor = Color(0xFFA48EFF)
 val LightPrimaryInactive = Color(0xFFC0B3F0)
 val LightTextInactive = Color(0xFFF2F4F5)
 
+val ShadowColor = Color(0xFFEDEDF3)
+
 // Category colors
 val BlueCategory = Color(0xFFCDDAFD)
 val GreenCategory = Color(0xFFCADBBB)
@@ -30,11 +32,13 @@ val OrangeCategory = Color(0xFFFFD8B9)
 val RedCategory = Color(0xFFFFB4B9)
 val BrownCategory = Color(0xFFC7A78E)
 
+val DefaultCategoryColor = PurpleCategory
+
 val BlueCategoryAccent = Color(0xFF001F74)
 val GreenCategoryAccent = Color(0xFF686D00)
 val YellowCategoryAccent = Color(0xFFA07300)
 val PinkCategoryAccent = Color(0xFF9B003D)
-val PurpleCategoryAccent = Color(0xFF3A0083)
+val PurpleCategoryAccent = Color(0xFF68509A)
 val OrangeCategoryAccent = Color(0xFFAB4C00)
 val RedCategoryAccent = Color(0xFF8F0009)
 val BrownCategoryAccent = Color(0xFF78431A)
