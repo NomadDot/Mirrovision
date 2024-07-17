@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 
 /**
@@ -39,9 +40,12 @@ fun HabitIcon(
     outerRadius: Dp = 12.dp,
     onIconClick: (() -> Unit)? = null
 ) {
+    onIconClick?.let {
+        modifier.bounceClick { it.invoke() }
+    }
+
     Box(
         modifier = modifier
-            .bounceClick { onIconClick?.invoke() }
             .background(color = backgroundColor, shape = CircleShape)
             .padding(outerRadius),
     ) {
@@ -94,8 +98,8 @@ fun CategoryChooserIcon(
 @Composable
 fun CategoryIcon(
     modifier: Modifier = Modifier,
-    @DrawableRes icon: Int = R.drawable.v2,
-    color: Color = MaterialTheme.colorScheme.primary,
+    @DrawableRes icon: Int = R.drawable.ic_sport_ball,
+    color: CategoryMainColor = CategoryMainColor.Purple,
     onIconClick: (() -> Unit)? = null
 ) {
     HabitIcon(
@@ -103,9 +107,9 @@ fun CategoryIcon(
             .width(50.dp)
             .height(50.dp),
         icon = icon,
-        iconSpec = 24.dp,
-        iconTint = MaterialTheme.colorScheme.surfaceContainer,
-        accentColor = color,
+        iconSpec = 35.dp,
+        iconTint = color.accent.pureColor,
+        accentColor = color.pureColor,
         backgroundColor = MaterialTheme.colorScheme.surfaceContainer,
         outerRadius = 5.dp,
         onIconClick = onIconClick
@@ -119,7 +123,5 @@ private fun IconPreview() {
         HabitIcon(modifier = Modifier
             .width(92.dp)
             .height(92.dp), icon = R.drawable.ic_add)
-
-        HabitIcon()
     }
 }

@@ -18,4 +18,7 @@ data class CategoryUI(
     val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
     @DrawableRes val iconRes: Int = R.drawable.ic_add,
     val habits: List<HabitUI> = emptyList()
-)
+) {
+    val isPresetCategory = habits.isEmpty()
+    val isFirstHabitPreset = if(habits.isEmpty()) true else habits.first().isDefaultIcon
+}

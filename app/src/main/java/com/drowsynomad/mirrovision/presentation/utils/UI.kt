@@ -102,7 +102,6 @@ data class FixedInsets(
 )
 
 val LocalFixedInsets = compositionLocalOf<FixedInsets> { error("no FixedInsets provided!") }
-//WindowInsets.Companion.statusBars.getTop(LocalDensity.current).pxToDp()
 @Composable
 fun Modifier.statusBarPaddingWith(topPadding: Dp = 0.dp): Modifier {
     return this.padding(top = LocalFixedInsets.current.statusBarHeight).padding(top = topPadding)

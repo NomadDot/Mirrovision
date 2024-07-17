@@ -10,23 +10,26 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
+import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmount
 import com.drowsynomad.mirrovision.presentation.core.components.AddingButton
+import com.drowsynomad.mirrovision.presentation.core.components.AmountHabit
 import com.drowsynomad.mirrovision.presentation.core.components.BackButton
 import com.drowsynomad.mirrovision.presentation.core.components.BigTitle
 import com.drowsynomad.mirrovision.presentation.core.components.CancelableAndSaveableButton
 import com.drowsynomad.mirrovision.presentation.core.components.ExplainTitle
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCounter
-import com.drowsynomad.mirrovision.presentation.core.components.HabitIcon
 import com.drowsynomad.mirrovision.presentation.core.components.InputField
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitState
@@ -49,9 +52,9 @@ data class CategoryAssets(
 @Composable
 fun CreateHabitScreen(
     viewModel: CreateHabitVM,
-    categoryAsset: CategoryAssets,
+    habitUI: HabitUI,
     onBackNavigation: Navigation,
-    onSaveHabit: () -> Unit
+    onSaveHabit: (HabitUI) -> Unit
 ) {
     StateContent(
         isStatusBarPadding = false,
@@ -59,12 +62,18 @@ fun CreateHabitScreen(
         launchedEffect = {
         }
     ) {
-        CreateHabitContent(it, categoryAsset, onBackNavigation, onSaveHabit)
+        CreateHabitContent(it, habitUI, onBackNavigation, onSaveHabit)
     }
 }
 
 @Composable
-fun IconItem(color: Color, modifier: Modifier = Modifier) {
+fun CircleIcon(
+    color: CategoryMainColor,
+    modifier: Modifier = Modifier,
+    count: Int = 1,
+    selected: Int = 0,
+    onClick: () -> Unit
+) {
     Box(modifier = Modifier) {
         Canvas(modifier = modifier
             .fillMaxWidth()
@@ -72,19 +81,23 @@ fun IconItem(color: Color, modifier: Modifier = Modifier) {
             .clipToBounds()
         ) {
             drawCircle(
-                color = color,
+                color = color.pureColor,
                 radius = size.width/1.8f,
                 center = Offset(this.center.x, y = 0f)
             )
         }
-        HabitIcon(
+        AmountHabit(
+            habitUI = HabitUI(
+                backgroundColor = color,
+                stroke = StrokeAmount(count, selected, color.accent)
+            ),
             modifier = Modifier
                 .padding(top = 60.dp + LocalFixedInsets.current.statusBarHeight)
                 .size(115.dp)
                 .align(Alignment.TopCenter),
-            outerRadius = 12.dp,
-            iconSpec = 60.dp,
-            accentColor = color
+            strokeSize = 115.dp,
+            iconSize = 60.dp,
+            onClick = onClick
         )
     }
 }
@@ -92,16 +105,26 @@ fun IconItem(color: Color, modifier: Modifier = Modifier) {
 @Composable
 fun CreateHabitContent(
     state: CreateHabitState,
-    categoryAsset: CategoryAssets,
+    habitUI: HabitUI,
     onBackNavigation: Navigation,
-    onSaveHabit: () -> Unit
+    onSaveHabit: (HabitUI) -> Unit
 ) {
-    val accentColor = categoryAsset.color.accent.pureColor
+    val accentColor = habitUI.accentColor.pureColor
+
+    val icon = remember { mutableIntStateOf(R.drawable.v2) }
+    val countPerDay = remember { mutableIntStateOf(1) }
+    val selectedHabits = remember { mutableIntStateOf(0) }
+    val configuredHabit = remember { habitUI }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            IconItem(categoryAsset.color.pureColor)
+            CircleIcon(
+                habitUI.backgroundColor,
+                count = countPerDay.intValue,
+                selected = selectedHabits.intValue
+            ) {}
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -143,9 +166,9 @@ fun CreateHabitContent(
                 )
                 HabitCounter(
                     modifier = Modifier.padding(top = 15.dp),
-                    styleColor = categoryAsset.color.pureColor,
+                    styleColor = habitUI.backgroundColor.pureColor,
                     accentColor = accentColor
-                )
+                ) { countPerDay.intValue = it }
                 BigTitle(
                     text = stringResource(R.string.label_regularity),
                     modifier = Modifier.padding(top = 20.dp),
@@ -170,13 +193,19 @@ fun CreateHabitContent(
             containerColor = accentColor,
             onCancelButtonClick = onBackNavigation,
             onPrimaryButtonClick = {
-                onSaveHabit.invoke()
+                onSaveHabit.invoke(
+                    habitUI.copy(
+                        stroke = StrokeAmount(countPerDay.intValue),
+                        icon = icon.intValue,
+                        attachedCategoryId = habitUI.attachedCategoryId
+                    )
+                )
             }
         )
         BackButton(
             modifier = Modifier
-               .padding(top = 46.dp)
-               .padding(start = 24.dp),
+                .padding(top = 46.dp)
+                .padding(start = 24.dp),
             color = accentColor,
             onClick = onBackNavigation
         )
@@ -187,6 +216,6 @@ fun CreateHabitContent(
 @Composable
 private fun Preview() {
     Box(modifier = Modifier.fillMaxSize()) {
-        CreateHabitContent(state = CreateHabitState(), CategoryAssets(0, CategoryMainColor.Red), {}, {})
+        CreateHabitContent(state = CreateHabitState(), HabitUI(), {}, {})
     }
 }

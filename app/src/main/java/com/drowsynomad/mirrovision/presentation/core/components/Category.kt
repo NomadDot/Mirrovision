@@ -51,14 +51,16 @@ fun HabitCategory(
                     Modifier,
                     onCreateHabit = onCreateHabit
                 )
-                AdviceText(text = stringResource(R.string.label_create_your_first_habit),
-                    modifier = Modifier.align(Alignment.BottomEnd),
-                    color = category.backgroundColor.accent.pureColor
-                )
+                if(category.isFirstHabitPreset)
+                    AdviceText(text = stringResource(R.string.label_create_your_first_habit),
+                        modifier = Modifier.align(Alignment.BottomEnd),
+                        color = category.backgroundColor.accent.pureColor
+                    )
             }
         }
         CategoryIcon(
-            color = category.backgroundColor.pureColor,
+            color = category.backgroundColor,
+            icon = category.iconRes,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(end = 14.dp)
@@ -80,7 +82,14 @@ private fun HabitRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(habits, key = { item -> item.id }) {
-            HabitItem(it, categoryAssets = categoryAssets, onCreateHabit = onCreateHabit)
+            AmountHabit(
+                iconSize = 35.dp,
+                strokeSize = 60.dp,
+                strokeWidth = StrokeWidth.Custom(14f),
+                habitUI = it
+            ) {
+                onCreateHabit.invoke(categoryAssets)
+            }
         }
     }
 }

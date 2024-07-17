@@ -1,12 +1,19 @@
 package com.drowsynomad.mirrovision.presentation.navigation
 
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.toMutableStateList
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -15,11 +22,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.MainTestScreen
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CategoryAssets
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CreateHabitScreen
 import com.drowsynomad.mirrovision.presentation.screens.introCategories.IntroCategoriesScreen
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.PresetHabitScreen
+import com.drowsynomad.mirrovision.presentation.utils.composableOf
 import com.drowsynomad.mirrovision.presentation.utils.fromJson
 import com.drowsynomad.mirrovision.presentation.utils.toJson
 import kotlin.reflect.KClass
@@ -44,78 +53,59 @@ fun RootNavigation(
             IntroCategoriesScreen(
                 viewModel = hiltViewModel(),
                 onNavigateNext = {
-                     navController.navigate(Routes.PresetHabitScreen(it.toJson()))
+                     navController.navigate(Routes.PresetHabitScreen(StringParcel(it.toJson())))
                 }
             )
         }
 
-        composable<Routes.PresetHabitScreen>(
-            enterTransition = {
-                slideIntoContainer(towards = AnimatedContentTransitionScope.SlideDirection.Left, tween(300))
-            },
-            exitTransition = {
-                slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, tween(300))
-            },
-            popExitTransition = {
-                slideOutOfContainer(towards = AnimatedContentTransitionScope.SlideDirection.Right, tween(300))
+        composableOf<Routes.PresetHabitScreen, StringParcel> { route, navBackStackEntry ->
+            val createdHabits = rememberSaveable {
+                mutableListOf<HabitUI>()
             }
-        ) {
-            val categories = it
-                .toRoute<Routes.PresetHabitScreen>()
-                .rawCategoryList
+            val createdHabit =
+                navBackStackEntry.savedStateHandle.get<HabitUI?>("createdHabit")
+
+            createdHabit?.let { habit ->
+                if(!createdHabits.contains(habit))
+                    createdHabits.add(habit)
+            }
+
+            val categories = route
+                .rawCategoryList.string
                 .fromJson<Array<CategoryUI>>().toList()
+                .map { category ->
+                    val attachedHabits = createdHabits.filter { habit -> habit.attachedCategoryId == category.id }
+                    if(attachedHabits.isNotEmpty())
+                        category.copy(habits = attachedHabits)
+                    else category
+                }
             PresetHabitScreen(
                 categories = categories,
                 viewModel = hiltViewModel(),
-                onCreateHabit = { categoryUI ->
-                    navController.navigate(Routes.CreateHabitScreen(categoryUI))
-                }
-            ) {
-                navController.popBackStack()
-            }
+                onCreateHabit = navController::navigateToHabitCreating,
+                onBackNavigation = navController::popBackStack
+            )
         }
 
-        composable<Routes.CreateHabitScreen>(
-            typeMap = getTypedMap<CategoryAssets>()
-        ) {
+        composableOf<Routes.CreateHabitScreen, CategoryAssets> { route, navBackStackEntry ->
+            val assets = route.categoryAssets
             CreateHabitScreen(
                 viewModel = hiltViewModel(),
-                it.toRoute<Routes.CreateHabitScreen>().categoryAssets,
-                onBackNavigation = {
-                    navController.popBackStack()
-                }
-            ) {
-
-            }
-        }
-
-        composable<Routes.MainTestScreen> {
-            MainTestScreen()
+                HabitUI(attachedCategoryId = assets.categoryId, backgroundColor =  assets.color),
+                onBackNavigation = navController::popBackStack,
+                onSaveHabit = navController::returnToHabitPresetWithCreatedHabit
+            )
         }
     }
 }
 
-private inline fun <reified T: Parcelable> getTypedMap() = mapOf(typeOf<T>() to NavTypeFactory.create<T>())
+fun NavController.navigateToHabitCreating(categoryAssets: CategoryAssets) {
+    this.navigate(Routes.CreateHabitScreen(categoryAssets))
+}
 
-private class NavTypeFactory {
-    companion object {
-        inline fun <reified T: Parcelable> create(): NavType<T> {
-            return object : NavType<T>(false) {
-                override fun get(bundle: Bundle, key: String): T? =
-                    @Suppress("DEPRECATION") // for backwards compatibility
-                    bundle.getParcelable(key)
-
-                override fun put(bundle: Bundle, key: String, value: T) =
-                    bundle.putParcelable(key, value)
-
-                override fun parseValue(value: String): T = value.fromJson()
-
-                override fun serializeAsValue(value: T): String = value.toJson()
-
-                override val name: String = "ScreenInfo"
-            }
-        }
-    }
+fun NavController.returnToHabitPresetWithCreatedHabit(habit: HabitUI) {
+    this.previousBackStackEntry?.savedStateHandle?.set("createdHabit", habit)
+    this.popBackStack()
 }
 
 sealed class MainBottomNavItem(

@@ -52,13 +52,13 @@ class IntroCategoriesVM @Inject constructor(
                     .map {
                         it.map { stringId ->
                             val (name: String?, iconRes: Int) = when(CategoriesId.toEnum(stringId)) {
-                                CategoriesId.CATEGORY_SPORT -> stringManager.getString(R.string.default_category_sport) to R.drawable.ic_category_art
-                                CategoriesId.CATEGORY_DIET -> stringManager.getString(R.string.default_category_diet) to R.drawable.ic_category_art
-                                CategoriesId.CATEGORY_SELF_EDUCATION -> stringManager.getString(R.string.default_category_self_education) to R.drawable.ic_category_art
-                                CategoriesId.CATEGORY_ART -> stringManager.getString(R.string.default_category_art) to R.drawable.ic_category_art
-                                CategoriesId.CATEGORY_MEDITATION -> stringManager.getString(R.string.default_category_meditation) to R.drawable.ic_category_art
-                                CategoriesId.CATEGORY_WORK -> stringManager.getString(R.string.default_category_work) to R.drawable.ic_category_art
-                                CategoriesId.CATEGORY_RELATIONSHIPS -> stringManager.getString(R.string.default_category_relationship) to R.drawable.ic_category_art
+                                CategoriesId.CATEGORY_SPORT -> stringManager.getString(R.string.default_category_sport) to R.drawable.ic_sport_ball
+                                CategoriesId.CATEGORY_DIET -> stringManager.getString(R.string.default_category_diet) to R.drawable.ic_diet_pizza
+                                CategoriesId.CATEGORY_SELF_EDUCATION -> stringManager.getString(R.string.default_category_self_education) to R.drawable.ic_self_education_books
+                                CategoriesId.CATEGORY_ART -> stringManager.getString(R.string.default_category_art) to R.drawable.ic_art_camera
+                                CategoriesId.CATEGORY_MEDITATION -> stringManager.getString(R.string.default_category_meditation) to R.drawable.ic_art_camera
+                                CategoriesId.CATEGORY_WORK -> stringManager.getString(R.string.default_category_work) to R.drawable.ic_art_camera
+                                CategoriesId.CATEGORY_RELATIONSHIPS -> stringManager.getString(R.string.default_category_relationship) to R.drawable.ic_art_camera
                                 CategoriesId.CATEGORY_NONE -> null to 0
                             }
                             IntroCategoryUI(name ?: emptyString(), icon = iconRes)
