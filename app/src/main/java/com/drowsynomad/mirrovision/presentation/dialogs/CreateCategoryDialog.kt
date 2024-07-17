@@ -49,7 +49,7 @@ import com.drowsynomad.mirrovision.presentation.utils.roundBox
 @Composable
 fun CreateCategoryDialog(
     enabledColors: List<ColorShades> = emptyList(),
-    @DrawableRes prefilledIcon: Int = R.drawable.v2,
+    @DrawableRes prefilledIcon: Int = R.drawable.ic_diet_pizza,
     isDialogVisible: (Boolean) -> Unit,
     onSave: (ColoredCategory) -> Unit
 ) {
@@ -74,26 +74,27 @@ fun CreateCategoryDialog(
         mutableStateOf(defaultAccentColor)
     }
 
-    val accentColor = animateColorAsState(
-        selectedAccentColor.value,
-        animationSpec = tween(500),
-        label = emptyString()
-    )
     val currentBackgroundColor = animateColorAsState(
         selectedBgColor.value,
         animationSpec = tween(500),
         label = emptyString()
     )
 
-    val colors = remember {
-        enabledColors.toMutableStateList()
-    }
-
     fun checkIfButtonEnabled() {
         isButtonActive.value = categoryName.value.isNotEmpty() &&
-                currentBackgroundColor.value != defaultBgColor &&
-                categoryIcon.intValue == R.drawable.v2
+                currentBackgroundColor.value != defaultBgColor
+                && categoryIcon.intValue == R.drawable.ic_diet_pizza
     }
+
+    val accentColor = animateColorAsState(
+        selectedAccentColor.value,
+        animationSpec = tween(500),
+        label = emptyString()
+    ) {
+        checkIfButtonEnabled()
+    }
+
+    val colors = remember { enabledColors.toMutableStateList() }
 
     fun selectCategory(colorShade: ColorShades) {
         colors.forEach { it.selected = false }
@@ -148,8 +149,6 @@ fun CreateCategoryDialog(
                         selectCategory(it)
                         selectedBgColor.value = it.main.pureColor
                         selectedAccentColor.value = it.accent.pureColor
-
-                        checkIfButtonEnabled()
                     }
                 )
                 Row(
@@ -182,7 +181,7 @@ fun CreateCategoryDialog(
                                     convertToMainCategoryColor(currentBackgroundColor.value),
                                     convertToAccentCategoryColor(accentColor.value)),
                                 name = categoryName.value,
-                                icon = R.drawable.ic_category_art
+                                icon = prefilledIcon
                             )
                         )
                         isDialogVisible.invoke(false)
@@ -198,7 +197,7 @@ fun CreateCategoryDialog(
                         bottom.linkTo(content.top)
                         end.linkTo(content.end, margin = 12.dp)
                     },
-                icon = R.drawable.v2,
+                icon = R.drawable.ic_add,
                 iconSpec = 40.dp,
                 backgroundColor = accentColor.value,
                 accentColor = currentBackgroundColor.value,

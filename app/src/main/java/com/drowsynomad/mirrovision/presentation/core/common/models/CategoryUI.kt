@@ -13,9 +13,12 @@ import kotlin.random.Random
 
 @Serializable
 data class CategoryUI(
-    val id: Long = Random.nextLong(),
+    val id: Int = Random.nextInt(),
     val name: String = emptyString(),
     val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
     @DrawableRes val iconRes: Int = R.drawable.ic_add,
     val habits: List<HabitUI> = emptyList()
-)
+) {
+    val isPresetCategory = habits.isEmpty()
+    val isFirstHabitPreset = if(habits.isEmpty()) true else habits.first().isDefaultIcon
+}

@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
@@ -13,15 +15,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.core.emptyString
+import com.drowsynomad.mirrovision.presentation.theme.ShadowColor
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
 
 /**
@@ -34,6 +40,7 @@ fun InputField(
     hint: String = emptyString(),
     maxLimit: Int? = null,
     color: Color? = null,
+    elevation: Dp = 0.dp,
     isSingleLine: Boolean = false,
     onValueChanged: ((String) -> Unit)? = null,
 ) {
@@ -55,34 +62,40 @@ fun InputField(
             }
         },
         singleLine = isSingleLine,
-        modifier = modifier.roundBox(MaterialTheme.colorScheme.primaryContainer),
+        modifier = modifier
+            .shadow(elevation, shape = RoundedCornerShape(25.dp), spotColor = ShadowColor)
+            .roundBox(MaterialTheme.colorScheme.primaryContainer),
         textStyle = MaterialTheme.typography.bodyMedium.copy(textColor),
         cursorBrush = SolidColor(value = textColor),
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
     ) { innerTextField ->
-        if(textState.text.isEmpty())
-            Text(text = hint,
-                style = MaterialTheme.typography.labelSmall,
-                color = color ?: MaterialTheme.colorScheme.tertiary
-            )
-
-        maxLimit?.let {
-            if(textState.text.isNotEmpty())
-                Text(
-                    text = "${textState.text.length}/$maxLimit",
-                    textAlign = TextAlign.End,
+        Box(modifier = Modifier) {
+            if(textState.text.isEmpty())
+                Text(text = hint,
                     style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.width(15.dp),
                     color = color ?: MaterialTheme.colorScheme.tertiary
                 )
-        }
 
-        Box(
-            modifier =
-                if(maxLimit != null) Modifier.padding(end = 16.dp)
+            maxLimit?.let {
+                if(textState.text.isNotEmpty())
+                    Text(
+                        text = "${textState.text.length}/$maxLimit",
+                        textAlign = TextAlign.End,
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .align(Alignment.CenterEnd),
+                        color = color ?: MaterialTheme.colorScheme.tertiary
+                    )
+            }
+
+            Box(
+                modifier =
+                if(maxLimit != null) Modifier.padding(end = 55.dp)
                 else Modifier
-        ) {
-            innerTextField()
+            ) {
+                innerTextField()
+            }
         }
     }
 }

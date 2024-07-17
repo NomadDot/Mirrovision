@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CategoryAssets
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
 
@@ -31,6 +32,7 @@ import com.drowsynomad.mirrovision.presentation.utils.roundBox
 fun HabitCategory(
     modifier: Modifier = Modifier,
     category: CategoryUI = CategoryUI(),
+    onCreateHabit: (CategoryAssets) -> Unit
 ) {
     Box(modifier = modifier
         .fillMaxWidth()
@@ -43,15 +45,22 @@ fun HabitCategory(
         ) {
             BigTitle(text = category.name, color = category.backgroundColor.accent.pureColor)
             Box(modifier = Modifier.fillMaxWidth()) {
-                HabitRow(category.habits, Modifier)
-                AdviceText(text = stringResource(R.string.label_create_your_first_habit),
-                    modifier = Modifier.align(Alignment.BottomEnd),
-                    color = category.backgroundColor.accent.pureColor
+                HabitRow(
+                    category.habits,
+                    categoryAssets = CategoryAssets(category.id, category.backgroundColor),
+                    Modifier,
+                    onCreateHabit = onCreateHabit
                 )
+                if(category.isFirstHabitPreset)
+                    AdviceText(text = stringResource(R.string.label_create_your_first_habit),
+                        modifier = Modifier.align(Alignment.BottomEnd),
+                        color = category.backgroundColor.accent.pureColor
+                    )
             }
         }
         CategoryIcon(
-            color = category.backgroundColor.pureColor,
+            color = category.backgroundColor,
+            icon = category.iconRes,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(end = 14.dp)
@@ -64,14 +73,23 @@ fun HabitCategory(
 @Composable
 private fun HabitRow(
     habits: List<HabitUI>,
-    modifier: Modifier = Modifier
+    categoryAssets: CategoryAssets,
+    modifier: Modifier = Modifier,
+    onCreateHabit: (CategoryAssets) -> Unit
 ) {
     LazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(habits, key = { item -> item.id }) {
-            HabitItem(it)
+            AmountHabit(
+                iconSize = 35.dp,
+                strokeSize = 60.dp,
+                strokeWidth = StrokeWidth.Custom(14f),
+                habitUI = it
+            ) {
+                onCreateHabit.invoke(categoryAssets)
+            }
         }
     }
 }
@@ -83,6 +101,7 @@ private fun Preview() {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         HabitCategory(
-            category = CategoryUI(backgroundColor = CategoryMainColor.Blue))
+            category = CategoryUI(backgroundColor = CategoryMainColor.Blue)
+        ) {}
     }
 }

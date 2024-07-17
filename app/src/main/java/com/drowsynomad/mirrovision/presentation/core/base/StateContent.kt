@@ -4,17 +4,23 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drowsynomad.mirrovision.presentation.core.common.UiState
+import com.drowsynomad.mirrovision.presentation.utils.LocalFixedInsets
+import com.drowsynomad.mirrovision.presentation.utils.statusBarPaddingWith
 import com.voloshynroman.zirkon.presentation.core.common.UiEvent
 
 /**
@@ -28,6 +34,7 @@ fun <S: UiState, E: UiEvent> StateContent(
     viewModel: StateViewModel<S, E>,
     onBackPressed: (() -> Unit)? = null,
     launchedEffect: (() -> Unit)? = null,
+    isStatusBarPadding: Boolean = true,
     contentBackground: Color = MaterialTheme.colorScheme.surfaceContainer,
     content: @Composable BoxScope.(uiState: S) -> Unit
 ) {
@@ -42,11 +49,19 @@ fun <S: UiState, E: UiEvent> StateContent(
 
     val uiState by viewModel.publicState.collectAsStateWithLifecycle()
 
+    val contentModifier = Modifier
+        .fillMaxSize()
+        .background(color = contentBackground)
+        .windowInsetsPadding(WindowInsets.Companion.navigationBars)
+        .padding(top = if(isStatusBarPadding) 20.dp + LocalFixedInsets.current.statusBarHeight else 0.dp)
+
+
+/*    if(topPadding != 40.dp) {
+        contentModifier.statusBarPaddingWith(topPadding)
+    }*/
+
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = contentBackground)
-            .padding(vertical = 20.dp)
+        modifier = contentModifier
     ) {
         content(uiState)
     }

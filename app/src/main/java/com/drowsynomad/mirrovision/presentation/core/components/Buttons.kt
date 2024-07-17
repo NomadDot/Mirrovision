@@ -1,10 +1,15 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
+import android.widget.Toolbar
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,19 +24,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
+import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColorShades
+import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColoredCategory
 import com.drowsynomad.mirrovision.presentation.theme.GradientMain
 import com.drowsynomad.mirrovision.presentation.theme.LightPrimary
-import com.drowsynomad.mirrovision.presentation.theme.LightPrimaryInactive
 import com.drowsynomad.mirrovision.presentation.theme.LightTextInactive
+import com.drowsynomad.mirrovision.presentation.theme.ShadowColor
+import com.drowsynomad.mirrovision.presentation.theme.convertToAccentCategoryColor
+import com.drowsynomad.mirrovision.presentation.theme.convertToMainCategoryColor
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 import com.drowsynomad.mirrovision.presentation.utils.gradient
-import com.drowsynomad.mirrovision.presentation.utils.gradientStroke
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
 
 /**
@@ -40,9 +51,10 @@ import com.drowsynomad.mirrovision.presentation.utils.roundBox
 
 @Composable
 fun PrimaryButton(
-    text: String,
+    text: String = emptyString(),
     modifier: Modifier = Modifier,
     isEnabled: Boolean = true,
+    @DrawableRes icon: Int? = null,
     containerColor: Color = LightPrimary,
     onClick: (() -> Unit)? = null
 ) {
@@ -55,7 +67,10 @@ fun PrimaryButton(
         colors = ButtonColors(containerColor = containerColor, contentColor = Color.White,
             disabledContentColor = LightTextInactive, disabledContainerColor = containerColor.copy(alpha = 0.4f))
     ) {
-        Text(text = text, style = MaterialTheme.typography.bodyMedium, color = Color.White)
+        if(icon == null)
+            Text(text = text, style = MaterialTheme.typography.bodyMedium, color = Color.White)
+        else
+            Icon(painter = painterResource(id = icon), contentDescription = emptyString())
     }
 }
 
@@ -110,13 +125,15 @@ fun HomeButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
 fun AddingButton(
     modifier: Modifier = Modifier,
     color: Color? = null,
+    elevation: Dp = 20.dp,
     onClick: (() -> Unit)? = null
 ){
     Box(
         modifier = modifier
             .bounceClick { onClick?.invoke() }
             .height(56.dp)
-            .roundBox(color = Color.White)
+            .shadow(elevation, shape = RoundedCornerShape(25.dp), spotColor = ShadowColor)
+            .roundBox(color = Color.White),
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_add),
@@ -124,6 +141,53 @@ fun AddingButton(
             modifier = Modifier.align(Alignment.Center),
             tint = color ?: MaterialTheme.colorScheme.secondary
         )
+    }
+}
+
+@Composable
+fun BackButton(
+    modifier: Modifier = Modifier,
+    color: Color? = null,
+    onClick: (() -> Unit)? = null
+) {
+    Icon(
+        painter = painterResource(id = R.drawable.ic_back_arrow),
+        contentDescription = null,
+        modifier = modifier.clickable { onClick?.invoke() },
+        tint = color ?: MaterialTheme.colorScheme.secondary)
+}
+
+@Composable
+fun CancelableAndSaveableButton(
+    modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.primary,
+    @StringRes cancelButtonLabel: Int,
+    @StringRes primaryButtonLabel: Int,
+    isPrimaryButtonEnabled: Boolean = true,
+    onCancelButtonClick: (() -> Unit)? = null,
+    onPrimaryButtonClick: (() -> Unit)? = null
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(15.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        SecondaryButton(
+            text = stringResource(id = cancelButtonLabel),
+            modifier = Modifier.weight(1f),
+            containerColor = containerColor
+        ) {
+            onCancelButtonClick?.invoke()
+        }
+        PrimaryButton(
+            text = stringResource(id = primaryButtonLabel),
+            modifier = Modifier.weight(1f),
+            isEnabled = isPrimaryButtonEnabled,
+            containerColor = containerColor
+        ) {
+            onPrimaryButtonClick?.invoke()
+        }
     }
 }
 
@@ -140,5 +204,11 @@ private fun Buttons() {
         SecondaryButton(text = "Скасувати", modifier = Modifier.fillMaxWidth()) {}
         HomeButton {}
         AddingButton(modifier = Modifier.fillMaxWidth())
+        CancelableAndSaveableButton(
+            containerColor = LightPrimary,
+            cancelButtonLabel = R.string.button_cancel,
+            primaryButtonLabel = R.string.button_save,
+            isPrimaryButtonEnabled = false
+        )
     }
 }

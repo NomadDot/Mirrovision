@@ -18,7 +18,7 @@ fun TestNavigation(
     navController: NavHostController = rememberNavController(),
     startDestination: KClass<Routes.MainTestScreen> = Routes.MainTestScreen::class
 ) {
-    NavHost(
+ /*   NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
@@ -28,5 +28,5 @@ fun TestNavigation(
         composableOf<Routes.SecondaryTestScreen> { _, _ ->
             ScreenB()
         }
-    }
+    }*/
 }

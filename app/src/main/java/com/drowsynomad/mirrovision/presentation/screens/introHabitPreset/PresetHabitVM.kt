@@ -3,6 +3,7 @@ package com.drowsynomad.mirrovision.presentation.screens.introHabitPreset
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmount
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +24,20 @@ class PresetHabitVM @Inject constructor(
     }
 
     private fun presetCategories(categories: List<CategoryUI>) {
-        val categoriesWithSingleHabit = categories.map { it.copy(habits = listOf(HabitUI(backgroundColor = it.backgroundColor))) }
+        val categoriesWithSingleHabit = categories.map {category ->
+            category.copy(
+                habits =
+                    if(category.isPresetCategory)
+                        listOf(
+                            HabitUI(
+                                backgroundColor = category.backgroundColor,
+                                attachedCategoryId = category.id,
+                                stroke = StrokeAmount(filledColor = category.backgroundColor.accent)
+                            )
+                        )
+                    else category.habits
+            )
+        }
         uiState.value = PresetHabitState(categories = categoriesWithSingleHabit)
     }
 }

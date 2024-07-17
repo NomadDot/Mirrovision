@@ -14,7 +14,7 @@ import kotlin.random.Random
 data class IntroCategoryUI(
     val name: String = emptyString(),
     @DrawableRes val icon: Int = 0,
-    val color: CategoryMainColor = CategoryMainColor.Blue,
+    val color: CategoryMainColor = CategoryMainColor.Purple,
     val isSelected: Boolean = false
 ) {
     val id: Int = Random.nextInt()

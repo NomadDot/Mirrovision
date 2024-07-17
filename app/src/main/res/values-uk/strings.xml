@@ -19,4 +19,11 @@
     <string name="label_choose_at_least_one_category">Оберіть хоча б одну категорію</string>
     <string name="label_my_habits">Мої звички</string>
     <string name="label_create_your_first_habit">*Створіть першу звичку в цій категорії</string>
+    <string name="label_habit_name">Звичка</string>
+    <string name="label_description">Опис</string>
+    <string name="label_habit_enter_the_name">Введіть назву звички</string>
+    <string name="label_add_habit_description">Додайте опис</string>
+    <string name="label_regularity">Регулярність</string>
+    <string name="label_amount">Кількість</string>
+    <string name="label_per_day">(разів на день)</string>
 </resources>

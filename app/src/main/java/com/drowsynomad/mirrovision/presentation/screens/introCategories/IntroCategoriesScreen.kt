@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -87,15 +86,12 @@ fun IntroCategoriesContent(
 ) {
     val categories = state.categories
 
-    val isNextEnabled = rememberSaveable {
-        mutableStateOf(false)
-    }
+    val isNextEnabled = rememberSaveable { mutableStateOf(false) }
+    val isDialogShown = rememberSaveable { mutableStateOf(false) }
 
     fun checkIfNextButtonEnabled() {
         isNextEnabled.value = categories.any { it.selection.value }
     }
-
-    val isDialogShown = remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxSize()
