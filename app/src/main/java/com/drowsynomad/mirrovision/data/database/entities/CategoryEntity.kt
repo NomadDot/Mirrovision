@@ -12,8 +12,8 @@ import com.drowsynomad.mirrovision.core.emptyString
     tableName = "categories"
 )
 data class CategoryEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String = emptyString(),
-    val icon: String = emptyString(),
+    val icon: Int = 0,
     val bgColor: String = emptyString()
 )

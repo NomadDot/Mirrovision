@@ -1,6 +1,7 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -116,11 +117,13 @@ fun HabitAmountStroke(
     amountStroke: StrokeAmount,
     strWidth: StrokeWidth = StrokeWidth.Default,
     onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
     strokeSize: Dp = 50.dp,
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
-        modifier = modifier.bounceClick { onClick?.invoke() }
+        modifier = modifier
+            .bounceClick(onClick = onClick, onLongClick = onLongClick)
     ) {
         val inactiveColor = MaterialTheme.colorScheme.surfaceContainer
         content()
@@ -167,6 +170,7 @@ fun AmountHabit(
     iconSize:Dp = 35.dp,
     strokeWidth: StrokeWidth = StrokeWidth.Default,
     habitUI: HabitUI = HabitUI(),
+    onLongHabitClick: (() -> Unit)? = null,
     onClick: (() -> Unit)? = null
 ) {
     HabitAmountStroke(
@@ -174,8 +178,9 @@ fun AmountHabit(
             .size(strokeSize),
         strokeSize = strokeSize,
         strWidth = strokeWidth,
-        amountStroke = habitUI.stroke,
-        onClick = onClick
+        amountStroke = habitUI.strokeState.value,
+        onClick = onClick,
+        onLongClick = onLongHabitClick
     ) {
         HabitIcon(
             modifier = Modifier

@@ -24,7 +24,7 @@ sealed class Routes {
     data object SecondaryTestScreen: Routes()
 
     @Serializable
-    data object SplashScreen: Routes()
+    data object SplashLoadingScreen: Routes()
 
     @Serializable
     data object IntroCategoriesScreen: Routes()
@@ -36,7 +36,9 @@ sealed class Routes {
     @Serializable
     data class CreateHabitScreen(
         val categoryAssets: CategoryAssets
-    ): Routes()
+    ): Routes() {
+        companion object { const val parameterKey = "createHabit"}
+    }
 
     @Serializable
     data object TimerScreen: Routes()
@@ -49,3 +51,6 @@ sealed class Routes {
     @Serializable
     data object StatisticScreen: Routes()
 }
+
+@Parcelize
+data object EmptyParameters: Parcelable

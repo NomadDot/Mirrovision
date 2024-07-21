@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,11 +29,14 @@ import com.drowsynomad.mirrovision.presentation.utils.roundBox
  * @author Roman Voloshyn (Created on 01.07.2024)
  */
 
+interface HabitCategory
+
 @Composable
 fun HabitCategory(
     modifier: Modifier = Modifier,
     category: CategoryUI = CategoryUI(),
-    onCreateHabit: (CategoryAssets) -> Unit
+    onLongHabitClick:((HabitUI) -> Unit)? = null,
+    onHabitClick: ((HabitUI) -> Unit)? = null
 ) {
     Box(modifier = modifier
         .fillMaxWidth()
@@ -49,7 +53,8 @@ fun HabitCategory(
                     category.habits,
                     categoryAssets = CategoryAssets(category.id, category.backgroundColor),
                     Modifier,
-                    onCreateHabit = onCreateHabit
+                    onHabitClick = onHabitClick,
+                    onLongHabitClick = onLongHabitClick
                 )
                 if(category.isFirstHabitPreset)
                     AdviceText(text = stringResource(R.string.label_create_your_first_habit),
@@ -72,10 +77,11 @@ fun HabitCategory(
 
 @Composable
 private fun HabitRow(
-    habits: List<HabitUI>,
+    habits: SnapshotStateList<HabitUI>,
     categoryAssets: CategoryAssets,
     modifier: Modifier = Modifier,
-    onCreateHabit: (CategoryAssets) -> Unit
+    onHabitClick: ((HabitUI) -> Unit)? = null,
+    onLongHabitClick: ((HabitUI) -> Unit)? = null
 ) {
     LazyRow(
         modifier = modifier,
@@ -86,9 +92,10 @@ private fun HabitRow(
                 iconSize = 35.dp,
                 strokeSize = 60.dp,
                 strokeWidth = StrokeWidth.Custom(14f),
-                habitUI = it
+                habitUI = it,
+                onLongHabitClick = { onLongHabitClick?.invoke(it) }
             ) {
-                onCreateHabit.invoke(categoryAssets)
+                onHabitClick?.invoke(it)
             }
         }
     }

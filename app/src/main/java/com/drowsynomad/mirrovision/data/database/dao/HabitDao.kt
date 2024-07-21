@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.drowsynomad.mirrovision.data.database.entities.HabitActivityUpdate
 import com.drowsynomad.mirrovision.data.database.entities.HabitEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -22,4 +23,7 @@ interface HabitDao {
 
     @Update(entity = HabitEntity::class)
     fun updateEntity(habit: HabitEntity)
+
+    @Update(entity = HabitEntity::class)
+    fun updateHabitActivity(updateEntity: HabitActivityUpdate)
 }

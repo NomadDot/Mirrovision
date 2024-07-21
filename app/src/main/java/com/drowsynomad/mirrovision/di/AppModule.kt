@@ -3,6 +3,8 @@ package com.drowsynomad.mirrovision.di
 import android.content.Context
 import com.drowsynomad.mirrovision.data.assets.AssetsStore
 import com.drowsynomad.mirrovision.data.assets.IAssetStore
+import com.drowsynomad.mirrovision.data.dataStore.DataStorePreferences
+import com.drowsynomad.mirrovision.data.dataStore.dataStore
 import com.drowsynomad.mirrovision.data.database.MirrovisionDatabase
 import dagger.Module
 import dagger.Provides
@@ -27,4 +29,9 @@ object AppModule {
     @Singleton
     fun providesAssetsStore(@ApplicationContext context: Context): IAssetStore =
         AssetsStore.getInstance(context)
+
+    @Provides
+    @Singleton
+    fun providesDataStore(@ApplicationContext context: Context): DataStorePreferences =
+        DataStorePreferences(context)
 }

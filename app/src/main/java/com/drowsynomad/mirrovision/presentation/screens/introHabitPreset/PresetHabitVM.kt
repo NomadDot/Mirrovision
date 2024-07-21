@@ -1,12 +1,18 @@
 package com.drowsynomad.mirrovision.presentation.screens.introHabitPreset
 
+import androidx.compose.runtime.mutableStateListOf
+import com.drowsynomad.mirrovision.domain.categories.ICategoryRepository
+import com.drowsynomad.mirrovision.domain.user.IUserRepository
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmount
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitState
+import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -15,11 +21,32 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PresetHabitVM @Inject constructor(
-
-): StateViewModel<PresetHabitState, PresetHabitEvent>(PresetHabitState()) {
+    private val categoryRepository: ICategoryRepository,
+    private val userRepository: IUserRepository
+): StateViewModel<PresetHabitState, PresetHabitEvent, PresetSideEffect>(PresetHabitState()) {
     override fun handleUiEvent(uiEvent: PresetHabitEvent) {
         when(uiEvent) {
             is PresetHabitEvent.PresetCategories -> presetCategories(uiEvent.categories)
+            PresetHabitEvent.SaveCategories -> saveCategories()
+        }
+    }
+
+    private fun saveCategories() {
+        launch(Dispatchers.IO) {
+            val categories = uiState.value.categories
+            val habits: MutableList<HabitUI> = mutableListOf()
+
+            categories.forEach { habits += it.habits }
+
+            categoryRepository.saveCategoriesPreset(
+                categories = categories.map(CategoryUI::toCategory),
+                habits = habits.map(HabitUI::toHabit)
+            )
+
+            withContext(Dispatchers.Main) {
+                userRepository.setUserFinishPreset()
+                sideEffect?.navigateNext()
+            }
         }
     }
 
@@ -28,7 +55,7 @@ class PresetHabitVM @Inject constructor(
             category.copy(
                 habits =
                     if(category.isPresetCategory)
-                        listOf(
+                        mutableStateListOf(
                             HabitUI(
                                 backgroundColor = category.backgroundColor,
                                 attachedCategoryId = category.id,
@@ -38,6 +65,7 @@ class PresetHabitVM @Inject constructor(
                     else category.habits
             )
         }
+
         uiState.value = PresetHabitState(categories = categoriesWithSingleHabit)
     }
 }

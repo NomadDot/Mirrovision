@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
 import com.drowsynomad.mirrovision.presentation.core.common.UiState
 import com.drowsynomad.mirrovision.presentation.utils.LocalFixedInsets
 import com.drowsynomad.mirrovision.presentation.utils.statusBarPaddingWith
@@ -30,8 +31,9 @@ import com.voloshynroman.zirkon.presentation.core.common.UiEvent
 typealias OnHandleEvent<T> = (T) -> Unit
 
 @Composable
-fun <S: UiState, E: UiEvent> StateContent(
-    viewModel: StateViewModel<S, E>,
+fun <S: UiState, E: UiEvent, SE: SideEffect> StateContent(
+    viewModel: StateViewModel<S, E, SE>,
+    sideEffect: SE? = null,
     onBackPressed: (() -> Unit)? = null,
     launchedEffect: (() -> Unit)? = null,
     isStatusBarPadding: Boolean = true,
@@ -39,8 +41,12 @@ fun <S: UiState, E: UiEvent> StateContent(
     content: @Composable BoxScope.(uiState: S) -> Unit
 ) {
     launchedEffect?.let { effect ->
-        LaunchedEffect(key1 = Unit) { effect.invoke() }
+        LaunchedEffect(key1 = Unit) {
+            effect.invoke()
+        }
     }
+
+    sideEffect?.let { viewModel.attachSideEffect(it) }
 
     BackHandler(
         enabled = onBackPressed != null,

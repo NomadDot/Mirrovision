@@ -18,9 +18,11 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColorShades
 import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColoredCategory
 import com.drowsynomad.mirrovision.presentation.navigation.TestNavigation
@@ -36,12 +38,13 @@ import com.drowsynomad.mirrovision.presentation.theme.GreenCategoryAccent
 private fun ComponentsPreview(
     onClick: () -> Unit
 ) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .imePadding()
-        .background(color = Color.Gray)
-        .verticalScroll(rememberScrollState())
-        .padding(top = 24.dp),
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding()
+            .background(color = Color.Gray)
+            .verticalScroll(rememberScrollState())
+            .padding(top = 24.dp),
         verticalArrangement = Arrangement.Center,
     ) {
         BigTitle(text = "Звичка", modifier = Modifier
@@ -63,8 +66,7 @@ private fun ComponentsPreview(
         Column(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
-                .padding(
-                    horizontal = 24.dp)
+                .padding(horizontal = 24.dp)
                 .padding(bottom = 15.dp),
         ) {
             InputField(modifier = Modifier.fillMaxWidth(), hint = "Hello!", maxLimit = 30)
@@ -74,9 +76,7 @@ private fun ComponentsPreview(
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
-                .padding(
-                    horizontal = 24.dp
-                )
+                .padding(horizontal = 24.dp)
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 15.dp),
         ) {
@@ -120,8 +120,8 @@ fun MainTestScreen(modifier: Modifier = Modifier) {
         TestNavigation(navController)
         BottomNavigationBar(
             modifier = Modifier
-            .align(Alignment.BottomCenter)
-            .padding(horizontal = 24.dp),
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 24.dp),
             bottomNavigationActions = BottomNavigationActions(onHomeNavigation = { navController.popBackStack() } )
         )
     }

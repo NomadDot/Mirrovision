@@ -4,6 +4,7 @@ import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.domain.categories.ICategoryRepository
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
+import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
 import com.drowsynomad.mirrovision.presentation.screens.introCategories.model.CategoriesId
 import com.drowsynomad.mirrovision.presentation.screens.introCategories.model.IntroCategoriesEvent
 import com.drowsynomad.mirrovision.presentation.screens.introCategories.model.IntroCategoriesState
@@ -24,7 +25,7 @@ import javax.inject.Inject
 class IntroCategoriesVM @Inject constructor(
     private val stringManager: IStringConverterManager,
     private val categoryRepository: ICategoryRepository,
-): StateViewModel<IntroCategoriesState, IntroCategoriesEvent>(
+): StateViewModel<IntroCategoriesState, IntroCategoriesEvent, SideEffect>(
     IntroCategoriesState(isProgress = true)
 ) {
     override fun handleUiEvent(uiEvent: IntroCategoriesEvent) {

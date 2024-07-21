@@ -48,6 +48,16 @@ enum class CategoryMainColor {
     Blue, Green, Yellow, Pink, Purple, Orange, Red, Brown;
     val pureColor  by lazy { CategoryMainColorsMap[this] ?: BlueCategory }
     val accent by lazy { CategoryMainToAccentColors[this] ?: CategoryAccentColor.BlueAccent }
+
+    companion object {
+        fun parse(stringValue: String): CategoryMainColor = let {
+            entries.toList().forEach { color ->
+                if(color.toString() == stringValue)
+                    return@let color
+            }
+            return@let Purple
+        }
+    }
 }
 
 @Serializable

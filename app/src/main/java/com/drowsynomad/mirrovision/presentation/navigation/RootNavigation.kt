@@ -1,38 +1,27 @@
 package com.drowsynomad.mirrovision.presentation.navigation
 
-import android.os.Build
-import android.os.Bundle
-import android.os.Parcelable
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.toMutableStateList
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
-import com.drowsynomad.mirrovision.presentation.core.components.MainTestScreen
+import com.drowsynomad.mirrovision.presentation.screens.dashboard.DashboardScreen
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CategoryAssets
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CreateHabitScreen
 import com.drowsynomad.mirrovision.presentation.screens.introCategories.IntroCategoriesScreen
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.PresetHabitScreen
+import com.drowsynomad.mirrovision.presentation.screens.splashLoading.SplashLoadingScreen
 import com.drowsynomad.mirrovision.presentation.utils.composableOf
 import com.drowsynomad.mirrovision.presentation.utils.fromJson
 import com.drowsynomad.mirrovision.presentation.utils.toJson
 import kotlin.reflect.KClass
-import kotlin.reflect.typeOf
 
 /**
  * @author Roman Voloshyn (Created on 19.06.2024)
@@ -43,12 +32,20 @@ typealias Navigation = () -> Unit
 @Composable
 fun RootNavigation(
     navController: NavHostController = rememberNavController(),
-    startDestination: KClass<Routes.IntroCategoriesScreen> = Routes.IntroCategoriesScreen::class
+    startDestination: KClass<Routes.SplashLoadingScreen> = Routes.SplashLoadingScreen::class
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
+       composable<Routes.SplashLoadingScreen> {
+           SplashLoadingScreen(
+               viewModel = hiltViewModel(),
+               onNewUserNavigation = navController::navigateToIntro,
+               onExistedUserNavigation = navController::navigateToDashboard
+           )
+       }
+
         composable<Routes.IntroCategoriesScreen> {
             IntroCategoriesScreen(
                 viewModel = hiltViewModel(),
@@ -63,7 +60,8 @@ fun RootNavigation(
                 mutableListOf<HabitUI>()
             }
             val createdHabit =
-                navBackStackEntry.savedStateHandle.get<HabitUI?>("createdHabit")
+                navBackStackEntry.savedStateHandle
+                    .get<HabitUI?>(Routes.CreateHabitScreen.parameterKey)
 
             createdHabit?.let { habit ->
                 if(!createdHabits.contains(habit))
@@ -76,14 +74,18 @@ fun RootNavigation(
                 .map { category ->
                     val attachedHabits = createdHabits.filter { habit -> habit.attachedCategoryId == category.id }
                     if(attachedHabits.isNotEmpty())
-                        category.copy(habits = attachedHabits)
+                        category.copy(habits = attachedHabits.toMutableStateList())
                     else category
                 }
             PresetHabitScreen(
                 categories = categories,
                 viewModel = hiltViewModel(),
                 onCreateHabit = navController::navigateToHabitCreating,
-                onBackNavigation = navController::popBackStack
+                onBackNavigation = navController::popBackStack,
+                onNextNavigation = {
+                    createdHabits.clear()
+                    navController.navigateToHomeFromPreset()
+                }
             )
         }
 
@@ -96,16 +98,14 @@ fun RootNavigation(
                 onSaveHabit = navController::returnToHabitPresetWithCreatedHabit
             )
         }
+
+        composableOf<Routes.HomeScreen, EmptyParameters> { _, _ ->
+            DashboardScreen(
+                viewModel = hiltViewModel(),
+                onBackNavigation = navController::popBackStack
+            )
+        }
     }
-}
-
-fun NavController.navigateToHabitCreating(categoryAssets: CategoryAssets) {
-    this.navigate(Routes.CreateHabitScreen(categoryAssets))
-}
-
-fun NavController.returnToHabitPresetWithCreatedHabit(habit: HabitUI) {
-    this.previousBackStackEntry?.savedStateHandle?.set("createdHabit", habit)
-    this.popBackStack()
 }
 
 sealed class MainBottomNavItem(

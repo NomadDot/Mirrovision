@@ -74,7 +74,7 @@ fun BottomNavigationBar(
     NavigationBar(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 10.dp)
+            .padding(bottom = 10.dp )
             .background(color = Color.Transparent),
         containerColor = Color.Transparent
     ) {

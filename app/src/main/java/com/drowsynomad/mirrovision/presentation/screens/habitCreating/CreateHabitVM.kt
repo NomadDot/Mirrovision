@@ -1,6 +1,7 @@
 package com.drowsynomad.mirrovision.presentation.screens.habitCreating
 
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
+import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateHabitVM  @Inject constructor(
 
-): StateViewModel<CreateHabitState, CreateHabitEvent>(
+): StateViewModel<CreateHabitState, CreateHabitEvent, SideEffect>(
     CreateHabitState()
 ) {
     override fun handleUiEvent(uiEvent: CreateHabitEvent) {

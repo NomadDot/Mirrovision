@@ -9,4 +9,5 @@ import com.voloshynroman.zirkon.presentation.core.common.UiEvent
 
 sealed class PresetHabitEvent: UiEvent {
     data class PresetCategories(val categories: List<CategoryUI>): PresetHabitEvent()
+    data object SaveCategories: PresetHabitEvent()
 }
