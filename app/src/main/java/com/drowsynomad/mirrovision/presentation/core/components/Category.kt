@@ -50,7 +50,6 @@ fun HabitCategory(
             Box(modifier = Modifier.fillMaxWidth()) {
                 HabitRow(
                     category.habits,
-                    categoryAssets = CategoryAssets(category.id, category.backgroundColor),
                     Modifier,
                     onHabitClick = onHabitClick,
                     onLongHabitClick = onLongHabitClick
@@ -77,7 +76,6 @@ fun HabitCategory(
 @Composable
 private fun HabitRow(
     habits: SnapshotStateList<HabitUI>,
-    categoryAssets: CategoryAssets,
     modifier: Modifier = Modifier,
     onHabitClick: ((HabitUI) -> Unit)? = null,
     onLongHabitClick: ((HabitUI) -> Unit)? = null

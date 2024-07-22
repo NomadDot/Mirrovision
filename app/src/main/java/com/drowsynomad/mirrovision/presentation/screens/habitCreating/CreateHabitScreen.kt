@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +33,7 @@ import com.drowsynomad.mirrovision.presentation.core.components.ExplainTitle
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCounter
 import com.drowsynomad.mirrovision.presentation.core.components.InputField
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
+import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitState
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.LocalFixedInsets
@@ -59,15 +61,148 @@ fun CreateHabitScreen(
     StateContent(
         isStatusBarPadding = false,
         viewModel = viewModel,
-        launchedEffect = {
-        }
+        launchedEffect = { viewModel.handleUiEvent(CreateHabitEvent.ConfigureStateForHabit(habitUI)) }
     ) {
-        CreateHabitContent(it, habitUI, onBackNavigation, onSaveHabit)
+        CreateHabitContent(it, onBackNavigation, onSaveHabit)
+    }
+}
+
+@Composable
+fun CreateHabitContent(
+    state: CreateHabitState,
+    onBackNavigation: Navigation,
+    onSaveHabit: (HabitUI) -> Unit
+) {
+    val habitUI = state.habitUI
+    habitUI?.let {
+        val accentColor = habitUI.accentColor.pureColor
+
+        val icon = remember {
+            mutableIntStateOf(habitUI.icon)
+        }
+        val habitName = remember { mutableStateOf(habitUI.name) }
+        val habitDescription = remember { mutableStateOf(habitUI.description) }
+        val habitCountPerDay = remember { mutableIntStateOf(habitUI.stroke.cellAmount) }
+        val selectedHabits = remember { mutableIntStateOf(0) }
+        val isSavingEnabled = remember { mutableStateOf(false) }
+
+        fun checkIfSavingButtonEnabled() {
+            isSavingEnabled.value = icon.intValue == R.drawable.ic_add &&
+                    habitName.value.isNotEmpty() && habitDescription.value.isNotEmpty()
+        }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                CircleIcon(
+                    icon = habitUI.icon,
+                    color = habitUI.backgroundColor,
+                    count = habitCountPerDay.intValue,
+                    selected = selectedHabits.intValue
+                ) {}
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                ) {
+                    BigTitle(text = stringResource(R.string.label_habit_name), color = accentColor)
+                    InputField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        color = accentColor,
+                        elevation = 20.dp,
+                        maxLimit = 30,
+                        isSingleLine = true,
+                        prefilledValue = habitName.value,
+                        hint = stringResource(R.string.label_habit_enter_the_name)
+                    ) {
+                        habitName.value = it
+                        checkIfSavingButtonEnabled()
+                    }
+                    BigTitle(
+                        text = stringResource(R.string.label_description),
+                        modifier = Modifier.padding(top = 20.dp),
+                        color = accentColor
+                    )
+                    InputField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        color = accentColor,
+                        elevation = 20.dp,
+                        maxLimit = 100,
+                        hint = stringResource(R.string.label_add_habit_description),
+                        prefilledValue = habitDescription.value
+                    ) {
+                        habitDescription.value = it
+                        checkIfSavingButtonEnabled()
+                    }
+                    ExplainTitle(
+                        title = stringResource(R.string.label_amount),
+                        explain = stringResource(R.string.label_per_day),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 20.dp),
+                        titleColor = accentColor,
+                        explainColor = accentColor
+                    )
+                    HabitCounter(
+                        modifier = Modifier.padding(top = 15.dp),
+                        defaultValue = habitCountPerDay.intValue,
+                        styleColor = habitUI.backgroundColor.pureColor,
+                        accentColor = accentColor
+                    ) { habitCountPerDay.intValue = it }
+                    BigTitle(
+                        text = stringResource(R.string.label_regularity),
+                        modifier = Modifier.padding(top = 20.dp),
+                        color = accentColor
+                    )
+                    AddingButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 15.dp),
+                        color = accentColor
+                    ) {
+
+                    }
+                }
+            }
+            CancelableAndSaveableButton(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 12.dp),
+                cancelButtonLabel = R.string.button_cancel,
+                primaryButtonLabel = R.string.button_save,
+                containerColor = accentColor,
+                onCancelButtonClick = onBackNavigation,
+                isPrimaryButtonEnabled = isSavingEnabled.value,
+                onPrimaryButtonClick = {
+                    onSaveHabit.invoke(
+                        habitUI.copy(
+                            name = habitName.value,
+                            description = habitDescription.value,
+                            stroke = habitUI.stroke.copy(cellAmount = habitCountPerDay.intValue),
+                            icon = icon.intValue
+                        )
+                    )
+                }
+            )
+            BackButton(
+                modifier = Modifier
+                    .padding(top = 46.dp)
+                    .padding(start = 24.dp),
+                color = accentColor,
+                onClick = onBackNavigation
+            )
+        }
     }
 }
 
 @Composable
 fun CircleIcon(
+    icon: Int,
     color: CategoryMainColor,
     modifier: Modifier = Modifier,
     count: Int = 1,
@@ -88,6 +223,7 @@ fun CircleIcon(
         }
         AmountHabit(
             habitUI = HabitUI(
+                icon = icon,
                 backgroundColor = color,
                 stroke = StrokeAmountState(count, selected, color.accent)
             ),
@@ -102,119 +238,10 @@ fun CircleIcon(
     }
 }
 
-@Composable
-fun CreateHabitContent(
-    state: CreateHabitState,
-    habitUI: HabitUI,
-    onBackNavigation: Navigation,
-    onSaveHabit: (HabitUI) -> Unit
-) {
-    val accentColor = habitUI.accentColor.pureColor
-
-    val icon = remember { mutableIntStateOf(R.drawable.v2) }
-    val countPerDay = remember { mutableIntStateOf(1) }
-    val selectedHabits = remember { mutableIntStateOf(0) }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            CircleIcon(
-                habitUI.backgroundColor,
-                count = countPerDay.intValue,
-                selected = selectedHabits.intValue
-            ) {}
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-            ) {
-                BigTitle(text = stringResource(R.string.label_habit_name), color = accentColor)
-                InputField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    color = accentColor,
-                    elevation = 20.dp,
-                    maxLimit = 30,
-                    isSingleLine = true,
-                    hint = stringResource(R.string.label_habit_enter_the_name)
-                )
-                BigTitle(
-                    text = stringResource(R.string.label_description),
-                    modifier = Modifier.padding(top = 20.dp),
-                    color = accentColor
-                )
-                InputField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    color = accentColor,
-                    elevation = 20.dp,
-                    maxLimit = 100,
-                    hint = stringResource(R.string.label_add_habit_description)
-                )
-                ExplainTitle(
-                    title = stringResource(R.string.label_amount),
-                    explain = stringResource(R.string.label_per_day),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 20.dp),
-                    titleColor = accentColor,
-                    explainColor = accentColor
-                )
-                HabitCounter(
-                    modifier = Modifier.padding(top = 15.dp),
-                    styleColor = habitUI.backgroundColor.pureColor,
-                    accentColor = accentColor
-                ) { countPerDay.intValue = it }
-                BigTitle(
-                    text = stringResource(R.string.label_regularity),
-                    modifier = Modifier.padding(top = 20.dp),
-                    color = accentColor
-                )
-                AddingButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 15.dp),
-                    color = accentColor
-                ) {
-
-                }
-            }
-        }
-        CancelableAndSaveableButton(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 12.dp),
-            cancelButtonLabel = R.string.button_cancel,
-            primaryButtonLabel = R.string.button_save,
-            containerColor = accentColor,
-            onCancelButtonClick = onBackNavigation,
-            onPrimaryButtonClick = {
-                onSaveHabit.invoke(
-                    habitUI.copy(
-                        stroke = StrokeAmountState(countPerDay.intValue, prefilledCellAmount = 0),
-                        icon = icon.intValue,
-                        attachedCategoryId = habitUI.attachedCategoryId
-                    )
-                )
-            }
-        )
-        BackButton(
-            modifier = Modifier
-                .padding(top = 46.dp)
-                .padding(start = 24.dp),
-            color = accentColor,
-            onClick = onBackNavigation
-        )
-    }
-}
-
 @Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
     Box(modifier = Modifier.fillMaxSize()) {
-        CreateHabitContent(state = CreateHabitState(), HabitUI(), {}, {})
+        CreateHabitContent(state = CreateHabitState(HabitUI()), {}, {})
     }
 }

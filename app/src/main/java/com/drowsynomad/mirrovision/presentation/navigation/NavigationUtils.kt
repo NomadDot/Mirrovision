@@ -1,14 +1,14 @@
 package com.drowsynomad.mirrovision.presentation.navigation
 
 import androidx.navigation.NavController
+import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
-import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CategoryAssets
 
 /**
  * @author Roman Voloshyn (Created on 20.07.2024)
  */
 
-fun NavController.navigateToHabitCreating(categoryAssets: CategoryAssets) {
+fun NavController.navigateToHabitCreating(categoryAssets: HabitNavigationModel) {
     this.navigate(Routes.CreateHabitScreen(categoryAssets))
 }
 

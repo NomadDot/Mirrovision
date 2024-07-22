@@ -15,11 +15,11 @@ import javax.inject.Inject
 class CreateHabitVM  @Inject constructor(
 
 ): StateViewModel<CreateHabitState, CreateHabitEvent, SideEffect>(
-    CreateHabitState()
+    CreateHabitState(null)
 ) {
     override fun handleUiEvent(uiEvent: CreateHabitEvent) {
         when(uiEvent) {
-            else -> {}
+            is CreateHabitEvent.ConfigureStateForHabit -> updateState { it.copy(habitUI = uiEvent.habit) }
         }
     }
 

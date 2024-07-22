@@ -42,9 +42,10 @@ fun InputField(
     color: Color? = null,
     elevation: Dp = 0.dp,
     isSingleLine: Boolean = false,
+    prefilledValue: String = emptyString(),
     onValueChanged: ((String) -> Unit)? = null,
 ) {
-    var textState by remember { mutableStateOf(TextFieldValue("")) }
+    var textState by remember { mutableStateOf(TextFieldValue(prefilledValue)) }
 
     val textColor = color ?: MaterialTheme.colorScheme.secondary
 

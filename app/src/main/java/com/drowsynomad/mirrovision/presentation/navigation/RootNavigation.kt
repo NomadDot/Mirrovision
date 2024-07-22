@@ -2,6 +2,7 @@ package com.drowsynomad.mirrovision.presentation.navigation
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.toMutableStateList
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -11,9 +12,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.screens.dashboard.DashboardScreen
-import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CategoryAssets
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CreateHabitScreen
 import com.drowsynomad.mirrovision.presentation.screens.introCategories.IntroCategoriesScreen
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.PresetHabitScreen
@@ -72,9 +73,10 @@ fun RootNavigation(
                 .rawCategoryList.string
                 .fromJson<Array<CategoryUI>>().toList()
                 .map { category ->
-                    val attachedHabits = createdHabits.filter { habit -> habit.attachedCategoryId == category.id }
-                    if(attachedHabits.isNotEmpty())
-                        category.copy(habits = attachedHabits.toMutableStateList())
+                    val attachedHabits =
+                        createdHabits.lastOrNull { habit -> habit.attachedCategoryId == category.id }
+                    if(attachedHabits != null)
+                        category.copy(habits = mutableStateListOf(attachedHabits))
                     else category
                 }
             PresetHabitScreen(
@@ -89,11 +91,11 @@ fun RootNavigation(
             )
         }
 
-        composableOf<Routes.CreateHabitScreen, CategoryAssets> { route, navBackStackEntry ->
+        composableOf<Routes.CreateHabitScreen, HabitNavigationModel> { route, navBackStackEntry ->
             val assets = route.categoryAssets
             CreateHabitScreen(
                 viewModel = hiltViewModel(),
-                HabitUI(attachedCategoryId = assets.categoryId, backgroundColor =  assets.color),
+                habitUI = assets.toHabitUI(),
                 onBackNavigation = navController::popBackStack,
                 onSaveHabit = navController::returnToHabitPresetWithCreatedHabit
             )

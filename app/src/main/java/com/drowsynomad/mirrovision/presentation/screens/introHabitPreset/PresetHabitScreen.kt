@@ -20,12 +20,12 @@ import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
 import com.drowsynomad.mirrovision.presentation.core.components.DefaultProgress
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCategory
 import com.drowsynomad.mirrovision.presentation.core.components.PrimaryButton
 import com.drowsynomad.mirrovision.presentation.core.components.Toolbar
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
-import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CategoryAssets
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent.SaveCategories
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitState
@@ -39,7 +39,7 @@ import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.P
 fun PresetHabitScreen(
     categories: List<CategoryUI>,
     viewModel: PresetHabitVM,
-    onCreateHabit: (CategoryAssets) -> Unit,
+    onCreateHabit: (HabitNavigationModel) -> Unit,
     onBackNavigation: Navigation,
     onNextNavigation: Navigation
 ) {
@@ -64,7 +64,7 @@ fun PresetHabitContent(
     state: PresetHabitState,
     modifier: Modifier = Modifier,
     onSaveCategories: () -> Unit,
-    onCreateHabit: (CategoryAssets) -> Unit,
+    onCreateHabit: (HabitNavigationModel) -> Unit,
     onBackNavigation: Navigation
 ) {
     val isSavingProgressShown = remember {
@@ -86,7 +86,7 @@ fun PresetHabitContent(
             ) {
                 items(state.categories, key = { item -> item.id }) {
                     HabitCategory(category = it) { habit ->
-                        onCreateHabit.invoke(habit.toCategoryAssets())
+                        onCreateHabit.invoke(habit.toHabitNavigation())
                     }
                 }
             }

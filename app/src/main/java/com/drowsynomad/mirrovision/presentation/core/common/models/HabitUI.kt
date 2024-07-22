@@ -14,15 +14,40 @@ import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
+import kotlin.random.Random
 
 /**
  * @author Roman Voloshyn (Created on 01.07.2024)
  */
+@Serializable
+@Parcelize
+data class HabitNavigationModel(
+    val id: Long = Random.nextLong(),
+    val name: String = emptyString(),
+    val description: String = emptyString(),
+    @DrawableRes val icon: Int = R.drawable.ic_add,
+    val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
+    val attachedCategoryId: Int = 0,
+    val stroke: StrokeAmountState = StrokeAmountState()
+) : Parcelable {
+    fun toHabitUI(): HabitUI {
+        return HabitUI(
+            id = id,
+            name = name,
+            description = description,
+            icon = icon,
+            backgroundColor = backgroundColor,
+            attachedCategoryId = attachedCategoryId,
+            stroke = stroke
+        )
+    }
+}
+
 
 @Serializable
 @Parcelize
 data class HabitUI(
-    val id: Long = 0,
+    val id: Long = Random.nextLong(),
     val name: String = emptyString(),
     val description: String = emptyString(),
     @DrawableRes val icon: Int = R.drawable.ic_add,
@@ -67,6 +92,18 @@ data class HabitUI(
         cellAmount = stroke.cellAmount,
         filledCellAmount = stroke.prefilledCellAmount
     )
+
+    fun toHabitNavigation(): HabitNavigationModel {
+        return HabitNavigationModel(
+            id = id,
+            name = name,
+            description = description,
+            icon = icon,
+            backgroundColor = backgroundColor,
+            attachedCategoryId = attachedCategoryId,
+            stroke = strokeAmount
+        )
+    }
 
     fun toCategoryAssets(): CategoryAssets =
         CategoryAssets(this.attachedCategoryId, this.backgroundColor)
