@@ -11,11 +11,12 @@ import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
 import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmount
+import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmountState
 import com.drowsynomad.mirrovision.presentation.screens.dashboard.model.DashboardEvent
 import com.drowsynomad.mirrovision.presentation.screens.dashboard.model.DashboardState
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -49,34 +50,36 @@ class DashboardVM @Inject constructor(
         }
     }
 
+    private fun updateHabitActivityCell(id: Long, newFilledCount: Int) {
+        habitRepository.updateActivityCell(habitId = id, newFilledCount = newFilledCount)
+    }
+
     private fun fillHabitCell(habitUI: HabitUI) {
-        uiState.value.categoriesWithHabits
+        val habitInCategory = uiState.value.categoriesWithHabits
             .find { it.id == habitUI.attachedCategoryId  }
             ?.habits?.find { it == habitUI }
-            ?.incrementFilledCell().also {
-                launch {
-                    habitRepository
-                        .updateActivityCell(
-                            habitId = habitUI.id,
-                            newFilledCount = habitUI.stroke.prefilledCellAmount.inc()
-                        )
+
+        habitInCategory?.let {
+            if(it.strokeAmount.prefilledCellAmount < it.strokeAmount.cellAmount)
+                launch(Dispatchers.IO) {
+                    updateHabitActivityCell(habitUI.id, habitUI.stroke.prefilledCellAmount.inc())
                 }
-            }
+            it.incrementFilledCell()
+        }
     }
 
     private fun removeHabitCell(habitUI: HabitUI) {
-        uiState.value.categoriesWithHabits
+        val habitInCategory = uiState.value.categoriesWithHabits
             .find { it.id == habitUI.attachedCategoryId  }
             ?.habits?.find { it == habitUI }
-            ?.decrementFilledCell().also {
-                launch {
-                    habitRepository
-                        .updateActivityCell(
-                            habitId = habitUI.id,
-                            newFilledCount = habitUI.stroke.prefilledCellAmount.dec()
-                        )
+
+        habitInCategory?.let {
+            if(it.strokeAmount.prefilledCellAmount > 0)
+                launch(Dispatchers.IO) {
+                    updateHabitActivityCell(habitUI.id, habitUI.stroke.prefilledCellAmount.dec())
                 }
-            }
+            it.decrementFilledCell()
+        }
     }
 
     private fun List<HabitEntity>.toHabitUI(): SnapshotStateList<HabitUI> = this.map {
@@ -88,10 +91,11 @@ class DashboardVM @Inject constructor(
             icon = it.icon,
             backgroundColor = categoryColor,
             attachedCategoryId = it.categoryId,
-            stroke = StrokeAmount(
+            stroke = StrokeAmountState(
                 it.amount.cellAmount,
                 it.amount.prefilledCellAmount,
-                categoryColor.accent)
+                categoryColor.accent
+            )
         )
     }.toMutableStateList()
 

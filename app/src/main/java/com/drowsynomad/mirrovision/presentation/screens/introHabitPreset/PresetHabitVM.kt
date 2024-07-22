@@ -6,7 +6,7 @@ import com.drowsynomad.mirrovision.domain.user.IUserRepository
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmount
+import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmountState
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitState
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetSideEffect
@@ -59,7 +59,7 @@ class PresetHabitVM @Inject constructor(
                             HabitUI(
                                 backgroundColor = category.backgroundColor,
                                 attachedCategoryId = category.id,
-                                stroke = StrokeAmount(filledColor = category.backgroundColor.accent)
+                                stroke = StrokeAmountState(filledColor = category.backgroundColor.accent)
                             )
                         )
                     else category.habits

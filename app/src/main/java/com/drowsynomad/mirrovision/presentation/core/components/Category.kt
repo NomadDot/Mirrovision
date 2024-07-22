@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeWidth
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CategoryAssets
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
@@ -28,8 +29,6 @@ import com.drowsynomad.mirrovision.presentation.utils.roundBox
 /**
  * @author Roman Voloshyn (Created on 01.07.2024)
  */
-
-interface HabitCategory
 
 @Composable
 fun HabitCategory(
@@ -89,9 +88,9 @@ private fun HabitRow(
     ) {
         items(habits, key = { item -> item.id }) {
             AmountHabit(
-                iconSize = 35.dp,
-                strokeSize = 60.dp,
-                strokeWidth = StrokeWidth.Custom(14f),
+                iconSize = 40.dp,
+                strokeSize = 80.dp,
+                strokeWidth = StrokeWidth.Custom(16f),
                 habitUI = it,
                 onLongHabitClick = { onLongHabitClick?.invoke(it) }
             ) {

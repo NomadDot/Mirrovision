@@ -2,8 +2,9 @@ package com.drowsynomad.mirrovision.presentation.core.common.models
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
-import androidx.compose.runtime.isTraceInProgress
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.domain.models.Habit
@@ -20,14 +21,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @Parcelize
-data class StrokeAmount(
-    val cellAmount: Int = 1,
-    val prefilledCellAmount: Int = 0,
-    val filledColor: CategoryAccentColor = CategoryAccentColor.PurpleAccent
-): Parcelable
-
-@Serializable
-@Parcelize
 data class HabitUI(
     val id: Long = 0,
     val name: String = emptyString(),
@@ -35,29 +28,34 @@ data class HabitUI(
     @DrawableRes val icon: Int = R.drawable.ic_add,
     val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
     val attachedCategoryId: Int = 0,
-    val stroke: StrokeAmount = StrokeAmount()
-): Parcelable {
+    val stroke: StrokeAmountState = StrokeAmountState()
+) : Parcelable {
     @IgnoredOnParcel
     val isDefaultIcon = icon == R.drawable.ic_add
+
     @IgnoredOnParcel
     val accentColor = backgroundColor.accent
 
     @IgnoredOnParcel
-    val strokeState = mutableStateOf(stroke)
+    var strokeAmount by mutableStateOf(stroke)
 
-    fun incrementFilledCell() =
-        strokeState.value.let {
-            return@let it.copy(
-                prefilledCellAmount = it.prefilledCellAmount.inc(),
-            ).also { strokeState.value = it }
-        }
+    fun incrementFilledCell() {
+        if (strokeAmount.prefilledCellAmount < stroke.cellAmount)
+            strokeAmount.let {
+                return@let it.copy(
+                    prefilledCellAmount = it.prefilledCellAmount.inc()
+                ).also { strokeAmount = it }
+            }
+    }
 
-    fun decrementFilledCell() =
-        strokeState.value.let {
-            return@let it.copy(
-                prefilledCellAmount = it.prefilledCellAmount.dec(),
-            ).also { strokeState.value = it }
-        }
+    fun decrementFilledCell() {
+        if (strokeAmount.prefilledCellAmount > 0)
+            strokeAmount.let {
+                return@let it.copy(
+                    prefilledCellAmount = it.prefilledCellAmount.dec()
+                ).also { strokeAmount = it }
+            }
+    }
 
     fun toHabit(): Habit = Habit(
         id = id,
@@ -73,3 +71,18 @@ data class HabitUI(
     fun toCategoryAssets(): CategoryAssets =
         CategoryAssets(this.attachedCategoryId, this.backgroundColor)
 }
+
+@Serializable
+@Parcelize
+sealed class StrokeWidth(val width: Float = 25f) : Parcelable {
+    data object Default : StrokeWidth()
+    data class Custom(val customWidth: Float) : StrokeWidth(customWidth)
+}
+
+@Serializable
+@Parcelize
+data class StrokeAmountState(
+    val cellAmount: Int = 1,
+    val prefilledCellAmount: Int = 0,
+    val filledColor: CategoryAccentColor = CategoryAccentColor.PurpleAccent
+) : Parcelable

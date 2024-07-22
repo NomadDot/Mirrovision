@@ -5,3 +5,6 @@ package com.drowsynomad.mirrovision.core
  */
 
 fun emptyString(): String = ""
+
+fun Int.isNegative(): Boolean = this < 0.0f
+fun Int.isZero(): Boolean = this == 0

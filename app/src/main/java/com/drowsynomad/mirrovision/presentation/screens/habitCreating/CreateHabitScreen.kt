@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmount
+import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmountState
 import com.drowsynomad.mirrovision.presentation.core.components.AddingButton
 import com.drowsynomad.mirrovision.presentation.core.components.AmountHabit
 import com.drowsynomad.mirrovision.presentation.core.components.BackButton
@@ -89,7 +89,7 @@ fun CircleIcon(
         AmountHabit(
             habitUI = HabitUI(
                 backgroundColor = color,
-                stroke = StrokeAmount(count, selected, color.accent)
+                stroke = StrokeAmountState(count, selected, color.accent)
             ),
             modifier = Modifier
                 .padding(top = 60.dp + LocalFixedInsets.current.statusBarHeight)
@@ -114,7 +114,6 @@ fun CreateHabitContent(
     val icon = remember { mutableIntStateOf(R.drawable.v2) }
     val countPerDay = remember { mutableIntStateOf(1) }
     val selectedHabits = remember { mutableIntStateOf(0) }
-    val configuredHabit = remember { habitUI }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -195,7 +194,7 @@ fun CreateHabitContent(
             onPrimaryButtonClick = {
                 onSaveHabit.invoke(
                     habitUI.copy(
-                        stroke = StrokeAmount(countPerDay.intValue),
+                        stroke = StrokeAmountState(countPerDay.intValue, prefilledCellAmount = 0),
                         icon = icon.intValue,
                         attachedCategoryId = habitUI.attachedCategoryId
                     )
