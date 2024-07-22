@@ -14,4 +14,6 @@ data class CategoryAndHabits(
         entityColumn = "category_id"
     )
     val habits: List<HabitEntity>
-)
+) {
+
+}

@@ -1,5 +1,8 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,11 +10,11 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -27,40 +30,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
+import com.drowsynomad.mirrovision.core.isNegative
+import com.drowsynomad.mirrovision.core.isZero
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmount
-import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CategoryAssets
+import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmountState
+import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeWidth
 import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.theme.LightPrimary
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * @author Roman Voloshyn (Created on 09.07.2024)
  */
-
-@Composable
-fun HabitItem(
-    habit: HabitUI,
-    categoryAssets: CategoryAssets,
-    modifier: Modifier = Modifier,
-    onCreateHabit: (CategoryAssets) -> Unit,
-) {
-    Box(modifier = modifier) {
-        HabitIcon(
-            modifier = Modifier
-                .width(50.dp)
-                .height(50.dp),
-            iconSpec = if(habit.isDefaultIcon) 16.dp else 30.dp,
-            accentColor = habit.backgroundColor.pureColor,
-            iconTint = habit.accentColor.pureColor,
-            icon = R.drawable.ic_add,
-            outerRadius = 5.dp
-        ) {
-            onCreateHabit.invoke(categoryAssets)
-        }
-    }
-}
 
 @Composable
 fun HabitCounter(
@@ -105,24 +89,41 @@ fun HabitCounter(
     }
 }
 
-sealed class StrokeWidth(val width: Float = 25f) {
-    data object Default: StrokeWidth()
-    data class Custom(val customWidth: Float): StrokeWidth(customWidth)
-}
-
 @Composable
 fun HabitAmountStroke(
     modifier: Modifier = Modifier,
-    amountStroke: StrokeAmount,
+    amountStroke: StrokeAmountState,
     strWidth: StrokeWidth = StrokeWidth.Default,
     onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
     strokeSize: Dp = 50.dp,
     content: @Composable BoxScope.() -> Unit
 ) {
     Box(
-        modifier = modifier.bounceClick { onClick?.invoke() }
+        modifier = modifier
+            .bounceClick(onClick = onClick, onLongClick = onLongClick)
     ) {
+        val animationDuration = remember { 700L }
+
+        val previousPrefilledAmount = remember { mutableIntStateOf(amountStroke.prefilledCellAmount) }
+        val difference = amountStroke.prefilledCellAmount - previousPrefilledAmount.intValue
+
         val inactiveColor = MaterialTheme.colorScheme.surfaceContainer
+        val percentAnimation = remember(key1 = difference) {
+            if(difference.isZero()) Animatable(1f)
+            else Animatable(if (difference.isNegative()) 1f else 0f)
+        }
+        LaunchedEffect(key1 = difference) {
+            launch {
+                delay(animationDuration)
+                previousPrefilledAmount.intValue = amountStroke.prefilledCellAmount
+            }
+            if(!difference.isZero())
+                percentAnimation.animateTo(
+                    targetValue = if (difference.isNegative()) 0f else 1f,
+                    animationSpec = tween(durationMillis = animationDuration.toInt(), easing = LinearEasing)
+                )
+        }
         content()
         Canvas(
             modifier = Modifier
@@ -132,28 +133,60 @@ fun HabitAmountStroke(
             drawIntoCanvas {
                 val width = size.width
                 val strokeWidth = strWidth.width
-                var startAngle = 270f
+                var activeStartAngle = 270f
+                var inactiveStartAngle = 270f
+
+                val arcSize = Size(width - strokeWidth, width - strokeWidth)
+                val arcOffset = Offset(strokeWidth / 2, strokeWidth / 2)
+                val arcStroke = Stroke(strokeWidth, cap = StrokeCap.Round)
 
                 val sweepAngle = 360f / amountStroke.cellAmount
 
-                val gapForFirst = 20f
-                for (cell in 1..amountStroke.cellAmount) {
-                    val gapFirst = (gapForFirst - amountStroke.cellAmount)
-                    val gap = if(gapFirst < 11) 11f / 2 else gapFirst/2f
+                val defaultGap = 20f
+                val gapByAmount = (defaultGap - amountStroke.cellAmount)
+                val gap = if (gapByAmount < 11) 11f / 2 else gapByAmount / 2f
+                val doubledGap = gap * 2
 
+                val calculatedSweepAngle = (sweepAngle - doubledGap)
+
+                for (cell in 1..amountStroke.cellAmount) {
                     drawArc(
-                        color =
-                            if (cell <= amountStroke.prefilledCellAmount) amountStroke.filledColor.pureColor
-                            else inactiveColor,
-                        startAngle = startAngle + gap,
-                        sweepAngle = sweepAngle - gap * 2,
-                        useCenter = false,
-                        topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
-                        size = Size(width - strokeWidth, width - strokeWidth),
-                        style = Stroke(strokeWidth, cap = StrokeCap.Round)
+                        color = inactiveColor,
+                        startAngle = inactiveStartAngle + gap, sweepAngle = calculatedSweepAngle,
+                        useCenter = false, topLeft = arcOffset,
+                        size = arcSize, style = arcStroke
                     )
 
-                    startAngle += sweepAngle
+                    inactiveStartAngle += sweepAngle
+                }
+                if (difference.isNegative())
+                    for (cell in 1..amountStroke.prefilledCellAmount) {
+                        drawArc(
+                            color = amountStroke.filledColor.pureColor,
+                            startAngle = activeStartAngle + gap, sweepAngle = calculatedSweepAngle,
+                            useCenter = false, topLeft = arcOffset,
+                            size = arcSize, style = arcStroke
+                        )
+                        activeStartAngle += sweepAngle
+                    }
+                else
+                    for (cell in 1..<amountStroke.prefilledCellAmount) {
+                        drawArc(
+                            color = amountStroke.filledColor.pureColor,
+                            startAngle = activeStartAngle + gap, sweepAngle = calculatedSweepAngle,
+                            useCenter = false, topLeft = arcOffset,
+                            size = arcSize, style = arcStroke
+                        )
+                        activeStartAngle += sweepAngle
+                    }
+
+                if (amountStroke.prefilledCellAmount > 0 || difference.isNegative()) {
+                     drawArc(
+                        color = amountStroke.filledColor.pureColor,
+                        startAngle = activeStartAngle + gap, sweepAngle = calculatedSweepAngle * percentAnimation.value,
+                        useCenter = false, topLeft = arcOffset,
+                         size = arcSize, style = arcStroke
+                    )
                 }
             }
         }
@@ -163,10 +196,11 @@ fun HabitAmountStroke(
 @Composable
 fun AmountHabit(
     modifier: Modifier = Modifier,
-    strokeSize: Dp = 50.dp,
-    iconSize:Dp = 35.dp,
+    strokeSize: Dp = 80.dp,
+    iconSize:Dp = 40.dp,
     strokeWidth: StrokeWidth = StrokeWidth.Default,
     habitUI: HabitUI = HabitUI(),
+    onLongHabitClick: (() -> Unit)? = null,
     onClick: (() -> Unit)? = null
 ) {
     HabitAmountStroke(
@@ -174,8 +208,9 @@ fun AmountHabit(
             .size(strokeSize),
         strokeSize = strokeSize,
         strWidth = strokeWidth,
-        amountStroke = habitUI.stroke,
-        onClick = onClick
+        amountStroke = habitUI.strokeAmount,
+        onClick = onClick,
+        onLongClick = onLongHabitClick
     ) {
         HabitIcon(
             modifier = Modifier
@@ -210,7 +245,11 @@ private fun Preview() {
                 icon = R.drawable.ic_sport_ball,
                 backgroundColor = CategoryMainColor.Green,
                 attachedCategoryId = 1409,
-                stroke = StrokeAmount(cellAmount = 30, prefilledCellAmount = 15, filledColor = CategoryAccentColor.GreenAccent)
+                stroke = StrokeAmountState(
+                    cellAmount = 30,
+                    prefilledCellAmount = 15,
+                    filledColor = CategoryAccentColor.GreenAccent
+                )
             ))
     }
 }

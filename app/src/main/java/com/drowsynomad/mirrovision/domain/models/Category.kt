@@ -1,6 +1,8 @@
 package com.drowsynomad.mirrovision.domain.models
 
 import com.drowsynomad.mirrovision.core.emptyString
+import com.drowsynomad.mirrovision.data.database.entities.CategoryEntity
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import kotlin.random.Random
 
 /**
@@ -8,7 +10,16 @@ import kotlin.random.Random
  */
 
 data class Category(
-    val id: Long = Random.nextLong(),
+    val id: Int = Random.nextInt(),
     val name: String = emptyString(),
-    val color: Long = 0L
-)
+    val icon: Int = 0,
+    val bgColor: CategoryMainColor = CategoryMainColor.Purple
+) {
+    fun toCategoryEntity(): CategoryEntity =
+        CategoryEntity(
+            id = id,
+            name = name,
+            icon = icon,
+            bgColor = bgColor.toString()
+        )
+}

@@ -3,9 +3,11 @@ package com.drowsynomad.mirrovision.presentation.utils
 import android.graphics.Rect
 import android.view.Window
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -57,7 +59,13 @@ fun Modifier.roundBox(
 }
 
 enum class ButtonState { Pressed, Idle }
-fun Modifier.bounceClick(scaledOnPressed: Float = 0.8f, enableBound: Boolean = true, onClick: (() -> Unit)? = null) = composed {
+@OptIn(ExperimentalFoundationApi::class)
+fun Modifier.bounceClick(
+    scaledOnPressed: Float = 0.8f,
+    enableBound: Boolean = true,
+    onLongClick: (() -> Unit)? = null,
+    onClick: (() -> Unit)? = null
+) = composed {
     var buttonState by remember { mutableStateOf(ButtonState.Idle) }
     val scale by animateFloatAsState(
         if (buttonState == ButtonState.Pressed) scaledOnPressed else 1f,
@@ -67,10 +75,11 @@ fun Modifier.bounceClick(scaledOnPressed: Float = 0.8f, enableBound: Boolean = t
     if(enableBound) {
         this
             .scale(scale = scale)
-            .clickable(
+            .combinedClickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = { onClick?.invoke() }
+                onClick = { onClick?.invoke() },
+                onLongClick = { onLongClick?.invoke() }
             )
             .pointerInput(buttonState) {
                 awaitPointerEventScope {

@@ -4,24 +4,24 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.LayoutDirection
+import androidx.lifecycle.lifecycleScope
+import com.drowsynomad.mirrovision.data.dataStore.dataStore
 import com.drowsynomad.mirrovision.presentation.navigation.RootNavigation
 import com.drowsynomad.mirrovision.presentation.theme.MirrovisionTheme
 import com.drowsynomad.mirrovision.presentation.utils.FixedInsets
 import com.drowsynomad.mirrovision.presentation.utils.LocalFixedInsets
 import com.drowsynomad.mirrovision.presentation.utils.pxToDp
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

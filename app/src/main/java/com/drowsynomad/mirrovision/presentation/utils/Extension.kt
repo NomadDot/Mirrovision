@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.drowsynomad.mirrovision.presentation.navigation.Routes
 import com.google.gson.Gson
+import java.io.Serializable
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
@@ -98,15 +99,3 @@ inline fun <reified T> String.fromJson(): T =
     )
 
 fun String?.clearRoute(): String = this?.substringAfterLast(".") ?: "$this"
-/*
-
-@Serializable
-data class JsonArgument(
-    val json: String
-) {
-    inline fun <reified OUT> createObject(): OUT {
-        return json.fromJson<OUT>()
-    }
-}
-*/
-

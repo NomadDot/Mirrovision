@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeWidth
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CategoryAssets
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
@@ -32,7 +34,8 @@ import com.drowsynomad.mirrovision.presentation.utils.roundBox
 fun HabitCategory(
     modifier: Modifier = Modifier,
     category: CategoryUI = CategoryUI(),
-    onCreateHabit: (CategoryAssets) -> Unit
+    onLongHabitClick:((HabitUI) -> Unit)? = null,
+    onHabitClick: ((HabitUI) -> Unit)? = null
 ) {
     Box(modifier = modifier
         .fillMaxWidth()
@@ -47,9 +50,9 @@ fun HabitCategory(
             Box(modifier = Modifier.fillMaxWidth()) {
                 HabitRow(
                     category.habits,
-                    categoryAssets = CategoryAssets(category.id, category.backgroundColor),
                     Modifier,
-                    onCreateHabit = onCreateHabit
+                    onHabitClick = onHabitClick,
+                    onLongHabitClick = onLongHabitClick
                 )
                 if(category.isFirstHabitPreset)
                     AdviceText(text = stringResource(R.string.label_create_your_first_habit),
@@ -72,10 +75,10 @@ fun HabitCategory(
 
 @Composable
 private fun HabitRow(
-    habits: List<HabitUI>,
-    categoryAssets: CategoryAssets,
+    habits: SnapshotStateList<HabitUI>,
     modifier: Modifier = Modifier,
-    onCreateHabit: (CategoryAssets) -> Unit
+    onHabitClick: ((HabitUI) -> Unit)? = null,
+    onLongHabitClick: ((HabitUI) -> Unit)? = null
 ) {
     LazyRow(
         modifier = modifier,
@@ -83,12 +86,13 @@ private fun HabitRow(
     ) {
         items(habits, key = { item -> item.id }) {
             AmountHabit(
-                iconSize = 35.dp,
-                strokeSize = 60.dp,
-                strokeWidth = StrokeWidth.Custom(14f),
-                habitUI = it
+                iconSize = 40.dp,
+                strokeSize = 80.dp,
+                strokeWidth = StrokeWidth.Custom(16f),
+                habitUI = it,
+                onLongHabitClick = { onLongHabitClick?.invoke(it) }
             ) {
-                onCreateHabit.invoke(categoryAssets)
+                onHabitClick?.invoke(it)
             }
         }
     }

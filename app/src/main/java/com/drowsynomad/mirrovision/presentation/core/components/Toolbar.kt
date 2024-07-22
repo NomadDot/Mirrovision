@@ -1,5 +1,6 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -27,6 +28,7 @@ fun Toolbar(
     modifier: Modifier = Modifier,
     text: String = emptyString(),
     subTitle: String? = null,
+    onSettingsClick: (() -> Unit)? = null,
     onBackClick: (() -> Unit)? = null
 ) {
     Box(modifier = modifier
@@ -53,13 +55,19 @@ fun Toolbar(
                 )
             }
         }
-        onBackClick?.let {
+        @Composable
+        fun Icon(@DrawableRes drawable: Int, onClick: () -> Unit) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_back_arrow),
+                painter = painterResource(id = drawable),
                 contentDescription = null,
-                modifier = Modifier.align(Alignment.CenterStart).clickable { it.invoke() },
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .clickable { onClick.invoke() },
                 tint = MaterialTheme.colorScheme.secondary)
         }
+
+        onBackClick?.let { Icon(drawable = R.drawable.ic_back_arrow, it) }
+        onSettingsClick?.let { Icon(drawable = R.drawable.ic_back_arrow, it) }
     }
 }
 

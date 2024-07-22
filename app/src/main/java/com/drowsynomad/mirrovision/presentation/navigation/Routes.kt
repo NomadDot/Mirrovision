@@ -2,7 +2,7 @@ package com.drowsynomad.mirrovision.presentation.navigation
 
 import android.os.Parcelable
 import com.drowsynomad.mirrovision.core.emptyString
-import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CategoryAssets
+import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -24,7 +24,7 @@ sealed class Routes {
     data object SecondaryTestScreen: Routes()
 
     @Serializable
-    data object SplashScreen: Routes()
+    data object SplashLoadingScreen: Routes()
 
     @Serializable
     data object IntroCategoriesScreen: Routes()
@@ -35,8 +35,10 @@ sealed class Routes {
 
     @Serializable
     data class CreateHabitScreen(
-        val categoryAssets: CategoryAssets
-    ): Routes()
+        val categoryAssets: HabitNavigationModel
+    ): Routes() {
+        companion object { const val parameterKey = "createHabit"}
+    }
 
     @Serializable
     data object TimerScreen: Routes()
@@ -49,3 +51,6 @@ sealed class Routes {
     @Serializable
     data object StatisticScreen: Routes()
 }
+
+@Parcelize
+data object EmptyParameters: Parcelable

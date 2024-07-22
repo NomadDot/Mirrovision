@@ -8,5 +8,6 @@ import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
  */
 
 data class PresetHabitState(
-    val categories: List<CategoryUI> = emptyList()
+    val categories: List<CategoryUI> = emptyList(),
+    val isNextNavigation: Boolean = false
 ): UiState

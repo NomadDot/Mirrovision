@@ -1,5 +1,6 @@
 package com.drowsynomad.mirrovision.presentation.screens.habitCreating.model
 
+import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
 import com.voloshynroman.zirkon.presentation.core.common.UiEvent
 
 /**
@@ -7,5 +8,5 @@ import com.voloshynroman.zirkon.presentation.core.common.UiEvent
  */
 
 sealed class CreateHabitEvent: UiEvent {
-
+    data class ConfigureStateForHabit(val habit: HabitUI): CreateHabitEvent()
 }
