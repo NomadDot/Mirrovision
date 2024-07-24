@@ -26,4 +26,5 @@
     <string name="label_regularity">Регулярність</string>
     <string name="label_amount">Кількість</string>
     <string name="label_per_day">(разів на день)</string>
+    <string name="label_icons">Іконки</string>
 </resources>

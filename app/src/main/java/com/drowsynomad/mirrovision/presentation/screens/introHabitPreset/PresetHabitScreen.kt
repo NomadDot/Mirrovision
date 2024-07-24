@@ -24,7 +24,7 @@ import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigati
 import com.drowsynomad.mirrovision.presentation.core.components.DefaultProgress
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCategory
 import com.drowsynomad.mirrovision.presentation.core.components.PrimaryButton
-import com.drowsynomad.mirrovision.presentation.core.components.Toolbar
+import com.drowsynomad.mirrovision.presentation.core.components.DefaultToolbar
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent.SaveCategories
@@ -76,7 +76,7 @@ fun PresetHabitContent(
 
     Box(modifier = modifier.fillMaxSize()) {
         Column {
-            Toolbar(
+            DefaultToolbar(
                 text = stringResource(R.string.label_my_habits),
                 onBackClick = onBackNavigation::invoke
             )

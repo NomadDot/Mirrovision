@@ -30,12 +30,12 @@ data class HabitNavigationModel(
     val attachedCategoryId: Int = 0,
     val stroke: StrokeAmountState = StrokeAmountState()
 ) : Parcelable {
-    fun toHabitUI(): HabitUI {
+    fun toHabitUI(prefilledIcon: Int? = null): HabitUI {
         return HabitUI(
             id = id,
             name = name,
             description = description,
-            icon = icon,
+            icon = prefilledIcon ?: icon,
             backgroundColor = backgroundColor,
             attachedCategoryId = attachedCategoryId,
             stroke = stroke

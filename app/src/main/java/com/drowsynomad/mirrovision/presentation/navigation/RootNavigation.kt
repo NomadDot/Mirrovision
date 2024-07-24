@@ -4,7 +4,6 @@ import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.toMutableStateList
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -14,11 +13,13 @@ import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.screens.chooseIcon.ChooseIconScreen
 import com.drowsynomad.mirrovision.presentation.screens.dashboard.DashboardScreen
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CreateHabitScreen
 import com.drowsynomad.mirrovision.presentation.screens.introCategories.IntroCategoriesScreen
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.PresetHabitScreen
 import com.drowsynomad.mirrovision.presentation.screens.splashLoading.SplashLoadingScreen
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.composableOf
 import com.drowsynomad.mirrovision.presentation.utils.fromJson
 import com.drowsynomad.mirrovision.presentation.utils.toJson
@@ -91,21 +92,34 @@ fun RootNavigation(
             )
         }
 
+        composableOf<Routes.ChooseIconScreen, CategoryMainColor> { args, _ ->
+            ChooseIconScreen(
+                viewModel = hiltViewModel(),
+                categoryMainColor = args.color,
+                onBackNavigation = navController::popBackStack,
+                onIconSelected = { iconRes ->
+                    navController.returnWithResult(iconRes, Routes.ChooseIconScreen.parameterKey)
+                }
+            )
+        }
+
         composableOf<Routes.CreateHabitScreen, HabitNavigationModel> { route, navBackStackEntry ->
             val assets = route.categoryAssets
+
+            val selectedIcon: Int? =
+                navBackStackEntry.savedStateHandle[Routes.ChooseIconScreen.parameterKey]
+
             CreateHabitScreen(
                 viewModel = hiltViewModel(),
-                habitUI = assets.toHabitUI(),
+                habitUI = assets.toHabitUI(selectedIcon),
+                onChooseIconNavigation = navController::navigateToIconChooser,
                 onBackNavigation = navController::popBackStack,
                 onSaveHabit = navController::returnToHabitPresetWithCreatedHabit
             )
         }
 
         composableOf<Routes.HomeScreen, EmptyParameters> { _, _ ->
-            DashboardScreen(
-                viewModel = hiltViewModel(),
-                onBackNavigation = navController::popBackStack
-            )
+            DashboardScreen(viewModel = hiltViewModel())
         }
     }
 }

@@ -25,4 +25,15 @@
     <string name="label_regularity">Regularity</string>
     <string name="label_amount">Amount</string>
     <string name="label_per_day">(per day)</string>
+    <string name="label_icons">Icons</string>
+
+    <string-array name="categories">
+        <item>Sport</item>
+        <item>Diet</item>
+        <item>Self education</item>
+        <item>Art</item>
+        <item>Meditation</item>
+        <item>Work</item>
+        <item>Relationship</item>
+    </string-array>
 </resources>

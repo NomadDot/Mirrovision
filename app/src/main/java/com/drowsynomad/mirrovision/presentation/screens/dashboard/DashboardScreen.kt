@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,7 +16,7 @@ import com.drowsynomad.mirrovision.presentation.core.base.StateContent
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.BottomNavigationBar
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCategory
-import com.drowsynomad.mirrovision.presentation.core.components.Toolbar
+import com.drowsynomad.mirrovision.presentation.core.components.DefaultToolbar
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
 import com.drowsynomad.mirrovision.presentation.screens.dashboard.model.DashboardEvent
 import com.drowsynomad.mirrovision.presentation.screens.dashboard.model.DashboardState
@@ -26,8 +27,7 @@ import com.drowsynomad.mirrovision.presentation.screens.dashboard.model.Dashboar
 
 @Composable
 fun DashboardScreen(
-    viewModel: DashboardVM,
-    onBackNavigation: Navigation
+    viewModel: DashboardVM
 ) {
     StateContent(
         viewModel = viewModel,
@@ -37,7 +37,7 @@ fun DashboardScreen(
             it,
             onHabitClick = { viewModel.handleUiEvent(DashboardEvent.FillHabitCell(it)) },
             onLongHabitClick = { viewModel.handleUiEvent(DashboardEvent.RemoveHabitCell(it)) },
-            onBackNavigation = onBackNavigation)
+            onSettingsClick = {})
     }
 }
 
@@ -46,11 +46,12 @@ fun DashboardContent(
     state: DashboardState,
     onHabitClick: (HabitUI) -> Unit,
     onLongHabitClick: (HabitUI) -> Unit,
-    onBackNavigation: Navigation
+    onSettingsClick: Navigation
 ) {
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         topBar = {
-            Toolbar(text = stringResource(id = R.string.label_my_habits), onBackClick = onBackNavigation)
+            DefaultToolbar(text = stringResource(id = R.string.label_my_habits), onSettingsClick = onSettingsClick)
         },
         bottomBar = { BottomNavigationBar(modifier = Modifier.padding(horizontal = 20.dp)) }
     ) { paddingValues ->
@@ -63,8 +64,7 @@ fun DashboardContent(
                 HabitCategory(
                     category = it,
                     onHabitClick = onHabitClick,
-                    onLongHabitClick = onLongHabitClick
-                )
+                    onLongHabitClick = onLongHabitClick)
             }
         }
     }

@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -55,6 +55,7 @@ data class CategoryAssets(
 fun CreateHabitScreen(
     viewModel: CreateHabitVM,
     habitUI: HabitUI,
+    onChooseIconNavigation: (CategoryMainColor) -> Unit,
     onBackNavigation: Navigation,
     onSaveHabit: (HabitUI) -> Unit
 ) {
@@ -63,7 +64,7 @@ fun CreateHabitScreen(
         viewModel = viewModel,
         launchedEffect = { viewModel.handleUiEvent(CreateHabitEvent.ConfigureStateForHabit(habitUI)) }
     ) {
-        CreateHabitContent(it, onBackNavigation, onSaveHabit)
+        CreateHabitContent(it, onBackNavigation, onSaveHabit, onChooseIconNavigation)
     }
 }
 
@@ -71,25 +72,27 @@ fun CreateHabitScreen(
 fun CreateHabitContent(
     state: CreateHabitState,
     onBackNavigation: Navigation,
-    onSaveHabit: (HabitUI) -> Unit
+    onSaveHabit: (HabitUI) -> Unit,
+    onChooseIconNavigation: (CategoryMainColor) -> Unit
 ) {
     val habitUI = state.habitUI
     habitUI?.let {
         val accentColor = habitUI.accentColor.pureColor
 
-        val icon = remember {
-            mutableIntStateOf(habitUI.icon)
-        }
-        val habitName = remember { mutableStateOf(habitUI.name) }
-        val habitDescription = remember { mutableStateOf(habitUI.description) }
-        val habitCountPerDay = remember { mutableIntStateOf(habitUI.stroke.cellAmount) }
-        val selectedHabits = remember { mutableIntStateOf(0) }
-        val isSavingEnabled = remember { mutableStateOf(false) }
+        val icon = mutableIntStateOf(habitUI.icon)
+
+        val habitName = rememberSaveable { mutableStateOf(habitUI.name) }
+        val habitDescription = rememberSaveable { mutableStateOf(habitUI.description) }
+        val habitCountPerDay = rememberSaveable { mutableIntStateOf(habitUI.stroke.cellAmount) }
+        val selectedHabits = rememberSaveable { mutableIntStateOf(0) }
+        val isSavingEnabled = rememberSaveable { mutableStateOf(false) }
 
         fun checkIfSavingButtonEnabled() {
-            isSavingEnabled.value = icon.intValue == R.drawable.ic_add &&
+            isSavingEnabled.value = icon.intValue != R.drawable.ic_add &&
                     habitName.value.isNotEmpty() && habitDescription.value.isNotEmpty()
         }
+
+        checkIfSavingButtonEnabled()
 
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
@@ -100,7 +103,9 @@ fun CreateHabitContent(
                     color = habitUI.backgroundColor,
                     count = habitCountPerDay.intValue,
                     selected = selectedHabits.intValue
-                ) {}
+                ) {
+                    onChooseIconNavigation.invoke(habitUI.backgroundColor)
+                }
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -153,7 +158,10 @@ fun CreateHabitContent(
                         defaultValue = habitCountPerDay.intValue,
                         styleColor = habitUI.backgroundColor.pureColor,
                         accentColor = accentColor
-                    ) { habitCountPerDay.intValue = it }
+                    ) {
+                        habitCountPerDay.intValue = it
+                        checkIfSavingButtonEnabled()
+                    }
                     BigTitle(
                         text = stringResource(R.string.label_regularity),
                         modifier = Modifier.padding(top = 20.dp),
@@ -242,6 +250,6 @@ fun CircleIcon(
 @Composable
 private fun Preview() {
     Box(modifier = Modifier.fillMaxSize()) {
-        CreateHabitContent(state = CreateHabitState(HabitUI()), {}, {})
+        CreateHabitContent(state = CreateHabitState(HabitUI()), {}, {}, {})
     }
 }

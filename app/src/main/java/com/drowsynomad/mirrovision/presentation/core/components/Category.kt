@@ -22,7 +22,6 @@ import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeWidth
-import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CategoryAssets
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
 
@@ -52,13 +51,11 @@ fun HabitCategory(
                     category.habits,
                     Modifier,
                     onHabitClick = onHabitClick,
-                    onLongHabitClick = onLongHabitClick
-                )
+                    onLongHabitClick = onLongHabitClick)
                 if(category.isFirstHabitPreset)
                     AdviceText(text = stringResource(R.string.label_create_your_first_habit),
                         modifier = Modifier.align(Alignment.BottomEnd),
-                        color = category.backgroundColor.accent.pureColor
-                    )
+                        color = category.backgroundColor.accent.pureColor)
             }
         }
         CategoryIcon(
@@ -86,7 +83,7 @@ private fun HabitRow(
     ) {
         items(habits, key = { item -> item.id }) {
             AmountHabit(
-                iconSize = 40.dp,
+                iconSize = 50.dp,
                 strokeSize = 80.dp,
                 strokeWidth = StrokeWidth.Custom(16f),
                 habitUI = it,

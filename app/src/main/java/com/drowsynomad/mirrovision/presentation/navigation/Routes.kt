@@ -3,6 +3,7 @@ package com.drowsynomad.mirrovision.presentation.navigation
 import android.os.Parcelable
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -38,6 +39,13 @@ sealed class Routes {
         val categoryAssets: HabitNavigationModel
     ): Routes() {
         companion object { const val parameterKey = "createHabit"}
+    }
+
+    @Serializable
+    data class ChooseIconScreen(
+        val color: CategoryMainColor,
+    ): Routes() {
+        companion object { const val parameterKey = "selectedIcon"}
     }
 
     @Serializable
