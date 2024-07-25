@@ -2,7 +2,17 @@ package com.drowsynomad.mirrovision.presentation.utils
 
 import android.graphics.Rect
 import android.view.Window
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.scale
@@ -111,15 +122,56 @@ data class FixedInsets(
 )
 
 val LocalFixedInsets = compositionLocalOf<FixedInsets> { error("no FixedInsets provided!") }
-@Composable
-fun Modifier.statusBarPaddingWith(topPadding: Dp = 0.dp): Modifier {
-    return this.padding(top = LocalFixedInsets.current.statusBarHeight).padding(top = topPadding)
-}
-
-@Composable
-fun Modifier.fixedNavigationBarsPadding(bottomPadding: Dp = 0.dp): Modifier {
-    return this.padding(bottom = LocalFixedInsets.current.navigationBarHeight + bottomPadding)
-}
 
 @Composable
 fun Int.pxToDp(): Dp =  with(LocalDensity.current) { this@pxToDp.toDp() }
+
+
+fun <T> defaultTween(): TweenSpec<T> = tween(
+    durationMillis = 300,
+    easing = LinearEasing
+)
+
+@Composable
+fun VisibilityContainer(
+    visible: Boolean,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    AnimatedVisibility(
+        visible,
+        modifier = modifier,
+        enter = fadeIn(animationSpec = defaultTween()) + scaleIn(initialScale = 0.3f, animationSpec = defaultTween()),
+        exit = fadeOut(animationSpec = defaultTween()) + scaleOut(animationSpec = defaultTween())
+    ) {
+        content()
+    }
+}
+
+@Composable
+fun ExpandableContainer(
+    isExpanded: Boolean,
+    content: @Composable () -> Unit
+) {
+    val enterTransition = remember {
+        expandVertically(
+            expandFrom = Alignment.Top,
+            animationSpec = defaultTween()
+        ) + fadeIn()
+    }
+
+    val exitTransition = remember {
+        shrinkVertically(
+            shrinkTowards = Alignment.Top,
+            animationSpec = defaultTween()
+        ) + fadeOut()
+    }
+
+    AnimatedVisibility(
+        visible = isExpanded,
+        enter = enterTransition,
+        exit = exitTransition
+    ) {
+        content()
+    }
+}

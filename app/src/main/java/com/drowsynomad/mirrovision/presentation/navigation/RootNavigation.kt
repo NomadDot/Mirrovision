@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.toMutableStateList
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -74,10 +75,9 @@ fun RootNavigation(
                 .rawCategoryList.string
                 .fromJson<Array<CategoryUI>>().toList()
                 .map { category ->
-                    val attachedHabits =
-                        createdHabits.lastOrNull { habit -> habit.attachedCategoryId == category.id }
-                    if(attachedHabits != null)
-                        category.copy(habits = mutableStateListOf(attachedHabits))
+                    val attachedHabits = createdHabits.filter { habit -> habit.attachedCategoryId == category.id }
+                    if(attachedHabits.isNotEmpty())
+                        category.copy(habits = attachedHabits.toMutableStateList())
                     else category
                 }
             PresetHabitScreen(

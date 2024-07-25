@@ -1,5 +1,6 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
+import android.annotation.SuppressLint
 import android.widget.Toolbar
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -101,6 +103,38 @@ fun SecondaryButton(
             text = text,
             style = MaterialTheme.typography.bodyMedium,
             color = if(isCustomContainerColor) containerColor else MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+fun ConfigurationButton(
+    text: String = emptyString(),
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
+    isEnabled: Boolean = true,
+    @DrawableRes icon: Int,
+    containerColor: Color,
+    onClick: (() -> Unit)? = null
+) {
+    Row(
+        modifier = modifier
+            .height(50.dp)
+            .bounceClick(enableBound = isEnabled) {  onClick?.invoke() }
+            .background(color = containerColor, shape = RoundedCornerShape(25.dp))
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.White,
+            modifier = Modifier.wrapContentSize())
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = emptyString(),
+            tint = Color.White,
+            modifier = Modifier.size(24.dp)
         )
     }
 }

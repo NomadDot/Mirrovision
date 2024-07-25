@@ -40,7 +40,7 @@ class PresetHabitVM @Inject constructor(
 
             categoryRepository.saveCategoriesPreset(
                 categories = categories.map(CategoryUI::toCategory),
-                habits = habits.map(HabitUI::toHabit)
+                habits = habits.filter { !it.isDefaultIcon }.map(HabitUI::toHabit)
             )
 
             withContext(Dispatchers.Main) {
@@ -50,19 +50,23 @@ class PresetHabitVM @Inject constructor(
         }
     }
 
+    private fun getPresetHabit(category: CategoryUI) =
+        HabitUI(
+            backgroundColor = category.backgroundColor,
+            attachedCategoryId = category.id,
+            stroke = StrokeAmountState(filledColor = category.backgroundColor.accent)
+        )
+
     private fun presetCategories(categories: List<CategoryUI>) {
         val categoriesWithSingleHabit = categories.map {category ->
             category.copy(
                 habits =
                     if(category.isPresetCategory)
-                        mutableStateListOf(
-                            HabitUI(
-                                backgroundColor = category.backgroundColor,
-                                attachedCategoryId = category.id,
-                                stroke = StrokeAmountState(filledColor = category.backgroundColor.accent)
-                            )
-                        )
-                    else category.habits
+                        mutableStateListOf(getPresetHabit(category))
+                    else {
+                        category.habits += getPresetHabit(category)
+                        category.habits
+                    }
             )
         }
 

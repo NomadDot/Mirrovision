@@ -7,6 +7,7 @@ import com.drowsynomad.mirrovision.presentation.screens.splashLoading.model.Spla
 import com.drowsynomad.mirrovision.presentation.screens.splashLoading.model.SplashLoadingState
 import com.drowsynomad.mirrovision.presentation.screens.splashLoading.model.SplashSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,6 +29,7 @@ class SplashLoadingVM @Inject constructor(
 
     private fun loadUserConfiguration() {
         viewModelScope.launch {
+            delay(300)
             userRepository.doesUserFinishPreset()
                 .collect { isFinishedPreset ->
                     if(isFinishedPreset) sideEffect?.navigateToDashboard()
