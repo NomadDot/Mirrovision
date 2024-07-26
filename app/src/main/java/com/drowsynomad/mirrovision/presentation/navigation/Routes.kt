@@ -36,16 +36,16 @@ sealed class Routes {
 
     @Serializable
     data class CreateHabitScreen(
-        val categoryAssets: HabitNavigationModel
+        val habit: HabitNavigationModel,
     ): Routes() {
-        companion object { const val parameterKey = "createHabit"}
+        companion object { const val parameterKey = "HABIT_CREATED"}
     }
 
     @Serializable
     data class ChooseIconScreen(
         val color: CategoryMainColor,
     ): Routes() {
-        companion object { const val parameterKey = "selectedIcon"}
+        companion object { const val parameterKey = "ICON_SELECTED"}
     }
 
     @Serializable

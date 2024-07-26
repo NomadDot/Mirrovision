@@ -19,7 +19,7 @@ interface HabitDao {
     fun insertHabit(habit: HabitEntity)
 
     @Query("SELECT * FROM habits")
-    fun getAllHabits(): Flow<List<HabitEntity>>
+    fun getAllHabits(): Flow<List<HabitEntity?>>
 
     @Update(entity = HabitEntity::class)
     fun updateEntity(habit: HabitEntity)

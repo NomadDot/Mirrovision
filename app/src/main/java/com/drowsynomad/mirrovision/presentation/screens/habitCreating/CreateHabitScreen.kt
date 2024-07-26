@@ -1,6 +1,5 @@
 package com.drowsynomad.mirrovision.presentation.screens.habitCreating
 
-import android.os.Parcelable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
+import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmountState
 import com.drowsynomad.mirrovision.presentation.core.components.AddingButton
@@ -37,34 +37,35 @@ import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.Crea
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitState
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.LocalFixedInsets
-import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.Serializable
 
 /**
  * @author Roman Voloshyn (Created on 11.07.2024)
  */
 
-@Serializable
-@Parcelize
-data class CategoryAssets(
-    val categoryId: Int,
-    val color: CategoryMainColor
-): Parcelable
-
 @Composable
 fun CreateHabitScreen(
     viewModel: CreateHabitVM,
-    habitUI: HabitUI,
+    habitUI: HabitNavigationModel,
     onChooseIconNavigation: (CategoryMainColor) -> Unit,
     onBackNavigation: Navigation,
-    onSaveHabit: (HabitUI) -> Unit
+    onSaveHabitNavigation: (HabitUI) -> Unit
 ) {
     StateContent(
         isStatusBarPadding = false,
         viewModel = viewModel,
-        launchedEffect = { viewModel.handleUiEvent(CreateHabitEvent.ConfigureStateForHabit(habitUI)) }
+        launchedEffect = {
+            viewModel.handleUiEvent(CreateHabitEvent.ConfigureStateForHabit(habitUI.toHabitUI())) }
     ) {
-        CreateHabitContent(it, onBackNavigation, onSaveHabit, onChooseIconNavigation)
+        CreateHabitContent(
+            it,
+            onBackNavigation,
+            onSaveHabit = {
+                if(!habitUI.isForIntro)
+                    viewModel.handleUiEvent(CreateHabitEvent.SaveHabitDirectlyToStorage(it))
+                onSaveHabitNavigation.invoke(it)
+            },
+            onChooseIconNavigation
+        )
     }
 }
 

@@ -26,6 +26,9 @@
     <string name="label_amount">Amount</string>
     <string name="label_per_day">(per day)</string>
     <string name="label_icons">Icons</string>
+    <string name="label_edit_habit">Edit habit</string>
+    <string name="label_edit_category">Edit category</string>
+    <string name="label_add_habit">Add new habit</string>
 
     <string-array name="categories">
         <item>Sport</item>

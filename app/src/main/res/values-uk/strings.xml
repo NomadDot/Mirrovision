@@ -27,4 +27,7 @@
     <string name="label_amount">Кількість</string>
     <string name="label_per_day">(разів на день)</string>
     <string name="label_icons">Іконки</string>
+    <string name="label_edit_habit">Редагувати звичку</string>
+    <string name="label_edit_category">Редагувати категорію</string>
+    <string name="label_add_habit">Додати звичку</string>
 </resources>

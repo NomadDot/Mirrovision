@@ -2,7 +2,6 @@ package com.drowsynomad.mirrovision.presentation.navigation
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.toMutableStateList
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -83,7 +82,7 @@ fun RootNavigation(
             PresetHabitScreen(
                 categories = categories,
                 viewModel = hiltViewModel(),
-                onCreateHabit = navController::navigateToHabitCreating,
+                onCreateHabit = { navController.navigateToHabitCreating(it, true) },
                 onBackNavigation = navController::popBackStack,
                 onNextNavigation = {
                     createdHabits.clear()
@@ -104,22 +103,25 @@ fun RootNavigation(
         }
 
         composableOf<Routes.CreateHabitScreen, HabitNavigationModel> { route, navBackStackEntry ->
-            val assets = route.categoryAssets
+            val habit = route.habit
 
             val selectedIcon: Int? =
                 navBackStackEntry.savedStateHandle[Routes.ChooseIconScreen.parameterKey]
 
             CreateHabitScreen(
                 viewModel = hiltViewModel(),
-                habitUI = assets.toHabitUI(selectedIcon),
+                habitUI = if(selectedIcon != null) habit.copy(icon = selectedIcon) else habit,
                 onChooseIconNavigation = navController::navigateToIconChooser,
                 onBackNavigation = navController::popBackStack,
-                onSaveHabit = navController::returnToHabitPresetWithCreatedHabit
+                onSaveHabitNavigation = navController::returnToHabitPresetWithCreatedHabit
             )
         }
 
-        composableOf<Routes.HomeScreen, EmptyParameters> { _, _ ->
-            DashboardScreen(viewModel = hiltViewModel())
+        composableOf<Routes.HomeScreen, EmptyParameters> { _, navBackStackEntry ->
+            DashboardScreen(
+                viewModel = hiltViewModel(),
+                onEditHabitClick = navController::navigateToHabitCreating
+            )
         }
     }
 }

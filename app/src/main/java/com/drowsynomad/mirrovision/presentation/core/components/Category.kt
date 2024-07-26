@@ -50,16 +50,18 @@ import com.drowsynomad.mirrovision.presentation.utils.roundBox
 fun HabitCategory(
     modifier: Modifier = Modifier,
     category: CategoryUI = CategoryUI(),
+    onEditHabit: ((HabitUI) -> Unit)? = null,
     onLongHabitClick:((HabitUI) -> Unit)? = null,
     onHabitClick: ((HabitUI) -> Unit)? = null
 ) {
-    TransitionHabitCategory(modifier, category, onLongHabitClick, onHabitClick)
+    TransitionHabitCategory(modifier, category, onEditHabit, onLongHabitClick, onHabitClick)
 }
 
 @Composable
 private fun TransitionHabitCategory(
     modifier: Modifier = Modifier,
     category: CategoryUI = CategoryUI(),
+    onEditHabit: ((HabitUI) -> Unit)? = null,
     onLongHabitClick:((HabitUI) -> Unit)? = null,
     onHabitClick: ((HabitUI) -> Unit)? = null
 ) {
@@ -107,7 +109,7 @@ private fun TransitionHabitCategory(
                          ConfigurationButton(
                              modifier = Modifier.fillMaxWidth(),
                              icon = R.drawable.ic_settings, containerColor = accent,
-                             text = "Edit category"
+                             text = stringResource(R.string.label_edit_category)
                          )
                          ConfigurationButton(
                              modifier = Modifier
@@ -115,11 +117,19 @@ private fun TransitionHabitCategory(
                                  .padding(top = 15.dp),
                              icon = R.drawable.ic_add,
                              containerColor = accent,
-                             text = "Add habit"
-                         )
+                             text = stringResource(R.string.label_add_habit)
+                         ) {
+                             onEditHabit?.invoke(
+                                 HabitUI(
+                                     backgroundColor = category.backgroundColor,
+                                     attachedCategoryId = category.id
+                                 )
+                             )
+                         }
                          EditHabitColumn(
                              category.habits,
                              Modifier.padding(top = 10.dp),
+                             onEditHabit = onEditHabit,
                              onHabitClick = onHabitClick,
                              onLongHabitClick = onLongHabitClick
                          )
@@ -133,8 +143,10 @@ private fun TransitionHabitCategory(
         }
         if(isCategoryExpanded.value)
             Icon(
-                modifier = Modifier.clickable {  isCategoryExpanded.value = false }
-                    .align(TopEnd).padding(end = 24.dp + 16.dp, top = 35.dp),
+                modifier = Modifier
+                    .clickable { isCategoryExpanded.value = false }
+                    .align(TopEnd)
+                    .padding(end = 24.dp + 16.dp, top = 35.dp),
                 painter = painterResource(id = R.drawable.ic_cancel),
                 contentDescription = emptyString(),
                 tint = category.backgroundColor.accent.pureColor)
@@ -188,6 +200,7 @@ private fun HabitRow(
 private fun EditHabitColumn(
     habits: SnapshotStateList<HabitUI>,
     modifier: Modifier = Modifier,
+    onEditHabit: ((HabitUI) -> Unit)? = null,
     onHabitClick: ((HabitUI) -> Unit)? = null,
     onLongHabitClick: ((HabitUI) -> Unit)? = null
 ) {
@@ -197,7 +210,7 @@ private fun EditHabitColumn(
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         habits.forEach {
-            EditAmountHabit(habitUI = it, Modifier.fillMaxWidth(), onHabitClick, onLongHabitClick)
+            EditAmountHabit(habitUI = it, Modifier.fillMaxWidth(), onEditHabit, onHabitClick, onLongHabitClick)
         }
     }
 }
@@ -206,6 +219,7 @@ private fun EditHabitColumn(
 fun EditAmountHabit(
     habitUI: HabitUI,
     modifier: Modifier = Modifier,
+    onEditHabit: ((HabitUI) -> Unit)? = null,
     onHabitClick: ((HabitUI) -> Unit)? = null,
     onLongHabitClick: ((HabitUI) -> Unit)? = null
 ) {
@@ -225,10 +239,12 @@ fun EditAmountHabit(
         }
         ConfigurationButton(
             modifier = Modifier.fillMaxWidth(),
-            text = "Edit habit",
+            text = stringResource(R.string.label_edit_habit),
             icon = R.drawable.ic_settings,
             containerColor = habitUI.backgroundColor.accent.pureColor
-        )
+        ) {
+            onEditHabit?.invoke(habitUI)
+        }
     }
 }
 

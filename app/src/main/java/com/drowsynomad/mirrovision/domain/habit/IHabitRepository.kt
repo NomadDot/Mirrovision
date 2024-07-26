@@ -2,6 +2,9 @@ package com.drowsynomad.mirrovision.domain.habit
 
 import com.drowsynomad.mirrovision.data.database.MirrovisionDatabase
 import com.drowsynomad.mirrovision.data.database.entities.HabitActivityUpdate
+import com.drowsynomad.mirrovision.domain.models.Habit
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * @author Roman Voloshyn (Created on 20.07.2024)
@@ -9,6 +12,7 @@ import com.drowsynomad.mirrovision.data.database.entities.HabitActivityUpdate
 
 interface IHabitRepository {
     fun updateActivityCell(habitId: Long, newFilledCount: Int)
+    suspend fun createNewOrUpdateHabit(habit: Habit)
 }
 
 class HabitRepository(
@@ -17,5 +21,11 @@ class HabitRepository(
     override fun updateActivityCell(habitId: Long, newFilledCount: Int) {
         database.habitDao()
             .updateHabitActivity(HabitActivityUpdate(habitId, newFilledCount))
+    }
+
+    override suspend fun createNewOrUpdateHabit(habit: Habit) {
+        database
+            .habitDao()
+            .insertHabit(habit.toHabitEntity())
     }
 }

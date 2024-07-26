@@ -10,18 +10,12 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
-import androidx.lifecycle.lifecycleScope
-import com.drowsynomad.mirrovision.data.dataStore.dataStore
 import com.drowsynomad.mirrovision.presentation.navigation.RootNavigation
 import com.drowsynomad.mirrovision.presentation.theme.MirrovisionTheme
 import com.drowsynomad.mirrovision.presentation.utils.FixedInsets
 import com.drowsynomad.mirrovision.presentation.utils.LocalFixedInsets
 import com.drowsynomad.mirrovision.presentation.utils.pxToDp
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

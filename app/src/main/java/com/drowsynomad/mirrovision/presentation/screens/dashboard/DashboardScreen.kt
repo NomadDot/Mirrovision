@@ -15,8 +15,8 @@ import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.BottomNavigationBar
-import com.drowsynomad.mirrovision.presentation.core.components.HabitCategory
 import com.drowsynomad.mirrovision.presentation.core.components.DefaultToolbar
+import com.drowsynomad.mirrovision.presentation.core.components.HabitCategory
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
 import com.drowsynomad.mirrovision.presentation.screens.dashboard.model.DashboardEvent
 import com.drowsynomad.mirrovision.presentation.screens.dashboard.model.DashboardState
@@ -27,7 +27,8 @@ import com.drowsynomad.mirrovision.presentation.screens.dashboard.model.Dashboar
 
 @Composable
 fun DashboardScreen(
-    viewModel: DashboardVM
+    viewModel: DashboardVM,
+    onEditHabitClick: (HabitUI) -> Unit
 ) {
     StateContent(
         viewModel = viewModel,
@@ -35,6 +36,7 @@ fun DashboardScreen(
     ) {
         DashboardContent(
             it,
+            onEditHabitClick = onEditHabitClick,
             onHabitClick = { viewModel.handleUiEvent(DashboardEvent.FillHabitCell(it)) },
             onLongHabitClick = { viewModel.handleUiEvent(DashboardEvent.RemoveHabitCell(it)) },
             onSettingsClick = {})
@@ -45,6 +47,7 @@ fun DashboardScreen(
 fun DashboardContent(
     state: DashboardState,
     onHabitClick: (HabitUI) -> Unit,
+    onEditHabitClick: (HabitUI) -> Unit,
     onLongHabitClick: (HabitUI) -> Unit,
     onSettingsClick: Navigation
 ) {
@@ -63,6 +66,7 @@ fun DashboardContent(
             items(state.categoriesWithHabits, key = { category -> category.id }) {
                 HabitCategory(
                     category = it,
+                    onEditHabit = onEditHabitClick,
                     onHabitClick = onHabitClick,
                     onLongHabitClick = onLongHabitClick)
             }

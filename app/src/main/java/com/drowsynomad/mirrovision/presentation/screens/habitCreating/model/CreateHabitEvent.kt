@@ -9,4 +9,5 @@ import com.voloshynroman.zirkon.presentation.core.common.UiEvent
 
 sealed class CreateHabitEvent: UiEvent {
     data class ConfigureStateForHabit(val habit: HabitUI): CreateHabitEvent()
+    data class SaveHabitDirectlyToStorage(val habit: HabitUI): CreateHabitEvent()
 }

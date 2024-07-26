@@ -17,19 +17,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
+import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.DefaultProgress
+import com.drowsynomad.mirrovision.presentation.core.components.DefaultToolbar
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCategory
 import com.drowsynomad.mirrovision.presentation.core.components.PrimaryButton
-import com.drowsynomad.mirrovision.presentation.core.components.DefaultToolbar
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
+import com.drowsynomad.mirrovision.presentation.navigation.Routes
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent.SaveCategories
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitState
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetSideEffect
+import com.drowsynomad.mirrovision.presentation.utils.clearRoute
 
 /**
  * @author Roman Voloshyn (Created on 30.06.2024)
@@ -39,7 +42,7 @@ import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.P
 fun PresetHabitScreen(
     categories: List<CategoryUI>,
     viewModel: PresetHabitVM,
-    onCreateHabit: (HabitNavigationModel) -> Unit,
+    onCreateHabit: (HabitUI) -> Unit,
     onBackNavigation: Navigation,
     onNextNavigation: Navigation
 ) {
@@ -64,7 +67,7 @@ fun PresetHabitContent(
     state: PresetHabitState,
     modifier: Modifier = Modifier,
     onSaveCategories: () -> Unit,
-    onCreateHabit: (HabitNavigationModel) -> Unit,
+    onCreateHabit: (HabitUI) -> Unit,
     onBackNavigation: Navigation
 ) {
     val isSavingProgressShown = remember {
@@ -86,7 +89,7 @@ fun PresetHabitContent(
             ) {
                 items(state.categories, key = { item -> item.id }) {
                     HabitCategory(category = it) { habit ->
-                        onCreateHabit.invoke(habit.toHabitNavigation())
+                        onCreateHabit.invoke(habit)
                     }
                 }
             }
@@ -109,5 +112,5 @@ fun PresetHabitContent(
 @Preview
 @Composable
 private fun Preview() {
-    PresetHabitContent(state = PresetHabitState(), onCreateHabit = {}, onSaveCategories = {}) {}
+    PresetHabitContent(state = PresetHabitState(), onCreateHabit = { }, onSaveCategories = {}) {}
 }
