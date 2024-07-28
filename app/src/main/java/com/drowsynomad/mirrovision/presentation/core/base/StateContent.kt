@@ -16,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
@@ -35,7 +36,7 @@ fun <S: UiState, E: UiEvent, SE: SideEffect> StateContent(
     sideEffect: SE? = null,
     onBackPressed: (() -> Unit)? = null,
     launchedEffect: (() -> Unit)? = null,
-    isStatusBarPadding: Boolean = true,
+    useStatusBarPadding: Boolean = true,
     contentBackground: Color = MaterialTheme.colorScheme.surfaceContainer,
     content: @Composable BoxScope.(uiState: S) -> Unit
 ) {
@@ -58,7 +59,7 @@ fun <S: UiState, E: UiEvent, SE: SideEffect> StateContent(
         .fillMaxSize()
         .background(color = contentBackground)
         .windowInsetsPadding(WindowInsets.Companion.navigationBars)
-        .padding(top = if(isStatusBarPadding) 25.dp + LocalFixedInsets.current.statusBarHeight else 0.dp)
+        .padding(top = if(useStatusBarPadding) 25.dp + LocalFixedInsets.current.statusBarHeight else 0.dp)
 
     Box(
         modifier = contentModifier.imePadding()

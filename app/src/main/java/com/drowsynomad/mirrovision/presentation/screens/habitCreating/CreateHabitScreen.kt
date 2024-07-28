@@ -51,7 +51,7 @@ fun CreateHabitScreen(
     onSaveHabitNavigation: (HabitUI) -> Unit
 ) {
     StateContent(
-        isStatusBarPadding = false,
+        useStatusBarPadding = false,
         viewModel = viewModel,
         launchedEffect = {
             viewModel.handleUiEvent(CreateHabitEvent.ConfigureStateForHabit(habitUI.toHabitUI())) }

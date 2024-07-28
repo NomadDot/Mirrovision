@@ -30,4 +30,9 @@
     <string name="label_edit_habit">Редагувати звичку</string>
     <string name="label_edit_category">Редагувати категорію</string>
     <string name="label_add_habit">Додати звичку</string>
+    <string name="label_settings">Налаштування</string>
+    <string name="label_language">Мова</string>
+    <string name="label_theme">Тема</string>
+    <string name="localization_ua">Українська</string>
+    <string name="localization_eng">English</string>
 </resources>

@@ -21,6 +21,7 @@ val LightPrimaryAccentColor = Color(0xFF68509A)
 val LightMainHintColor = Color(0xFFA48EFF)
 
 val LightPrimaryInactive = Color(0xFFC0B3F0)
+val MenuAccent = Color(0xFFE5D4FC)
 val LightTextInactive = Color(0xFFF2F4F5)
 
 val ShadowColor = Color(0xFFEDEDF3)
@@ -132,6 +133,15 @@ val GradientMain by lazy {
     listOf(
         Color(0xFFA58EFF),
         Color(0xFFFFC9DE)
+    )
+}
+
+val GradientButtonColors by lazy {
+    listOf(
+        Color(0xFF8567FA),
+        Color(0xFF7755FA),
+        Color(0xFFEE1683),
+        Color(0xFFEE4098),
     )
 }
 

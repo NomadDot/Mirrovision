@@ -12,6 +12,7 @@ import kotlinx.serialization.json.Json
 
 interface IAssetStore {
     fun getCategoriesId(): Flow<List<StringId>>
+    fun getSupportedLanguages(): Flow<List<String>>
 }
 
 class AssetsStore(
@@ -19,6 +20,7 @@ class AssetsStore(
 ): IAssetStore {
     companion object {
         private const val CATEGORIES_PRESET = "preset_categories.json"
+        private const val SUPPORTED_LANGUAGES = "supported_languages.json"
 
         fun getInstance(context: Context): AssetsStore {
             return AssetsStore(context)
@@ -30,5 +32,14 @@ class AssetsStore(
             .bufferedReader()
             .use { it.readText() }
         emit(Json.decodeFromString<List<StringId>>(rawData))
+    }
+
+    override fun getSupportedLanguages(): Flow<List<String>> {
+        return flow {
+            val rawData = context.assets.open(SUPPORTED_LANGUAGES)
+                .bufferedReader()
+                .use { it.readText() }
+            emit(Json.decodeFromString<List<StringId>>(rawData).map { it.id })
+        }
     }
 }

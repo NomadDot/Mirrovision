@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,6 +19,7 @@ class DataStorePreferences(
 ) {
     companion object {
         val IS_PRESET_CONFIGURED = booleanPreferencesKey(name = "IS_PRESET_CONFIGURED")
+        val USER_LANGUAGE = stringPreferencesKey(name = "USER_LANGUAGE")
     }
 
     fun <T> getDataStoreFlow(key: Preferences.Key<T>): Flow<T?>  =
