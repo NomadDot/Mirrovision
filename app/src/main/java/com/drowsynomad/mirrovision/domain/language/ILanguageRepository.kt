@@ -2,6 +2,7 @@ package com.drowsynomad.mirrovision.domain.language
 
 import com.drowsynomad.mirrovision.data.assets.IAssetStore
 import com.drowsynomad.mirrovision.data.dataStore.DataStorePreferences
+import com.drowsynomad.mirrovision.data.dataStore.DataStorePreferences.Companion.USER_LANGUAGE
 import com.drowsynomad.mirrovision.domain.models.Locale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.zip
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.zip
 
 interface ILanguageRepository {
     fun getSupportedLanguagesWithUserSelected(): Flow<List<Locale>>
+    suspend fun saveUserLanguage(locale: String)
 }
 
 class LanguageRepository(
@@ -27,5 +29,9 @@ class LanguageRepository(
                 languages.find { userLanguage == it.id }?.isSelected = true
                 languages
             }
+    }
+
+    override suspend fun saveUserLanguage(locale: String) {
+        dataStorePreferences.saveData(USER_LANGUAGE, locale)
     }
 }

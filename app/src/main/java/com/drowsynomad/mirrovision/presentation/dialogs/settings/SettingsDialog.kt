@@ -38,7 +38,6 @@ import com.drowsynomad.mirrovision.presentation.core.components.GradientButton
 import com.drowsynomad.mirrovision.presentation.dialogs.settings.model.SettingsDialogEvent
 import com.drowsynomad.mirrovision.presentation.utils.AnimatedScene
 import com.drowsynomad.mirrovision.presentation.utils.LocaleUtils
-import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -130,19 +129,23 @@ fun SettingsDialog(
                                 languageTriggered.value = !languageTriggered.value
                             }
                             ExpandableButton(
-                                modifier= Modifier.fillMaxWidth().padding(top = 15.dp),
+                                modifier= Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 15.dp),
                                 title = stringResource(R.string.label_theme),
                                 icon = R.drawable.ic_theme,
                                 expandableContent = it.themeContent
-                            )
+                            ) {
+                                // TODO: Change theme
+                            }
                             GradientButton(
                                 modifier = Modifier
                                     .padding(top = 20.dp)
                                     .fillMaxWidth(),
-                                text = "Upgrade to Pro",
+                                text = stringResource(R.string.label_upgrade_to_pro),
                                 icon = R.drawable.ic_pro_version
                             ) {
-
+                                // TODO: Navigate to premium screen
                             }
                         }
                     }

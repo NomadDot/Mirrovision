@@ -54,5 +54,9 @@ class SettingsDialogVM @Inject constructor(
         uiState.value.languageContent.find { it.isSelected.value }?.isSelected?.value = false
         uiState.value.languageContent.find { it.id == id }
             ?.isSelected?.value = true
+
+        launch {
+            languageRepository.saveUserLanguage(id)
+        }
     }
 }

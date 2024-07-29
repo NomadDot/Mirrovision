@@ -8,9 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
+import com.drowsynomad.mirrovision.core.getLocale
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
 import com.drowsynomad.mirrovision.presentation.screens.splashLoading.model.SplashLoadingEvent
@@ -35,9 +37,16 @@ fun SplashLoadingScreen (
     onNewUserNavigation: Navigation,
     onExistedUserNavigation: Navigation
 ) {
+    val context = LocalContext.current
+    val deviceLanguage = getLocale().language
+
     StateContent(
         viewModel = viewModel,
-        launchedEffect = { viewModel.handleUiEvent(SplashLoadingEvent.LoadUserConfiguration) },
+        launchedEffect = {
+            viewModel.handleUiEvent(
+                SplashLoadingEvent.LoadUserConfiguration(context, deviceLanguage)
+            )
+        },
         sideEffect = attachSideEffects(onNewUserNavigation, onExistedUserNavigation)
     ) {
         SplashLoadingContent(it)
@@ -48,7 +57,9 @@ fun SplashLoadingScreen (
 private fun SplashLoadingContent(state: SplashLoadingState) {
     Box(modifier = Modifier.fillMaxSize()) {
         Icon(
-            modifier = Modifier.align(Center).size(300.dp),
+            modifier = Modifier
+                .align(Center)
+                .size(300.dp),
             painter = painterResource(id = R.drawable.ic_dzerkalo),
             contentDescription = null,
             tint = Color.Unspecified

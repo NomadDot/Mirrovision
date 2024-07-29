@@ -3,8 +3,6 @@ package com.drowsynomad.mirrovision.presentation.utils
 import android.content.Context
 import android.content.res.Configuration
 import android.util.Log
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
 import java.util.Locale
 
 /**
@@ -12,14 +10,7 @@ import java.util.Locale
  */
 
 object LocaleUtils {
-    fun updateLanguage(languageId: String) =
-        AppCompatDelegate.setApplicationLocales(
-            LocaleListCompat.forLanguageTags(
-                languageId.dropLast(1).lowercase(Locale.getDefault())
-            )
-        )
-
-    fun setLocale(c: Context, pref: String) = updateResources(c, pref) //use locale codes
+    fun setLocale(c: Context, pref: String) = updateResources(c, pref)
 
     private fun updateResources(context: Context, language: String) {
         Log.i("Language", language)
@@ -30,6 +21,7 @@ object LocaleUtils {
             context.createConfigurationContext(configuration)
             Locale.setDefault(locale)
             config.setLocale(locale)
+
             context.resources.updateConfiguration(config, displayMetrics)
         }
     }

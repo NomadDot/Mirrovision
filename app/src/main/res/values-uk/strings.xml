@@ -35,4 +35,5 @@
     <string name="label_theme">Тема</string>
     <string name="localization_ua">Українська</string>
     <string name="localization_eng">English</string>
+    <string name="label_upgrade_to_pro">Оновити до Про-версії</string>
 </resources>
