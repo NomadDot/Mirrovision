@@ -26,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
-import com.drowsynomad.mirrovision.core.getLocale
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.components.AdviceText
@@ -43,8 +42,8 @@ import com.drowsynomad.mirrovision.presentation.theme.CategoryColors
 import com.drowsynomad.mirrovision.presentation.theme.GradientAccent
 import com.drowsynomad.mirrovision.presentation.theme.GradientMain
 import com.drowsynomad.mirrovision.presentation.theme.LightMainBackground
-import com.drowsynomad.mirrovision.presentation.utils.LocaleUtils
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
+import com.drowsynomad.mirrovision.presentation.utils.getLocale
 import com.drowsynomad.mirrovision.presentation.utils.gradient
 
 /**

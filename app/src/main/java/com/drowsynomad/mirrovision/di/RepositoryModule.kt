@@ -5,7 +5,11 @@ import com.drowsynomad.mirrovision.data.dataStore.DataStorePreferences
 import com.drowsynomad.mirrovision.data.database.MirrovisionDatabase
 import com.drowsynomad.mirrovision.domain.categories.CategoryRepository
 import com.drowsynomad.mirrovision.domain.categories.ICategoryRepository
+import com.drowsynomad.mirrovision.domain.habit.HabitRecordingRepository
+import com.drowsynomad.mirrovision.domain.habit.HabitRegularityRepository
 import com.drowsynomad.mirrovision.domain.habit.HabitRepository
+import com.drowsynomad.mirrovision.domain.habit.IHabitRecordingRepository
+import com.drowsynomad.mirrovision.domain.habit.IHabitRegularityRepository
 import com.drowsynomad.mirrovision.domain.habit.IHabitRepository
 import com.drowsynomad.mirrovision.domain.language.ILanguageRepository
 import com.drowsynomad.mirrovision.domain.language.LanguageRepository
@@ -33,6 +37,16 @@ object RepositoryModule {
     @ViewModelScoped
     fun provideHabitRepository(database: MirrovisionDatabase): IHabitRepository =
         HabitRepository(database)
+
+    @Provides
+    @ViewModelScoped
+    fun provideHabitRecordingRepository(database: MirrovisionDatabase): IHabitRecordingRepository =
+        HabitRecordingRepository(database)
+
+    @Provides
+    @ViewModelScoped
+    fun provideHabitRegularityRepository(database: MirrovisionDatabase): IHabitRegularityRepository =
+        HabitRegularityRepository(database)
 
     @Provides
     @ViewModelScoped

@@ -15,9 +15,9 @@ fun NavController.navigateToHabitCreating(
     this.navigate(Routes.CreateHabitScreen(args.toHabitNavigation(isForIntro)))
 }
 
-fun NavController.navigateToHomeFromPreset() {
-    this.navigate(Routes.HomeScreen) {
-        popUpTo<Routes.HomeScreen> { inclusive = true }
+fun NavController.navigateToDashboardFromPreset() {
+    this.navigate(Routes.DashboardScreen) {
+        popUpTo<Routes.DashboardScreen> { inclusive = true }
     }
 }
 
@@ -28,7 +28,7 @@ fun NavController.navigateToIntro() {
 }
 
 fun NavController.navigateToDashboard() {
-    this.navigate(Routes.HomeScreen) {
+    this.navigate(Routes.DashboardScreen) {
         popUpTo<Routes.SplashLoadingScreen> { inclusive = true }
     }
 }

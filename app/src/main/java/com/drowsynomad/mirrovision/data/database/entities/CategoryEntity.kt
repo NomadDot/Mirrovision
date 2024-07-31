@@ -3,6 +3,8 @@ package com.drowsynomad.mirrovision.data.database.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.drowsynomad.mirrovision.core.emptyString
+import com.drowsynomad.mirrovision.domain.models.Category
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 
 /**
  * @author Roman Voloshyn (Created on 23.06.2024)
@@ -16,4 +18,9 @@ data class CategoryEntity(
     val name: String = emptyString(),
     val icon: Int = 0,
     val bgColor: String = emptyString()
-)
+) {
+    fun toDomain(): Category =
+        Category(
+            id = id, name = name, icon = icon, bgColor = CategoryMainColor.parse(bgColor)
+        )
+}

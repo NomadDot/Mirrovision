@@ -3,8 +3,6 @@ package com.drowsynomad.mirrovision.domain.habit
 import com.drowsynomad.mirrovision.data.database.MirrovisionDatabase
 import com.drowsynomad.mirrovision.data.database.entities.HabitActivityUpdate
 import com.drowsynomad.mirrovision.domain.models.Habit
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
 /**
  * @author Roman Voloshyn (Created on 20.07.2024)
@@ -26,6 +24,6 @@ class HabitRepository(
     override suspend fun createNewOrUpdateHabit(habit: Habit) {
         database
             .habitDao()
-            .insertHabit(habit.toHabitEntity())
+            .insertHabit(habit.toData())
     }
 }

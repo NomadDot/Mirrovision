@@ -49,6 +49,9 @@ sealed class Routes {
     }
 
     @Serializable
+    data object DashboardScreen: Routes()
+
+    @Serializable
     data object TimerScreen: Routes()
     @Serializable
     data object NotesScreen: Routes()

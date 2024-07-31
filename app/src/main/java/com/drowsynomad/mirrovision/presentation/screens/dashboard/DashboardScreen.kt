@@ -3,11 +3,9 @@ package com.drowsynomad.mirrovision.presentation.screens.dashboard
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -27,9 +25,8 @@ import com.drowsynomad.mirrovision.presentation.core.base.StateContent
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.BottomNavigationBar
 import com.drowsynomad.mirrovision.presentation.core.components.DefaultToolbar
-import com.drowsynomad.mirrovision.presentation.core.components.HabitCategory
 import com.drowsynomad.mirrovision.presentation.dialogs.settings.SettingsDialog
-import com.drowsynomad.mirrovision.presentation.screens.dashboard.model.DashboardEvent
+import com.drowsynomad.mirrovision.presentation.navigation.DashboardNavigation
 import com.drowsynomad.mirrovision.presentation.screens.dashboard.model.DashboardState
 import com.drowsynomad.mirrovision.presentation.theme.MenuAccent
 import com.drowsynomad.mirrovision.presentation.utils.LocalFixedInsets
@@ -51,13 +48,10 @@ fun DashboardScreen(
     StateContent(
         viewModel = viewModel,
         useStatusBarPadding = useStatusBarPadding.value,
-        launchedEffect = { viewModel.handleUiEvent(DashboardEvent.LoadCategories)}
     ) {
         DashboardContent(
             it,
             onEditHabitClick = onEditHabitClick,
-            onHabitClick = { viewModel.handleUiEvent(DashboardEvent.FillHabitCell(it)) },
-            onLongHabitClick = { viewModel.handleUiEvent(DashboardEvent.RemoveHabitCell(it)) },
             onUseSystemBar = { useStatusBarPadding.value = it })
     }
 }
@@ -65,9 +59,7 @@ fun DashboardScreen(
 @Composable
 fun DashboardContent(
     state: DashboardState,
-    onHabitClick: (HabitUI) -> Unit,
     onEditHabitClick: (HabitUI) -> Unit,
-    onLongHabitClick: (HabitUI) -> Unit,
     onUseSystemBar: (Boolean) -> Unit,
 ) {
     val settingsVisibility = rememberSaveable {
@@ -116,21 +108,8 @@ fun DashboardContent(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(
-                    top = paddingValues.calculateTopPadding()
-                ),
-            contentPadding = PaddingValues(bottom = 120.dp),
-            verticalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            items(state.categoriesWithHabits, key = { category -> category.id }) {
-                HabitCategory(
-                    category = it,
-                    onEditHabit = onEditHabitClick,
-                    onHabitClick = onHabitClick,
-                    onLongHabitClick = onLongHabitClick)
-            }
+        Box(modifier = Modifier.fillMaxSize().padding(top = paddingValues.calculateTopPadding())) {
+            DashboardNavigation(onHabitEditClick = onEditHabitClick)
         }
     }
 }

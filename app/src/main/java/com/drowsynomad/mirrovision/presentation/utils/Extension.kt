@@ -9,6 +9,10 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.core.os.ConfigurationCompat
+import androidx.core.os.LocaleListCompat
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -17,6 +21,7 @@ import androidx.navigation.toRoute
 import com.drowsynomad.mirrovision.presentation.navigation.Routes
 import com.google.gson.Gson
 import java.io.Serializable
+import java.util.Locale
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
@@ -99,3 +104,10 @@ inline fun <reified T> String.fromJson(): T =
     )
 
 fun String?.clearRoute(): String = this?.substringAfterLast(".") ?: "$this"
+
+@Composable
+@ReadOnlyComposable
+fun getLocale(): Locale {
+    val configuration = LocalConfiguration.current
+    return ConfigurationCompat.getLocales(configuration).get(0) ?: LocaleListCompat.getDefault()[0]!!
+}

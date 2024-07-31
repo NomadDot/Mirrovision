@@ -86,7 +86,7 @@ fun RootNavigation(
                 onBackNavigation = navController::popBackStack,
                 onNextNavigation = {
                     createdHabits.clear()
-                    navController.navigateToHomeFromPreset()
+                    navController.navigateToDashboardFromPreset()
                 }
             )
         }
@@ -117,7 +117,7 @@ fun RootNavigation(
             )
         }
 
-        composableOf<Routes.HomeScreen, EmptyParameters> { _, navBackStackEntry ->
+        composableOf<Routes.DashboardScreen, EmptyParameters> { _, navBackStackEntry ->
             DashboardScreen(
                 viewModel = hiltViewModel(),
                 onEditHabitClick = navController::navigateToHabitCreating

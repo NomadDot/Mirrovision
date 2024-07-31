@@ -1,5 +1,7 @@
 package com.drowsynomad.mirrovision.presentation.screens.habitCreating
 
+import com.drowsynomad.mirrovision.domain.habit.IHabitRecordingRepository
+import com.drowsynomad.mirrovision.domain.habit.IHabitRegularityRepository
 import com.drowsynomad.mirrovision.domain.habit.IHabitRepository
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
 import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
@@ -15,7 +17,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateHabitVM@Inject constructor(
-    private val habitRepository: IHabitRepository
+    private val habitRepository: IHabitRepository,
+    private val habitRecordingRepository: IHabitRecordingRepository,
+    private val habitRegularityRepository: IHabitRegularityRepository,
 ): StateViewModel<CreateHabitState, CreateHabitEvent, SideEffect>(
     CreateHabitState(null)
 ) {

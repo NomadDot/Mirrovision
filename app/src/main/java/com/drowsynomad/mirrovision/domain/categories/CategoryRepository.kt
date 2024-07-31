@@ -6,9 +6,8 @@ import com.drowsynomad.mirrovision.data.database.entities.CategoryAndHabits
 import com.drowsynomad.mirrovision.domain.models.Category
 import com.drowsynomad.mirrovision.domain.models.Habit
 import com.drowsynomad.mirrovision.domain.models.StringId
-import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 /**
  * @author Roman Voloshyn (Created on 27.06.2024)
@@ -18,7 +17,8 @@ interface ICategoryRepository {
     fun getCategoriesId(): Flow<List<StringId>>
 
     suspend fun saveCategoriesPreset(categories: List<Category>, habits: List<Habit>)
-    fun loadLocalCategories(): Flow<List<CategoryAndHabits>>
+    fun loadLocalCategoriesWithHabits(): Flow<List<CategoryAndHabits>>
+    fun loadLocalCategories(): Flow<List<Category>>
 }
 
 class CategoryRepository(
@@ -40,11 +40,16 @@ class CategoryRepository(
         }
 
         habits.forEach {
-            val entity = it.toHabitEntity()
+            val entity = it.toData()
             habitDao.insertHabit(entity)
         }
     }
 
-    override fun loadLocalCategories(): Flow<List<CategoryAndHabits>> =
+    override fun loadLocalCategoriesWithHabits(): Flow<List<CategoryAndHabits>> =
         database.categoryDao().getCategoriesAndHabits()
+
+    override fun loadLocalCategories(): Flow<List<Category>> =
+        database.categoryDao().getAllCategories().map { entityCategories ->
+            entityCategories.map { it.toDomain()}
+        }
 }

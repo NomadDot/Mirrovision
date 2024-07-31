@@ -12,12 +12,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
-import com.drowsynomad.mirrovision.core.getLocale
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
 import com.drowsynomad.mirrovision.presentation.screens.splashLoading.model.SplashLoadingEvent
 import com.drowsynomad.mirrovision.presentation.screens.splashLoading.model.SplashLoadingState
 import com.drowsynomad.mirrovision.presentation.screens.splashLoading.model.SplashSideEffect
+import com.drowsynomad.mirrovision.presentation.utils.getLocale
 
 /**
  * @author Roman Voloshyn (Created on 20.07.2024)
