@@ -5,6 +5,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.drowsynomad.mirrovision.core.emptyString
+import com.drowsynomad.mirrovision.domain.models.HabitRegularity
+import com.drowsynomad.mirrovision.domain.models.RegularityType
 
 /**
  * @author Roman Voloshyn (Created on 30.07.2024)
@@ -33,4 +35,13 @@ data class HabitRegularity(
     val days: List<Int> = emptyList(),
     @ColumnInfo(name = "type")
     val type: String = emptyString()
-)
+) {
+    fun toDomain(): HabitRegularity =
+        HabitRegularity(
+            id = id,
+            habitId = habitId,
+            time = time,
+            days = days,
+            type = RegularityType.toType(type)
+        )
+}

@@ -1,14 +1,15 @@
 package com.drowsynomad.mirrovision.presentation.home
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.viewModelScope
+import com.drowsynomad.mirrovision.core.generateDayId
 import com.drowsynomad.mirrovision.data.database.entities.CategoryAndHabits
 import com.drowsynomad.mirrovision.data.database.entities.HabitEntity
 import com.drowsynomad.mirrovision.domain.categories.ICategoryRepository
+import com.drowsynomad.mirrovision.domain.habit.IHabitRecordingRepository
 import com.drowsynomad.mirrovision.domain.habit.IHabitRepository
-import com.drowsynomad.mirrovision.domain.models.Category
+import com.drowsynomad.mirrovision.domain.models.RegularityType
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
 import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
@@ -21,6 +22,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
 
 /**
@@ -30,6 +32,7 @@ import javax.inject.Inject
 class HomeVM @Inject constructor(
     private val categoryRepository: ICategoryRepository,
     private val habitRepository: IHabitRepository,
+    private val habitRecordingsRepository: IHabitRecordingRepository
 ): StateViewModel<HomeState, HomeEvent, SideEffect>(
     HomeState()
 ) {
@@ -43,6 +46,16 @@ class HomeVM @Inject constructor(
 
     private fun createTodayCategories() {
         viewModelScope.launch {
+      /*      val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
+            val dayId = generateDayId()
+            if(habitRecordingsRepository.isDailyRecordConfigured(dayId)) {
+                habitRecordingsRepository.createDailyRecordings(
+                    dayId = dayId,
+                    currentDay = currentDay,
+                    typeOfDay = RegularityType.WEEKLY
+                )
+            }
+*/
             categoryRepository.loadLocalCategoriesWithHabits()
                 .map { it.toCategoryUI() }
                 .collect { categories ->

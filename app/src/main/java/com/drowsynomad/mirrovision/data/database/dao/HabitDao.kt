@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.drowsynomad.mirrovision.data.database.entities.HabitActivityUpdate
 import com.drowsynomad.mirrovision.data.database.entities.HabitEntity
+import com.drowsynomad.mirrovision.data.database.entities.HabitRecord
 import com.drowsynomad.mirrovision.data.database.entities.tuples.FullInfoHabit
 import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRecordings
 import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRegularity
@@ -21,6 +22,9 @@ import kotlinx.coroutines.flow.Flow
 interface HabitDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertHabit(habit: HabitEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = HabitRecord::class)
+    fun insertHabitRecords(habits: List<HabitRecord>)
 
     @Query("SELECT * FROM habits")
     fun getAllHabits(): Flow<List<HabitEntity?>>
@@ -38,8 +42,15 @@ interface HabitDao {
     fun getHabitWithRegularity(): Flow<List<HabitWithRegularity?>>
 
     @Transaction
+    @Query("SELECT * FROM habits")
+    suspend fun getHabitsRegularity(): List<HabitWithRegularity?>
+
+    @Transaction
     @Query("SELECT * FROM habits WHERE id = :habitId")
     suspend fun getFullInfoHabitById(habitId: Long): FullInfoHabit?
+
+    @Query("SELECT * FROM habit_record WHERE day_date = :dayId")
+    suspend fun getRecords(dayId: Long): List<HabitRecord>
 
     @Update(entity = HabitEntity::class)
     fun updateEntity(habit: HabitEntity)

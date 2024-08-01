@@ -6,6 +6,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.drowsynomad.mirrovision.core.emptyString
+import com.drowsynomad.mirrovision.domain.models.Habit
+import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 
 /**
  * @author Roman Voloshyn (Created on 23.06.2024)
@@ -45,6 +48,18 @@ data class HabitEntity(
         @ColumnInfo(name = "filled_cell")
         val prefilledCellAmount: Int = 0
     )
+
+    fun toDomain(): Habit =
+        Habit(
+            id = id,
+            attachedCategoryId = categoryId,
+            name = name,
+            description = description,
+            icon = icon,
+            backgroundColor = CategoryMainColor.parse(bgColor),
+            cellAmount = amount.cellAmount,
+            filledCellAmount = amount.prefilledCellAmount
+        )
 }
 
 data class HabitActivityUpdate(
