@@ -2,10 +2,12 @@ package com.drowsynomad.mirrovision.presentation.core.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -22,6 +24,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
+import com.drowsynomad.mirrovision.domain.models.RegularityType
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 
@@ -70,6 +73,22 @@ fun HabitIcon(
             )
         }
     }
+}
+
+@Composable
+fun StateIcon(
+    modifier: Modifier = Modifier,
+    state: Boolean,
+    @DrawableRes onStateTrueIcon: Int,
+    @DrawableRes onStateFalseIcon: Int,
+    tint: Color
+) {
+    Icon(
+        painter = painterResource(id = if(state) onStateTrueIcon else onStateFalseIcon),
+        contentDescription = emptyString(),
+        modifier = modifier,
+        tint = tint
+    )
 }
 
 @Composable

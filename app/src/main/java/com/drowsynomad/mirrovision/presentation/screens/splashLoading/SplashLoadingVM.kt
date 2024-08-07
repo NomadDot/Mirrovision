@@ -37,7 +37,7 @@ class SplashLoadingVM @Inject constructor(
 
     private fun loadUserConfiguration(context: Context, deviceLocalization: String) {
         viewModelScope.launch {
-            delay(500)
+            delay(300)
             userRepository
                 .doesUserFinishPreset()
                 .zip(userRepository.getUserLanguageId(deviceLocalization)) { userFinishPreset, language ->

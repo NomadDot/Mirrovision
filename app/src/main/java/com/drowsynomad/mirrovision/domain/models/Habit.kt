@@ -1,7 +1,5 @@
 package com.drowsynomad.mirrovision.domain.models
 
-import androidx.room.Embedded
-import androidx.room.Relation
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.data.database.entities.HabitEntity
 import com.drowsynomad.mirrovision.data.database.entities.HabitRegularity
@@ -31,18 +29,6 @@ data class Habit(
             bgColor = backgroundColor.toString(),
             amount = HabitEntity.Amount(cellAmount, filledCellAmount)
         )
-    }
-}
-
-enum class RegularityType {
-    WEEKLY, MONTHLY;
-
-    companion object {
-        fun toType(value: String): RegularityType = when(value) {
-            "WEEKLY" -> WEEKLY
-            "MONTHLY" -> MONTHLY
-            else -> WEEKLY
-        }
     }
 }
 

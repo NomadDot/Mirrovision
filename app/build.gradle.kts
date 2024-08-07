@@ -112,4 +112,6 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.android.joda)
     implementation(libs.gson)
+
+    implementation(libs.lottie.compose)
 }

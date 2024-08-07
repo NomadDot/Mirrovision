@@ -19,7 +19,8 @@ data class CategoryUI(
     val name: String = emptyString(),
     val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
     @DrawableRes val iconRes: Int = R.drawable.ic_add,
-    val habits: SnapshotStateList<HabitUI> = mutableStateListOf()
+    val habits: SnapshotStateList<HabitUI> = mutableStateListOf(),
+    val customizationEnable: Boolean = true
 ) {
     val isPresetCategory = habits.isEmpty()
     val isFirstHabitPreset = if(habits.isEmpty()) true else habits.first().isDefaultIcon

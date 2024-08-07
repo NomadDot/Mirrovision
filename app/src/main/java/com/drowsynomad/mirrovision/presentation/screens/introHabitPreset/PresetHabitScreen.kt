@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
@@ -27,12 +26,10 @@ import com.drowsynomad.mirrovision.presentation.core.components.DefaultToolbar
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCategory
 import com.drowsynomad.mirrovision.presentation.core.components.PrimaryButton
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
-import com.drowsynomad.mirrovision.presentation.navigation.Routes
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent.SaveCategories
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitState
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetSideEffect
-import com.drowsynomad.mirrovision.presentation.utils.clearRoute
 
 /**
  * @author Roman Voloshyn (Created on 30.06.2024)

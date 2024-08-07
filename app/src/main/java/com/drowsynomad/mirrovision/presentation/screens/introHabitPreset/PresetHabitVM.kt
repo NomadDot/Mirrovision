@@ -66,7 +66,8 @@ class PresetHabitVM @Inject constructor(
                     else {
                         category.habits += getPresetHabit(category)
                         category.habits
-                    }
+                    },
+                customizationEnable = false
             )
         }
 

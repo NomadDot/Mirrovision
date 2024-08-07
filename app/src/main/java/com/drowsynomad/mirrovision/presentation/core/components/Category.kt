@@ -89,7 +89,9 @@ private fun TransitionHabitCategory(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                AnimatedVisibility(visible = !isCategoryExpanded.value) {
+                AnimatedVisibility(
+                    visible = !isCategoryExpanded.value && category.customizationEnable
+                ) {
                     Icon(
                         modifier = Modifier
                             .clickable { isCategoryExpanded.value = true }

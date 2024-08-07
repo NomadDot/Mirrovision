@@ -1,6 +1,7 @@
 package com.drowsynomad.mirrovision.presentation.screens.habitCreating
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,14 +9,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,7 +29,6 @@ import com.drowsynomad.mirrovision.presentation.core.base.StateContent
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmountState
-import com.drowsynomad.mirrovision.presentation.core.components.AddingButton
 import com.drowsynomad.mirrovision.presentation.core.components.AmountHabit
 import com.drowsynomad.mirrovision.presentation.core.components.BackButton
 import com.drowsynomad.mirrovision.presentation.core.components.BigTitle
@@ -32,6 +36,8 @@ import com.drowsynomad.mirrovision.presentation.core.components.CancelableAndSav
 import com.drowsynomad.mirrovision.presentation.core.components.ExplainTitle
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCounter
 import com.drowsynomad.mirrovision.presentation.core.components.InputField
+import com.drowsynomad.mirrovision.presentation.core.components.RegularityColumn
+import com.drowsynomad.mirrovision.presentation.core.components.RegularityContentUI
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitState
@@ -77,6 +83,7 @@ fun CreateHabitContent(
     onChooseIconNavigation: (CategoryMainColor) -> Unit
 ) {
     val habitUI = state.habitUI
+
     habitUI?.let {
         val accentColor = habitUI.accentColor.pureColor
 
@@ -88,6 +95,10 @@ fun CreateHabitContent(
         val selectedHabits = rememberSaveable { mutableIntStateOf(0) }
         val isSavingEnabled = rememberSaveable { mutableStateOf(false) }
 
+        val regularity = rememberSaveable {
+            habitUI.regularity
+        }
+
         fun checkIfSavingButtonEnabled() {
             isSavingEnabled.value = icon.intValue != R.drawable.ic_add &&
                     habitName.value.isNotEmpty() && habitDescription.value.isNotEmpty()
@@ -96,21 +107,16 @@ fun CreateHabitContent(
         checkIfSavingButtonEnabled()
 
         Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.fillMaxSize()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
             ) {
-                CircleIcon(
-                    icon = habitUI.icon,
-                    color = habitUI.backgroundColor,
-                    count = habitCountPerDay.intValue,
-                    selected = selectedHabits.intValue
-                ) {
-                    onChooseIconNavigation.invoke(habitUI.backgroundColor)
-                }
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp)
+                        .verticalScroll(rememberScrollState())
+                        .padding(top = 220.dp),
                 ) {
                     BigTitle(text = stringResource(R.string.label_habit_name), color = accentColor)
                     InputField(
@@ -139,6 +145,7 @@ fun CreateHabitContent(
                         color = accentColor,
                         elevation = 20.dp,
                         maxLimit = 100,
+                        maxLines = 3,
                         hint = stringResource(R.string.label_add_habit_description),
                         prefilledValue = habitDescription.value
                     ) {
@@ -165,22 +172,30 @@ fun CreateHabitContent(
                     }
                     BigTitle(
                         text = stringResource(R.string.label_regularity),
-                        modifier = Modifier.padding(top = 20.dp),
+                        modifier = Modifier.padding(top = 20.dp, bottom = 15.dp),
                         color = accentColor
                     )
-                    AddingButton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 15.dp),
-                        color = accentColor
+                    RegularityColumn(
+                        regularityContentUI = regularity,
+                        color = habitUI.backgroundColor,
+                        modifier = Modifier.padding(bottom = 100.dp)
                     ) {
 
                     }
+                }
+                CircleIcon(
+                    icon = habitUI.icon,
+                    color = habitUI.backgroundColor,
+                    count = habitCountPerDay.intValue,
+                    selected = selectedHabits.intValue
+                ) {
+                    onChooseIconNavigation.invoke(habitUI.backgroundColor)
                 }
             }
             CancelableAndSaveableButton(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
+                    .padding(horizontal = 16.dp)
                     .padding(bottom = 12.dp),
                 cancelButtonLabel = R.string.button_cancel,
                 primaryButtonLabel = R.string.button_save,
@@ -218,10 +233,13 @@ fun CircleIcon(
     selected: Int = 0,
     onClick: () -> Unit
 ) {
-    Box(modifier = Modifier) {
+    Box(modifier = Modifier
+        .height(220.dp)
+        .background(Color.Transparent)
+    ) {
         Canvas(modifier = modifier
             .fillMaxWidth()
-            .height(250.dp)
+            .height(220.dp)
             .clipToBounds()
         ) {
             drawCircle(

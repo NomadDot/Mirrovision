@@ -9,6 +9,7 @@ import androidx.room.Update
 import com.drowsynomad.mirrovision.data.database.entities.HabitActivityUpdate
 import com.drowsynomad.mirrovision.data.database.entities.HabitEntity
 import com.drowsynomad.mirrovision.data.database.entities.HabitRecord
+import com.drowsynomad.mirrovision.data.database.entities.HabitRegularity
 import com.drowsynomad.mirrovision.data.database.entities.tuples.FullInfoHabit
 import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRecordings
 import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRegularity
@@ -22,6 +23,9 @@ import kotlinx.coroutines.flow.Flow
 interface HabitDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertHabit(habit: HabitEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = HabitRegularity::class)
+    fun insertHabitRegularity(habits: List<HabitRegularity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE, entity = HabitRecord::class)
     fun insertHabitRecords(habits: List<HabitRecord>)

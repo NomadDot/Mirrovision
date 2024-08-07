@@ -434,7 +434,6 @@ fun CancelableAndSaveableButton(
         horizontalArrangement = Arrangement.spacedBy(15.dp),
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
     ) {
         SecondaryButton(
             text = stringResource(id = cancelButtonLabel),

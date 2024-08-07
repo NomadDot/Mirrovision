@@ -35,6 +35,10 @@
     <string name="localization_ua">Українська</string>
     <string name="localization_eng">English</string>
     <string name="label_upgrade_to_pro">Upgrade to Pro</string>
+    <string name="i_want_to_use_time_reminder">I want to use time reminder</string>
+    <string name="label_days">Days</string>
+    <string name="label_weekly_brackets">(Weekly)</string>
+    <string name="label_monthly_brackets">(Monthly)</string>
 
     <string-array name="categories">
         <item>Sport</item>
@@ -44,5 +48,15 @@
         <item>Meditation</item>
         <item>Work</item>
         <item>Relationship</item>
+    </string-array>
+
+    <string-array name="weekly_days">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
     </string-array>
 </resources>

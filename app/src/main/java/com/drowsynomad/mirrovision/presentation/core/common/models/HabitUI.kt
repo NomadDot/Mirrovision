@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.domain.models.Habit
+import com.drowsynomad.mirrovision.presentation.core.components.RegularityContentUI
 import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import kotlinx.parcelize.IgnoredOnParcel
@@ -25,6 +26,7 @@ data class HabitUI(
     val id: Long = Random.nextLong(),
     val name: String = emptyString(),
     val description: String = emptyString(),
+    val regularity: List<RegularityContentUI> = emptyList(),
     @DrawableRes val icon: Int = R.drawable.ic_add,
     val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
     val attachedCategoryId: Int = 0,
@@ -73,6 +75,7 @@ data class HabitUI(
             id = id,
             name = name,
             description = description,
+            regularity = regularity,
             icon = icon,
             backgroundColor = backgroundColor,
             attachedCategoryId = attachedCategoryId,
@@ -89,6 +92,7 @@ data class HabitNavigationModel(
     val id: Long = Random.nextLong(),
     val name: String = emptyString(),
     val description: String = emptyString(),
+    val regularity: List<RegularityContentUI>,
     @DrawableRes val icon: Int = R.drawable.ic_add,
     val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
     val attachedCategoryId: Int = 0,
@@ -100,6 +104,7 @@ data class HabitNavigationModel(
             id = id,
             name = name,
             description = description,
+            regularity = regularity,
             icon = icon,
             backgroundColor = backgroundColor,
             attachedCategoryId = attachedCategoryId,

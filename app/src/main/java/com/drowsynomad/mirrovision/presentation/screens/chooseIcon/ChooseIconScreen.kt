@@ -112,6 +112,7 @@ private fun ChooseIconContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 20.dp)
+                .padding(horizontal = 16.dp)
                 .align(Alignment.BottomCenter),
             containerColor = color.accent.pureColor,
             cancelButtonLabel = R.string.button_cancel,

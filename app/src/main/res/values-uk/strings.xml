@@ -36,4 +36,28 @@
     <string name="localization_ua">Українська</string>
     <string name="localization_eng">English</string>
     <string name="label_upgrade_to_pro">Оновити до Про-версії</string>
+    <string name="i_want_to_use_time_reminder">Хочу використовувати нагадування</string>
+    <string name="label_days">Дні</string>
+    <string name="label_weekly_brackets">(Тиждень)</string>
+    <string name="label_monthly_brackets">(Місяць)</string>
+
+    <string-array name="categories">
+        <item>Спорт</item>
+        <item>Харчування</item>
+        <item>Саморозвиток</item>
+        <item>Мистецтво</item>
+        <item>Медитація</item>
+        <item>Робота</item>
+        <item>Стосунки</item>
+    </string-array>
+
+    <string-array name="weekly_days">
+        <item>Пн</item>
+        <item>Вт</item>
+        <item>Ср</item>
+        <item>Чт</item>
+        <item>Пт</item>
+        <item>Сб</item>
+        <item>Нд</item>
+    </string-array>
 </resources>

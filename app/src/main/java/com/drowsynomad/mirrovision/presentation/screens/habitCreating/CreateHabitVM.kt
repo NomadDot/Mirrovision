@@ -43,6 +43,7 @@ class CreateHabitVM@Inject constructor(
                                 else presetStroke.prefilledCellAmount)
                     ).toHabit()
                 )
+                habitRegularityRepository
             }
     }
 }
