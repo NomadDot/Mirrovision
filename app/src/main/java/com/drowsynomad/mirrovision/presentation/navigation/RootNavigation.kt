@@ -12,7 +12,6 @@ import androidx.navigation.compose.rememberNavController
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.screens.chooseIcon.ChooseIconScreen
 import com.drowsynomad.mirrovision.presentation.screens.dashboard.DashboardScreen
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CreateHabitScreen
@@ -59,14 +58,19 @@ fun RootNavigation(
 
         composableOf<Routes.PresetHabitScreen, StringParcel> { route, navBackStackEntry ->
             val createdHabits = rememberSaveable {
-                mutableListOf<HabitUI>()
+                mutableListOf<HabitNavigationModel>()
             }
             val createdHabit =
                 navBackStackEntry.savedStateHandle
-                    .get<HabitUI?>(Routes.CreateHabitScreen.parameterKey)
+                    .get<HabitNavigationModel?>(Routes.CreateHabitScreen.parameterKey)
+
 
             createdHabit?.let { habit ->
-                if(!createdHabits.contains(habit))
+                val existedItem = createdHabits.find { it.id == habit.id && it.hashCode() != habit.hashCode() }
+                if(existedItem != null)
+                    createdHabits.remove(existedItem)
+
+                if(createdHabits.find { it.id == habit.id } == null)
                     createdHabits.add(habit)
             }
 
@@ -76,7 +80,11 @@ fun RootNavigation(
                 .map { category ->
                     val attachedHabits = createdHabits.filter { habit -> habit.attachedCategoryId == category.id }
                     if(attachedHabits.isNotEmpty())
-                        category.copy(habits = attachedHabits.toMutableStateList())
+                        category.copy(
+                            habits = attachedHabits
+                                .map { it.toHabitUI() }
+                                .toMutableStateList()
+                        )
                     else category
                 }
             PresetHabitScreen(

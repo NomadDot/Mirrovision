@@ -39,7 +39,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.drowsynomad.mirrovision.presentation.core.components.DayState
+import com.drowsynomad.mirrovision.presentation.core.common.models.DayUI
 import com.drowsynomad.mirrovision.presentation.core.components.Time
 
 /**
@@ -186,16 +186,16 @@ fun AnimatedScene(
     }
 }
 
-fun fillWeeklyDays(weeklyDayLabels: List<String>): List<DayState> {
+fun fillWeeklyDays(weeklyDayLabels: List<String>): List<DayUI> {
     return List(7) {
-        DayState(it + 1, weeklyDayLabels[it], true)
+        DayUI(it + 1, weeklyDayLabels[it], true)
     }
 }
 
-fun fillMonthlyDays(): List<DayState> {
-    return List(7) {
+fun fillMonthlyDays(): List<DayUI> {
+    return List(31) {
         val day = it + 1
-        DayState(day, day.toString())
+        DayUI(day, day.toString())
     }
 }
 

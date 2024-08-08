@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.annotation.ArrayRes
 import androidx.annotation.StringRes
 import com.drowsynomad.mirrovision.R
-import com.drowsynomad.mirrovision.domain.models.Locale
 
 /**
  * @author Roman Voloshyn (Created on 10.07.2024)

@@ -180,19 +180,24 @@ private fun HabitRow(
     onHabitClick: ((HabitUI) -> Unit)? = null,
     onLongHabitClick: ((HabitUI) -> Unit)? = null
 ) {
-    LazyRow(
+    Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(habits, key = { item -> item.id }) {
-            AmountHabit(
-                iconSize = 60.dp,
-                strokeSize = 80.dp,
-                strokeWidth = StrokeWidth.Custom(16f),
-                habitUI = it,
-                onLongHabitClick = { onLongHabitClick?.invoke(it) }
-            ) {
-                onHabitClick?.invoke(it)
+        LazyRow(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(habits, key = { item -> item.id }) {
+                AmountHabit(
+                    iconSize = 60.dp,
+                    strokeSize = 80.dp,
+                    strokeWidth = StrokeWidth.Custom(16f),
+                    habitUI = it,
+                    onLongHabitClick = { onLongHabitClick?.invoke(it) }
+                ) {
+                    onHabitClick?.invoke(it)
+                }
             }
         }
     }

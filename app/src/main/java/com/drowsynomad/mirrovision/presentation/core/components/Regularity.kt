@@ -1,6 +1,6 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
-import android.os.Parcelable
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,9 +23,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.toMutableStateList
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -39,25 +40,18 @@ import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.domain.models.RegularityType
-import com.drowsynomad.mirrovision.presentation.core.components.RegularityContentUI.Companion.getDefaultRegularity
+import com.drowsynomad.mirrovision.presentation.core.common.models.DayUI
+import com.drowsynomad.mirrovision.presentation.core.common.models.RegularityContentUI
+import com.drowsynomad.mirrovision.presentation.screens.habitCreating.RegularityActions
 import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.theme.LightMainBackground
 import com.drowsynomad.mirrovision.presentation.theme.ShadowColor
 import com.drowsynomad.mirrovision.presentation.utils.ExpandableContainer
-import com.drowsynomad.mirrovision.presentation.utils.StringConverterManager
 import com.drowsynomad.mirrovision.presentation.utils.VisibilityContainer
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
-import com.drowsynomad.mirrovision.presentation.utils.fillMonthlyDays
-import com.drowsynomad.mirrovision.presentation.utils.fillWeeklyDays
-import com.drowsynomad.mirrovision.presentation.utils.formatTime
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
 import com.drowsynomad.mirrovision.presentation.utils.toTime
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.Serializable
-import org.joda.time.DateTime
-import kotlin.random.Random
 
 /**
  * @author Roman Voloshyn (Created on 01.08.2024)
@@ -67,35 +61,24 @@ import kotlin.random.Random
 fun RegularityColumn(
     modifier: Modifier = Modifier,
     color: CategoryMainColor = CategoryMainColor.Green,
-    regularityContentUI: List<RegularityContentUI>,
-    onUpdated: (List<RegularityContentUI>) -> Unit
+    regularityContentUI: SnapshotStateList<RegularityContentUI>,
+    regularityActions: RegularityActions
 ) {
     val context = LocalContext.current
-    val weeklyDayLabels = remember {
-        StringConverterManager(context)
-            .getStringArray(R.array.weekly_days).toList()
-    }
-    val regularity = remember {
-        if(regularityContentUI.isEmpty())
-            listOf(
-                getDefaultRegularity(RegularityType.WeeklyType(weeklyDayLabels), false)
-            ).toMutableStateList()
-        else
-            regularityContentUI.toMutableStateList()
-    }
+
+    if(regularityContentUI.isEmpty())
+        regularityActions.onAddNewRegularity?.invoke(false)
 
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        regularity.forEach {
+        regularityContentUI.forEach {
             RegularityPickerItem(
                 state = it,
                 color = color,
                 cancellable = it.cancellable,
-                onRemoveRegularity = { out ->
-                    regularity.remove(out)
-                }
+                regularityActions = regularityActions
             )
         }
         AddingButton(
@@ -103,34 +86,7 @@ fun RegularityColumn(
                 .fillMaxWidth(),
             color = color.accent.pureColor,
         ) {
-            regularity.add(
-                getDefaultRegularity(RegularityType.WeeklyType(weeklyDayLabels), true)
-            )
-        }
-    }
-}
-
-@Serializable
-@Parcelize
-data class RegularityContentUI(
-    val id: Int = Random.nextInt(),
-    val presetTime: String = emptyString(),
-    val useTime: Boolean = false,
-    val cancellable: Boolean = false,
-    val type: RegularityType = RegularityType.WeeklyType(),
-    val days: List<DayState> = emptyList()
-): Parcelable {
-    companion object {
-        fun getDefaultRegularity(type: RegularityType, cancellable: Boolean = false): RegularityContentUI {
-            val currentLocalTime = DateTime.now().toLocalTime()
-            val currentTime = "${currentLocalTime.hourOfDay}:${currentLocalTime.minuteOfHour}"
-                .formatTime()
-
-            val days =
-                if(type is RegularityType.WeeklyType) fillWeeklyDays(type.localizedDayNames)
-                else fillMonthlyDays()
-
-            return RegularityContentUI(presetTime = currentTime, days = days, cancellable = cancellable)
+            regularityActions.onAddNewRegularity?.invoke(true)
         }
     }
 }
@@ -141,30 +97,18 @@ private fun RegularityPickerItem(
     state: RegularityContentUI,
     color: CategoryMainColor = CategoryMainColor.Green,
     cancellable: Boolean = false,
-    onRemoveRegularity: (RegularityContentUI) -> Unit,
-    onChangeTime: ((String) -> Unit)? = null,
-    onDaysChanged: ((List<Int>) -> Unit)? = null,
-    onTypeChanged: ((RegularityType) -> Unit)? = null
+    regularityActions: RegularityActions
 ) {
-    val type = remember {
-        mutableStateOf(state.type)
-    }
-    val time = remember {
-        mutableStateOf(state.presetTime)
-    }
-    val useTime = remember {
-        mutableStateOf(state.useTime)
-    }
-
-    val showTimeSelector = remember { mutableStateOf(false) }
+    val showTimeSelector = rememberSaveable { mutableStateOf(false) }
 
     if(showTimeSelector.value)
         TimePickerDialog(
-            presetTime = time.value.toTime(),
+            presetTime = state.stateTime.value.toTime(),
             color = color,
             onConfirm = {
-                time.value = it.formattedTime
                 showTimeSelector.value = false
+                regularityActions.onTimeChanged
+                    ?.invoke(it, true, state.id)
             },
             onDismiss =  { showTimeSelector.value = false }
         )
@@ -182,7 +126,7 @@ private fun RegularityPickerItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box {
-                    VisibilityContainer(visible = useTime.value) {
+                    VisibilityContainer(visible = state.stateUseTime.value) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(5.dp),
                             verticalAlignment = Alignment.CenterVertically,
@@ -195,14 +139,14 @@ private fun RegularityPickerItem(
                                 tint = color.accent.pureColor,
                             )
                             Text(
-                                text = time.value,
+                                text = state.stateTime.value,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = color.accent.pureColor,
                                 fontSize = 32.sp
                             )
                         }
                     }
-                    VisibilityContainer(visible = !useTime.value) {
+                    VisibilityContainer(visible = !state.stateUseTime.value) {
                         Text(
                             text = stringResource(R.string.label_days),
                             style = MaterialTheme.typography.bodyMedium,
@@ -218,9 +162,8 @@ private fun RegularityPickerItem(
                     Text(
                         text =
                              stringResource(
-                                 if(type.value is RegularityType.WeeklyType) R.string.label_weekly_brackets
-                                 else  R.string.label_monthly_brackets
-                            ),
+                                 if(state.stateType.value is RegularityType.WeeklyType) R.string.label_weekly_brackets
+                                 else  R.string.label_monthly_brackets),
                         style = MaterialTheme.typography.headlineSmall,
                         color = color.accent.pureColor
                     )
@@ -231,7 +174,8 @@ private fun RegularityPickerItem(
                             tint = color.accent.pureColor,
                             modifier = Modifier
                                 .clickable {
-                                    onRemoveRegularity.invoke(state)
+                                    regularityActions.onRemoveRegularity
+                                        ?.invoke(state.id)
                                 }
                         )
                 }
@@ -240,30 +184,32 @@ private fun RegularityPickerItem(
             LabelWithCheckbox(
                 modifier = Modifier.fillMaxWidth(),
                 color = color.accent.pureColor,
-                isSelected = useTime.value,
+                isSelected =  state.stateUseTime.value,
                 label = stringResource(R.string.i_want_to_use_time_reminder)
             ) {
-                useTime.value = !useTime.value
+                regularityActions.onTimeChanged
+                    ?.invoke(null, !state.stateUseTime.value, state.id)
             }
             Spacer(modifier = Modifier.height(16.dp))
             RegularityTypeBox(
-                type = type.value,
-                days = state.days,
+                type = state.stateType.value,
+                weekDays = state.week.days,
+                monthlyDays = state.month.days,
                 color = color
-            )
+            ) { dayState ->
+                regularityActions.onDaysSelected?.invoke(dayState, state.id)
+            }
             RegularityExpanderIcon(
                 modifier = Modifier.padding(top = 16.dp),
-                isCollapsed = type.value is RegularityType.WeeklyType,
+                isCollapsed = state.stateType.value is RegularityType.WeeklyType,
                 color = color.accent.pureColor,
                 label = stringResource(
-                    if(type.value is RegularityType.WeeklyType) R.string.label_monthly_brackets
+                    if(state.stateType.value is RegularityType.WeeklyType) R.string.label_monthly_brackets
                     else  R.string.label_weekly_brackets
                 ),
             ) {
-                if (type.value is RegularityType.WeeklyType)
-                    type.value = RegularityType.MonthlyType
-                else
-                    type.value = RegularityType.WeeklyType()
+                regularityActions.onTypeChanged
+                    ?.invoke(state.stateType.value.invert(), state.id)
             }
         }
     }
@@ -339,35 +285,31 @@ fun LabelWithCheckbox(
 fun RegularityTypeBox(
     modifier: Modifier = Modifier,
     type: RegularityType,
-    days: List<DayState>,
-    color: CategoryMainColor
+    weekDays: List<DayUI>,
+    monthlyDays: List<DayUI>,
+    color: CategoryMainColor,
+    dayClickAction: (day: DayUI) -> Unit
 ) {
     Box {
         VisibilityContainer(visible = type is RegularityType.WeeklyType) {
-            WeeklyDaysRow(daysState = days, color = color)
+            WeeklyDaysRow(daysState = weekDays, color = color) {
+                dayClickAction.invoke(it)
+            }
         }
         ExpandableContainer(type == RegularityType.MonthlyType) {
-            MonthlyDaysRows(modifier = Modifier.fillMaxWidth(), color = color)
+            MonthlyDaysRows(modifier = Modifier.fillMaxWidth(), days = monthlyDays, color = color) {
+                dayClickAction.invoke(it)
+            }
         }
     }
-}
-
-@Serializable
-@Parcelize
-data class DayState(
-    val dayPosition: Int,
-    val dayName: String,
-    val initialSelection: Boolean = false
-): Parcelable {
-    @IgnoredOnParcel
-    val isSelected = mutableStateOf(initialSelection)
 }
 
 @Composable
 fun WeeklyDaysRow(
     modifier: Modifier = Modifier,
-    daysState: List<DayState> = emptyList(),
-    color: CategoryMainColor
+    daysState: List<DayUI> = emptyList(),
+    color: CategoryMainColor,
+    onClick: (DayUI) -> Unit
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -377,10 +319,9 @@ fun WeeklyDaysRow(
         daysState.forEach { dayState ->
             DayButton(
                 dayButtonState = dayState,
-                color = color
-            ) {
-                it.isSelected   .value = it.isSelected.value.not()
-            }
+                color = color,
+                onClick = onClick
+            )
         }
     }
 }
@@ -388,15 +329,10 @@ fun WeeklyDaysRow(
 @Composable
 fun MonthlyDaysRows(
     modifier: Modifier = Modifier,
-    color: CategoryMainColor
+    color: CategoryMainColor,
+    days: List<DayUI>,
+    onClick: (DayUI) -> Unit
 ) {
-    val days = remember {
-        List(31) {
-            val day = it + 1
-            DayState(dayPosition = day, dayName = day.toString())
-        }
-    }
-
     LazyVerticalGrid(
         modifier = Modifier
             .fillMaxWidth()
@@ -408,14 +344,14 @@ fun MonthlyDaysRows(
         items(days, key = {day -> day.dayPosition }) {
             DayButton(
                 dayButtonState = it,
-                color = color
-            ) {
-                it.isSelected.value = it.isSelected.value.not()
-            }
+                color = color,
+                onClick = onClick
+            )
         }
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
@@ -424,7 +360,16 @@ private fun Preview() {
             .fillMaxSize()
             .background(color = LightMainBackground)
     ) {
-        RegularityColumn(regularityContentUI = emptyList()) {}
+        RegularityColumn(
+            regularityContentUI = mutableStateListOf(),
+            regularityActions = RegularityActions(
+                onAddNewRegularity = {},
+                onRemoveRegularity = {},
+                onTimeChanged = { time: Time?, b: Boolean, regularityContentUI: Int -> },
+                onDaysSelected = { dayUI: DayUI, regularityContentUI: Int -> },
+                onTypeChanged = { regularityType: RegularityType, regularityContentUI: Int -> }
+            ),
+        )
         LabelWithCheckbox(color = CategoryAccentColor.GreenAccent.pureColor, label = "I want to use time reminder") {}
         RegularityExpanderIcon(
             modifier = Modifier.fillMaxWidth(),

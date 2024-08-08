@@ -14,8 +14,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -25,9 +25,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
+import com.drowsynomad.mirrovision.domain.models.RegularityType
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
+import com.drowsynomad.mirrovision.presentation.core.common.models.DayUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.common.models.Regularities
 import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmountState
 import com.drowsynomad.mirrovision.presentation.core.components.AmountHabit
 import com.drowsynomad.mirrovision.presentation.core.components.BackButton
@@ -37,7 +40,7 @@ import com.drowsynomad.mirrovision.presentation.core.components.ExplainTitle
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCounter
 import com.drowsynomad.mirrovision.presentation.core.components.InputField
 import com.drowsynomad.mirrovision.presentation.core.components.RegularityColumn
-import com.drowsynomad.mirrovision.presentation.core.components.RegularityContentUI
+import com.drowsynomad.mirrovision.presentation.core.components.Time
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitState
@@ -56,6 +59,34 @@ fun CreateHabitScreen(
     onBackNavigation: Navigation,
     onSaveHabitNavigation: (HabitUI) -> Unit
 ) {
+    val regularityActions = remember {
+        RegularityActions(
+            onAddNewRegularity = { viewModel.handleUiEvent(CreateHabitEvent.RegularityAddNew(it)) },
+            onRemoveRegularity = { regularityId ->
+                viewModel.handleUiEvent(CreateHabitEvent.RegularityRemove(regularityId))
+            },
+            onTimeChanged = { time: Time?, useTime: Boolean, regularityId: Int ->
+                viewModel.handleUiEvent(CreateHabitEvent.RegularityTimeChanged(time, useTime, regularityId))
+            },
+            onDaysSelected = { dayUI: DayUI, regularityId: Int ->
+                viewModel.handleUiEvent(CreateHabitEvent.RegularityDaysSelected(dayUI, regularityId))
+            },
+            onTypeChanged = { regularityType: RegularityType, regularityId: Int ->
+                viewModel.handleUiEvent(CreateHabitEvent.RegularityTypeChanged(regularityType, regularityId))
+            }
+        )
+    }
+
+    val saveHabitAction = remember {
+        object: (HabitUI) -> Unit {
+            override fun invoke(habit: HabitUI) {
+                if(!habitUI.isForIntro)
+                    viewModel.handleUiEvent(CreateHabitEvent.SaveHabitDirectlyToStorage(habit))
+                onSaveHabitNavigation.invoke(habit)
+            }
+        }
+    }
+
     StateContent(
         useStatusBarPadding = false,
         viewModel = viewModel,
@@ -65,12 +96,9 @@ fun CreateHabitScreen(
         CreateHabitContent(
             it,
             onBackNavigation,
-            onSaveHabit = {
-                if(!habitUI.isForIntro)
-                    viewModel.handleUiEvent(CreateHabitEvent.SaveHabitDirectlyToStorage(it))
-                onSaveHabitNavigation.invoke(it)
-            },
-            onChooseIconNavigation
+            onSaveHabit = saveHabitAction,
+            onChooseIconNavigation,
+            regularityActions = regularityActions
         )
     }
 }
@@ -80,7 +108,8 @@ fun CreateHabitContent(
     state: CreateHabitState,
     onBackNavigation: Navigation,
     onSaveHabit: (HabitUI) -> Unit,
-    onChooseIconNavigation: (CategoryMainColor) -> Unit
+    onChooseIconNavigation: (CategoryMainColor) -> Unit,
+    regularityActions: RegularityActions
 ) {
     val habitUI = state.habitUI
 
@@ -94,10 +123,6 @@ fun CreateHabitContent(
         val habitCountPerDay = rememberSaveable { mutableIntStateOf(habitUI.stroke.cellAmount) }
         val selectedHabits = rememberSaveable { mutableIntStateOf(0) }
         val isSavingEnabled = rememberSaveable { mutableStateOf(false) }
-
-        val regularity = rememberSaveable {
-            habitUI.regularity
-        }
 
         fun checkIfSavingButtonEnabled() {
             isSavingEnabled.value = icon.intValue != R.drawable.ic_add &&
@@ -176,12 +201,11 @@ fun CreateHabitContent(
                         color = accentColor
                     )
                     RegularityColumn(
-                        regularityContentUI = regularity,
+                        regularityContentUI = habitUI.regularityState,
                         color = habitUI.backgroundColor,
-                        modifier = Modifier.padding(bottom = 100.dp)
-                    ) {
-
-                    }
+                        modifier = Modifier.padding(bottom = 100.dp),
+                        regularityActions = regularityActions
+                    )
                 }
                 CircleIcon(
                     icon = habitUI.icon,
@@ -205,6 +229,7 @@ fun CreateHabitContent(
                 onPrimaryButtonClick = {
                     onSaveHabit.invoke(
                         habitUI.copy(
+                            presetRegularities = Regularities(habitUI.regularityState),
                             name = habitName.value,
                             description = habitDescription.value,
                             stroke = habitUI.stroke.copy(cellAmount = habitCountPerDay.intValue),
@@ -234,7 +259,7 @@ fun CircleIcon(
     onClick: () -> Unit
 ) {
     Box(modifier = Modifier
-        .height(220.dp)
+        .height(230.dp)
         .background(Color.Transparent)
     ) {
         Canvas(modifier = modifier
@@ -265,10 +290,19 @@ fun CircleIcon(
     }
 }
 
+data class RegularityActions(
+    val onRemoveRegularity: ((regularityId: Int) -> Unit)? = null,
+    val onAddNewRegularity: ((cancellable: Boolean) -> Unit)? = null,
+    val onTimeChanged: ((time: Time?, usetTime: Boolean, regularityId: Int) -> Unit)? = null,
+    val onDaysSelected: ((day: DayUI, regularityId: Int) -> Unit)? = null,
+    val onTypeChanged: ((type: RegularityType, regularityId: Int) -> Unit)? = null,
+)
+
 @Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
     Box(modifier = Modifier.fillMaxSize()) {
-        CreateHabitContent(state = CreateHabitState(HabitUI()), {}, {}, {})
+        CreateHabitContent(state = CreateHabitState(HabitUI()), {}, {}, {}, regularityActions = RegularityActions()
+        )
     }
 }

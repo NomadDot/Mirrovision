@@ -1,6 +1,7 @@
 package com.drowsynomad.mirrovision.data.database.entities
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -31,8 +32,8 @@ data class HabitRegularity(
     val habitId: Long = 0,
     @ColumnInfo(name = "time")
     val time: String = emptyString(),
-    @ColumnInfo(name = "days")
-    val days: List<Int> = emptyList(),
+    @Embedded
+    val days: RegularityDays = RegularityDays(),
     @ColumnInfo(name = "type")
     val type: String = emptyString()
 ) {
@@ -41,7 +42,21 @@ data class HabitRegularity(
             id = id,
             habitId = habitId,
             time = time,
-            days = days,
+            days = days.regularityDays.map { it.toDomain() },
             type = RegularityType.toType(type)
         )
+}
+
+data class RegularityDays(
+    val regularityDays: List<RegularityDay> = emptyList()
+)
+
+data class RegularityDay(
+    @ColumnInfo("day_position")
+    val dayPosition: Int,
+    @ColumnInfo("is_selected")
+    val isSelected: Boolean
+) {
+    fun toDomain(): com.drowsynomad.mirrovision.domain.models.RegularityDay =
+        com.drowsynomad.mirrovision.domain.models.RegularityDay(dayPosition, isSelected)
 }

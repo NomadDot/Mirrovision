@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.drowsynomad.mirrovision.presentation.core.common.models.DayUI
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
@@ -36,7 +37,7 @@ fun MonthlyDays(
     val days = remember {
         List(31) {
             val day = it + 1
-            DayState(dayPosition = day, dayName = day.toString())
+            DayUI(dayPosition = day, dayName = day.toString())
         }
     }
 
@@ -71,9 +72,9 @@ fun MonthlyDays(
 @Composable
 fun DayButton(
     modifier: Modifier = Modifier,
-    dayButtonState: DayState,
+    dayButtonState: DayUI,
     color: CategoryMainColor,
-    onClick: (DayState) -> Unit
+    onClick: (DayUI) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -99,5 +100,5 @@ fun DayButton(
 @Composable
 private fun Preview() {
    // MonthlyDays(modifier = Modifier.fillMaxSize())
-    MonthlyDaysRows(color = CategoryMainColor.Green)
+    MonthlyDaysRows(color = CategoryMainColor.Green, days = emptyList()) {}
 }

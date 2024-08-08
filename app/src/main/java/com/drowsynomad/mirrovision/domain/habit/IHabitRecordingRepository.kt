@@ -43,13 +43,14 @@ class HabitRecordingRepository(
                     val regularity = habitWithRegularity?.habitRegularity
                     val habit = habitWithRegularity?.habit
 
-                    regularity?.let {
-                        it.find { it.days.contains(currentDay) }
+                    // TODO:
+             /*       regularity?.let {
+                        it.find { it.days.regularityDays? == true }
                             ?.let {
                                 todayHabits.add(habitWithRegularity.habit.toDomain())
                             }
                         return@forEach
-                    }
+                    }*/
 
                     habit?.toDomain()?.let { todayHabits.add(it) }
                 }

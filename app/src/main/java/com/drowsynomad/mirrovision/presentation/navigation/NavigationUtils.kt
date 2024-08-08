@@ -34,7 +34,9 @@ fun NavController.navigateToDashboard() {
 }
 
 fun NavController.returnToHabitPresetWithCreatedHabit(habit: HabitUI) {
-    this.previousBackStackEntry?.savedStateHandle?.set(Routes.CreateHabitScreen.parameterKey, habit)
+    this.previousBackStackEntry?.savedStateHandle?.set(
+        Routes.CreateHabitScreen.parameterKey, habit.toHabitNavigation(true)
+    )
     this.popBackStack()
 }
 

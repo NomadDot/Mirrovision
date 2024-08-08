@@ -7,7 +7,6 @@ import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.domain.models.Category
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
-import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
 /**

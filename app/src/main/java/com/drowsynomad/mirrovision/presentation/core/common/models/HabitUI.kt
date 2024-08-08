@@ -5,10 +5,11 @@ import androidx.annotation.DrawableRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.domain.models.Habit
-import com.drowsynomad.mirrovision.presentation.core.components.RegularityContentUI
 import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import kotlinx.parcelize.IgnoredOnParcel
@@ -20,18 +21,16 @@ import kotlin.random.Random
  * @author Roman Voloshyn (Created on 01.07.2024)
  */
 
-@Serializable
-@Parcelize
 data class HabitUI(
     val id: Long = Random.nextLong(),
     val name: String = emptyString(),
     val description: String = emptyString(),
-    val regularity: List<RegularityContentUI> = emptyList(),
+    val presetRegularities: Regularities = Regularities(),
     @DrawableRes val icon: Int = R.drawable.ic_add,
     val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
     val attachedCategoryId: Int = 0,
     val stroke: StrokeAmountState = StrokeAmountState()
-) : Parcelable {
+) {
     @IgnoredOnParcel
     val isDefaultIcon = icon == R.drawable.ic_add
 
@@ -40,6 +39,10 @@ data class HabitUI(
 
     @IgnoredOnParcel
     var strokeAmount by mutableStateOf(stroke)
+
+    @IgnoredOnParcel
+    val regularityState: SnapshotStateList<RegularityContentUI> =
+        presetRegularities.regularityList.toMutableStateList()
 
     fun incrementFilledCell() {
         if (strokeAmount.prefilledCellAmount < stroke.cellAmount)
@@ -75,7 +78,10 @@ data class HabitUI(
             id = id,
             name = name,
             description = description,
-            regularity = regularity,
+            regularity = NavigationRegularities(
+                presetRegularities.regularityList
+                    .map { it.toNavigationModel() }
+            ),
             icon = icon,
             backgroundColor = backgroundColor,
             attachedCategoryId = attachedCategoryId,
@@ -85,14 +91,13 @@ data class HabitUI(
     }
 }
 
-
 @Serializable
 @Parcelize
 data class HabitNavigationModel(
-    val id: Long = Random.nextLong(),
+    val id: Long,
     val name: String = emptyString(),
     val description: String = emptyString(),
-    val regularity: List<RegularityContentUI>,
+    val regularity: NavigationRegularities = NavigationRegularities(),
     @DrawableRes val icon: Int = R.drawable.ic_add,
     val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
     val attachedCategoryId: Int = 0,
@@ -104,7 +109,8 @@ data class HabitNavigationModel(
             id = id,
             name = name,
             description = description,
-            regularity = regularity,
+            presetRegularities = Regularities(
+                regularity.regularityList.map { it.toRegulationUI() }),
             icon = icon,
             backgroundColor = backgroundColor,
             attachedCategoryId = attachedCategoryId,
