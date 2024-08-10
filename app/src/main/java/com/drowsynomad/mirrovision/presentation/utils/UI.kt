@@ -40,6 +40,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.presentation.core.common.models.DayUI
+import com.drowsynomad.mirrovision.presentation.core.common.models.Days
 import com.drowsynomad.mirrovision.presentation.core.components.Time
 
 /**
@@ -186,17 +187,38 @@ fun AnimatedScene(
     }
 }
 
-fun fillWeeklyDays(weeklyDayLabels: List<String>): List<DayUI> {
-    return List(7) {
-        DayUI(it + 1, weeklyDayLabels[it], true)
-    }
+fun fillWeeklyDays(weeklyDayLabels: List<String>, selectedDays: List<Int>? = null): Days {
+    val useSelectedDays = selectedDays != null
+    return Days(
+        days = List(7) {
+            val day = it + 1
+            DayUI(
+                day,
+                weeklyDayLabels[it],
+                initialSelection =
+                    if(useSelectedDays)
+                        selectedDays?.contains(day) ?: false
+                    else true
+            )
+        }
+    )
 }
 
-fun fillMonthlyDays(): List<DayUI> {
-    return List(31) {
-        val day = it + 1
-        DayUI(day, day.toString())
-    }
+fun fillMonthlyDays(selectedDays: List<Int>? = null): Days {
+    val useSelectedDays = selectedDays != null
+    return Days(
+        days = List(31) {
+          val day = it + 1
+            DayUI(
+                day,
+                day.toString(),
+                initialSelection =
+                    if(useSelectedDays)
+                        selectedDays?.contains(it + 1) ?: false
+                    else false
+            )
+        }
+    )
 }
 
 fun String.formatTime(): String {

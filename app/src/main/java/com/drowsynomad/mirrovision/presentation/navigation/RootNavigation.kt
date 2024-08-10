@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.common.models.HabitDTO
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
 import com.drowsynomad.mirrovision.presentation.screens.chooseIcon.ChooseIconScreen
 import com.drowsynomad.mirrovision.presentation.screens.dashboard.DashboardScreen
@@ -90,7 +91,7 @@ fun RootNavigation(
             PresetHabitScreen(
                 categories = categories,
                 viewModel = hiltViewModel(),
-                onCreateHabit = { navController.navigateToHabitCreating(it, true) },
+                onCreateHabit = { navController.navigateToHabitCreating(it) },
                 onBackNavigation = navController::popBackStack,
                 onNextNavigation = {
                     createdHabits.clear()
@@ -110,15 +111,20 @@ fun RootNavigation(
             )
         }
 
-        composableOf<Routes.CreateHabitScreen, HabitNavigationModel> { route, navBackStackEntry ->
-            val habit = route.habit
+        composableOf<Routes.CreateHabitScreen, HabitDTO> { route, navBackStackEntry ->
+            val habitDto = route.habitDto
+            val habit = habitDto.habitNavigationModel
+            val habitId = habitDto.habitId
 
             val selectedIcon: Int? =
                 navBackStackEntry.savedStateHandle[Routes.ChooseIconScreen.parameterKey]
 
+            val habitUI = if(selectedIcon != null) habit?.copy(icon = selectedIcon) else habit
+
             CreateHabitScreen(
                 viewModel = hiltViewModel(),
-                habitUI = if(selectedIcon != null) habit.copy(icon = selectedIcon) else habit,
+                habitUI = habitUI,
+                habitId = habitId,
                 onChooseIconNavigation = navController::navigateToIconChooser,
                 onBackNavigation = navController::popBackStack,
                 onSaveHabitNavigation = navController::returnToHabitPresetWithCreatedHabit

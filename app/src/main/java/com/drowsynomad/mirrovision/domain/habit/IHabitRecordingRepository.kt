@@ -37,20 +37,20 @@ class HabitRecordingRepository(
     ) {
         val todayHabits = mutableListOf<Habit>()
 
-        database.habitDao().getHabitWithRegularity()
+       /* database.habitDao().getHabitWithRegularity()
             .map { habitsWithRegularity ->
                 habitsWithRegularity.forEach { habitWithRegularity ->
                     val regularity = habitWithRegularity?.habitRegularity
                     val habit = habitWithRegularity?.habit
 
                     // TODO:
-             /*       regularity?.let {
+             *//*       regularity?.let {
                         it.find { it.days.regularityDays? == true }
                             ?.let {
                                 todayHabits.add(habitWithRegularity.habit.toDomain())
                             }
                         return@forEach
-                    }*/
+                    }*//*
 
                     habit?.toDomain()?.let { todayHabits.add(it) }
                 }
@@ -68,7 +68,7 @@ class HabitRecordingRepository(
                         )
                     )
                 }
-            }
+            }*/
     }
 
     override suspend fun loadDailyRecordings(): List<HabitWithRecordings> {

@@ -362,13 +362,7 @@ private fun Preview() {
     ) {
         RegularityColumn(
             regularityContentUI = mutableStateListOf(),
-            regularityActions = RegularityActions(
-                onAddNewRegularity = {},
-                onRemoveRegularity = {},
-                onTimeChanged = { time: Time?, b: Boolean, regularityContentUI: Int -> },
-                onDaysSelected = { dayUI: DayUI, regularityContentUI: Int -> },
-                onTypeChanged = { regularityType: RegularityType, regularityContentUI: Int -> }
-            ),
+            regularityActions = RegularityActions(),
         )
         LabelWithCheckbox(color = CategoryAccentColor.GreenAccent.pureColor, label = "I want to use time reminder") {}
         RegularityExpanderIcon(

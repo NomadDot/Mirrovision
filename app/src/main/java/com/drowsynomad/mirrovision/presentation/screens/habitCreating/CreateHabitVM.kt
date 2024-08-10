@@ -5,10 +5,11 @@ import com.drowsynomad.mirrovision.domain.habit.IHabitRecordingRepository
 import com.drowsynomad.mirrovision.domain.habit.IHabitRegularityRepository
 import com.drowsynomad.mirrovision.domain.habit.IHabitRepository
 import com.drowsynomad.mirrovision.domain.models.RegularityType
+import com.drowsynomad.mirrovision.domain.user.IUserRepository
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
-import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
 import com.drowsynomad.mirrovision.presentation.core.common.models.DayUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.common.models.Regularities
 import com.drowsynomad.mirrovision.presentation.core.common.models.RegularityContentUI
 import com.drowsynomad.mirrovision.presentation.core.components.Time
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitEvent
@@ -26,19 +27,16 @@ class CreateHabitVM@Inject constructor(
     private val habitRepository: IHabitRepository,
     private val habitRecordingRepository: IHabitRecordingRepository,
     private val habitRegularityRepository: IHabitRegularityRepository,
-    private val stringConverterManager: IStringConverterManager
-): StateViewModel<CreateHabitState, CreateHabitEvent, SideEffect>(
+    private val stringConverterManager: IStringConverterManager,
+    private val userRepository: IUserRepository
+): StateViewModel<CreateHabitState, CreateHabitEvent, CreateHabitSideEffect>(
     CreateHabitState(null)
 ) {
     override fun handleUiEvent(uiEvent: CreateHabitEvent) {
         when(uiEvent) {
-            is CreateHabitEvent.ConfigureStateForHabit -> updateState {
-                if(it.habitUI != null ) it.copy(
-                    habitUI = it.habitUI.copy(icon = uiEvent.habit.icon)
-                )
-                else it.copy(habitUI = uiEvent.habit)
-            }
-            is CreateHabitEvent.SaveHabitDirectlyToStorage ->
+            is CreateHabitEvent.ConfigureStateForHabit -> updateStateHolder(uiEvent.habit)
+            is CreateHabitEvent.LoadExistedHabit -> updateStateHolder(habitId = uiEvent.habitId)
+            is CreateHabitEvent.SaveHabitDirectlyToStorageIfNeed ->
                 saveHabitDirectlyToStorage(habitUI = uiEvent.habit)
 
             is CreateHabitEvent.RegularityAddNew -> addNewRegularityBlock(uiEvent.cancellable)
@@ -49,34 +47,91 @@ class CreateHabitVM@Inject constructor(
         }
     }
 
-    private fun saveHabitDirectlyToStorage(habitUI: HabitUI) {
-        if(!habitUI.isDefaultIcon)
-            launch {
-                val presetStroke = habitUI.stroke
-                habitRepository.createNewOrUpdateHabit(
-                    habitUI.copy(
-                        stroke = presetStroke.copy(
-                            prefilledCellAmount =
-                                if (presetStroke.prefilledCellAmount >= presetStroke.cellAmount) presetStroke.cellAmount
-                                else presetStroke.prefilledCellAmount)
-                    ).toHabit()
-                )
-                habitRegularityRepository
+    private val weekLabels by lazy {
+        stringConverterManager.getStringArray(R.array.weekly_days).toList()
+    }
+
+    private fun updateStateHolder(
+        habitUI: HabitUI? = null,
+        habitId: Long? = null
+    ) {
+        when {
+            habitUI != null -> {
+                updateState {
+                    if(it.habitUI != null)
+                        it.copy(
+                            habitUI = it.habitUI.copy(
+                                icon = habitUI.icon
+                            )
+                        )
+                    else it.copy(habitUI = habitUI)
+                }
             }
+            habitId != null -> loadHabitInfo(habitId)
+        }
+    }
+
+    private fun loadHabitInfo(habitId: Long) {
+        launch {
+            val habitWithRegularities = habitRepository.loadHabitWithRegularity(habitId)
+            val savedHabit = habitWithRegularities.habit.toUI()
+            val regularities = habitWithRegularities.habitRegularity
+
+            val habit = savedHabit.copy(
+                presetRegularities = Regularities(
+                    regularities.mapIndexed { index, item ->
+                         item.toDomain()
+                            .toRegularityUI(cancellable = index > 0)
+                            .also {
+                                it.fillDays(weekLabels)
+                            }
+                    }
+                )
+            )
+
+            updateState {
+                it.copy(habitUI = habit)
+            }
+        }
+    }
+
+    private fun saveHabitDirectlyToStorage(habitUI: HabitUI) {
+        launch {
+            userRepository.doesUserFinishPreset()
+                .collect { userFinishPreset ->
+                    if (userFinishPreset) {
+                        if (!habitUI.isDefaultIcon) {
+                            val presetStroke = habitUI.stroke
+                            habitRepository.createNewOrUpdateHabit(
+                                habitUI.copy(
+                                    stroke = presetStroke.copy(
+                                        prefilledCellAmount =
+                                        if (presetStroke.prefilledCellAmount >= presetStroke.cellAmount) presetStroke.cellAmount
+                                        else presetStroke.prefilledCellAmount
+                                    )
+                                ).toHabit()
+                            )
+                            habitRegularityRepository
+                                .createOrUpdateRegularity(
+                                    Regularities(habitUI.presetRegularities.regularityList)
+                                        .toDomain(habitUI.id)
+                                )
+                        }
+                    }
+                    sideEffect?.onSaveHabit(habitUI)
+                }
+        }
     }
 
     private fun addNewRegularityBlock(cancellable: Boolean = false) {
         uiState.value.habitUI?.regularityState?.add(
-            RegularityContentUI.getDefaultRegularity(
-                stringConverterManager.getStringArray(R.array.weekly_days).toList(),
-                cancellable
-            )
+            RegularityContentUI.getDefaultRegularity(weekLabels, cancellable)
         )
     }
 
     private fun updateRegularityDays(
         clickedDay: DayUI,
-        regularityId: Int,
+        regularityId: Long,
     ) {
         uiState.value.habitUI?.regularityState
             ?.find { it.id == regularityId }
@@ -96,7 +151,7 @@ class CreateHabitVM@Inject constructor(
             }
     }
 
-    private fun removeRegularity(regularityId: Int) {
+    private fun removeRegularity(regularityId: Long) {
         uiState.value.habitUI?.regularityState
             ?.find { it.id == regularityId }
             ?.also {
@@ -107,7 +162,7 @@ class CreateHabitVM@Inject constructor(
     private fun updateRegularityTime(
         time: Time?,
         useTime: Boolean,
-        regularityId: Int
+        regularityId: Long
     ) {
         uiState.value.habitUI?.regularityState
             ?.find { it.id == regularityId }
@@ -120,7 +175,7 @@ class CreateHabitVM@Inject constructor(
 
     private fun updateRegularityType(
         type: RegularityType,
-        regularityId: Int
+        regularityId: Long
     ) {
         uiState.value.habitUI?.regularityState
             ?.find { it.id == regularityId }

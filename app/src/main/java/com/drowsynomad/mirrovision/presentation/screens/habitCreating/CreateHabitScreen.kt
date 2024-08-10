@@ -24,9 +24,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastAll
+import androidx.compose.ui.util.fastAny
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.domain.models.RegularityType
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
+import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
 import com.drowsynomad.mirrovision.presentation.core.common.models.DayUI
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
@@ -51,10 +54,15 @@ import com.drowsynomad.mirrovision.presentation.utils.LocalFixedInsets
  * @author Roman Voloshyn (Created on 11.07.2024)
  */
 
+interface CreateHabitSideEffect: SideEffect {
+    fun onSaveHabit(habitUi: HabitUI)
+}
+
 @Composable
 fun CreateHabitScreen(
     viewModel: CreateHabitVM,
-    habitUI: HabitNavigationModel,
+    habitUI: HabitNavigationModel? = null,
+    habitId: Long? = null,
     onChooseIconNavigation: (CategoryMainColor) -> Unit,
     onBackNavigation: Navigation,
     onSaveHabitNavigation: (HabitUI) -> Unit
@@ -65,13 +73,13 @@ fun CreateHabitScreen(
             onRemoveRegularity = { regularityId ->
                 viewModel.handleUiEvent(CreateHabitEvent.RegularityRemove(regularityId))
             },
-            onTimeChanged = { time: Time?, useTime: Boolean, regularityId: Int ->
+            onTimeChanged = { time: Time?, useTime: Boolean, regularityId: Long ->
                 viewModel.handleUiEvent(CreateHabitEvent.RegularityTimeChanged(time, useTime, regularityId))
             },
-            onDaysSelected = { dayUI: DayUI, regularityId: Int ->
+            onDaysSelected = { dayUI: DayUI, regularityId: Long ->
                 viewModel.handleUiEvent(CreateHabitEvent.RegularityDaysSelected(dayUI, regularityId))
             },
-            onTypeChanged = { regularityType: RegularityType, regularityId: Int ->
+            onTypeChanged = { regularityType: RegularityType, regularityId: Long ->
                 viewModel.handleUiEvent(CreateHabitEvent.RegularityTypeChanged(regularityType, regularityId))
             }
         )
@@ -80,9 +88,7 @@ fun CreateHabitScreen(
     val saveHabitAction = remember {
         object: (HabitUI) -> Unit {
             override fun invoke(habit: HabitUI) {
-                if(!habitUI.isForIntro)
-                    viewModel.handleUiEvent(CreateHabitEvent.SaveHabitDirectlyToStorage(habit))
-                onSaveHabitNavigation.invoke(habit)
+                viewModel.handleUiEvent(CreateHabitEvent.SaveHabitDirectlyToStorageIfNeed(habit))
             }
         }
     }
@@ -90,8 +96,19 @@ fun CreateHabitScreen(
     StateContent(
         useStatusBarPadding = false,
         viewModel = viewModel,
+        sideEffect = object: CreateHabitSideEffect {
+            override fun onSaveHabit(habitUi: HabitUI) {
+                onSaveHabitNavigation.invoke(habitUi)
+            }
+        },
         launchedEffect = {
-            viewModel.handleUiEvent(CreateHabitEvent.ConfigureStateForHabit(habitUI.toHabitUI())) }
+                viewModel.handleUiEvent(
+                    if(habitUI != null)
+                        CreateHabitEvent.ConfigureStateForHabit(habitUI.toHabitUI())
+                    else
+                        CreateHabitEvent.LoadExistedHabit(habitId)
+                )
+        }
     ) {
         CreateHabitContent(
             it,
@@ -126,7 +143,8 @@ fun CreateHabitContent(
 
         fun checkIfSavingButtonEnabled() {
             isSavingEnabled.value = icon.intValue != R.drawable.ic_add &&
-                    habitName.value.isNotEmpty() && habitDescription.value.isNotEmpty()
+                    habitName.value.isNotEmpty() && habitDescription.value.isNotEmpty() &&
+                    habitUI.regularityState.fastAll { it.isFilled }
         }
 
         checkIfSavingButtonEnabled()
@@ -291,11 +309,11 @@ fun CircleIcon(
 }
 
 data class RegularityActions(
-    val onRemoveRegularity: ((regularityId: Int) -> Unit)? = null,
+    val onRemoveRegularity: ((regularityId: Long) -> Unit)? = null,
     val onAddNewRegularity: ((cancellable: Boolean) -> Unit)? = null,
-    val onTimeChanged: ((time: Time?, usetTime: Boolean, regularityId: Int) -> Unit)? = null,
-    val onDaysSelected: ((day: DayUI, regularityId: Int) -> Unit)? = null,
-    val onTypeChanged: ((type: RegularityType, regularityId: Int) -> Unit)? = null,
+    val onTimeChanged: ((time: Time?, usetTime: Boolean, regularityId: Long) -> Unit)? = null,
+    val onDaysSelected: ((day: DayUI, regularityId: Long) -> Unit)? = null,
+    val onTypeChanged: ((type: RegularityType, regularityId: Long) -> Unit)? = null,
 )
 
 @Preview(showSystemUi = true)

@@ -7,9 +7,8 @@ import com.drowsynomad.mirrovision.data.database.entities.RegularityDay
  */
 
 data class RegularityDay(
-    val dayPosition: Int,
-    val isSelected: Boolean
+    val dayPosition: Int
 ) {
     fun toData(): RegularityDay =
-        RegularityDay(dayPosition, isSelected)
+        RegularityDay(dayPosition)
 }

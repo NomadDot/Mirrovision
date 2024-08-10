@@ -2,6 +2,7 @@ package com.drowsynomad.mirrovision.domain.habit
 
 import com.drowsynomad.mirrovision.data.database.MirrovisionDatabase
 import com.drowsynomad.mirrovision.data.database.entities.HabitActivityUpdate
+import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRegularity
 import com.drowsynomad.mirrovision.domain.models.Habit
 
 /**
@@ -11,6 +12,8 @@ import com.drowsynomad.mirrovision.domain.models.Habit
 interface IHabitRepository {
     fun updateActivityCell(habitId: Long, newFilledCount: Int)
     suspend fun createNewOrUpdateHabit(habit: Habit)
+
+    suspend fun loadHabitWithRegularity(habitId: Long): HabitWithRegularity
 }
 
 class HabitRepository(
@@ -25,5 +28,9 @@ class HabitRepository(
         database
             .habitDao()
             .insertHabit(habit.toData())
+    }
+
+    override suspend fun loadHabitWithRegularity(habitId: Long): HabitWithRegularity {
+        return database.habitDao().getHabitWithRegularity(habitId)
     }
 }

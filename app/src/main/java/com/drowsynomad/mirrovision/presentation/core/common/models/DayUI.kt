@@ -2,6 +2,7 @@ package com.drowsynomad.mirrovision.presentation.core.common.models
 
 import android.os.Parcelable
 import androidx.compose.runtime.mutableStateOf
+import com.drowsynomad.mirrovision.domain.models.RegularityDay
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
@@ -11,10 +12,14 @@ import kotlinx.serialization.Serializable
  */
 
 data class Days(
-    val days: List<DayUI> = emptyList()
+    val days: List<DayUI> = emptyList(),
 ) {
     fun toNavigationDays(): NavigationDays =
         NavigationDays(this.days.map { it.toNavigationModel() })
+
+    fun toDomain(): List<RegularityDay> =
+        days.filter { it.isSelected.value }
+            .map { RegularityDay(it.dayPosition) }
 }
 
 data class DayUI(
@@ -38,7 +43,7 @@ data class NavigationDays(
     val days: List<NavigationDayModel> = emptyList()
 ): Parcelable {
     fun toDaysUI(): Days {
-        return Days(this.days.map { it.toDayUI() })
+        return Days(days = this.days.map { it.toDayUI() })
     }
 }
 

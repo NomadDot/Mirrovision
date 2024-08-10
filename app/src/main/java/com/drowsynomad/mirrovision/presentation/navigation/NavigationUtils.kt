@@ -1,6 +1,8 @@
 package com.drowsynomad.mirrovision.presentation.navigation
 
 import androidx.navigation.NavController
+import com.drowsynomad.mirrovision.presentation.core.common.models.HabitDTO
+import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
 import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 
@@ -8,11 +10,23 @@ import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
  * @author Roman Voloshyn (Created on 20.07.2024)
  */
 
-fun NavController.navigateToHabitCreating(
-    args: HabitUI,
-    isForIntro: Boolean = false
-) {
-    this.navigate(Routes.CreateHabitScreen(args.toHabitNavigation(isForIntro)))
+fun NavController.navigateToHabitCreating(args: HabitUI) {
+    var habitNavigation: HabitNavigationModel? = null
+    var habitId: Long? = null
+
+    if(args.isDefaultHabit)
+        habitNavigation = args.toHabitNavigation(true)
+    else
+        habitId = args.id
+
+    this.navigate(
+        Routes.CreateHabitScreen(
+            HabitDTO(
+                habitNavigationModel = habitNavigation,
+                habitId =habitId
+            )
+        )
+    )
 }
 
 fun NavController.navigateToDashboardFromPreset() {

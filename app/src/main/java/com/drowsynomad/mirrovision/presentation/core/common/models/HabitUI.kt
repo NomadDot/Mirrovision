@@ -35,6 +35,9 @@ data class HabitUI(
     val isDefaultIcon = icon == R.drawable.ic_add
 
     @IgnoredOnParcel
+    val isDefaultHabit = icon == R.drawable.ic_add && name.isEmpty() && description.isEmpty()
+
+    @IgnoredOnParcel
     val accentColor = backgroundColor.accent
 
     @IgnoredOnParcel
@@ -90,6 +93,13 @@ data class HabitUI(
         )
     }
 }
+
+@Serializable
+@Parcelize
+data class HabitDTO(
+    val habitNavigationModel: HabitNavigationModel? = null,
+    val habitId: Long? = null
+): Parcelable
 
 @Serializable
 @Parcelize

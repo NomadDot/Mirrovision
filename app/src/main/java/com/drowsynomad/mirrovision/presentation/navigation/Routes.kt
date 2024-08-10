@@ -2,7 +2,7 @@ package com.drowsynomad.mirrovision.presentation.navigation
 
 import android.os.Parcelable
 import com.drowsynomad.mirrovision.core.emptyString
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
+import com.drowsynomad.mirrovision.presentation.core.common.models.HabitDTO
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
@@ -36,9 +36,9 @@ sealed class Routes {
 
     @Serializable
     data class CreateHabitScreen(
-        val habit: HabitNavigationModel,
+        val habitDto: HabitDTO,
     ): Routes() {
-        companion object { const val parameterKey = "HABIT_CREATED"}
+        companion object { const val parameterKey = "HABIT_DTO"}
     }
 
     @Serializable

@@ -33,6 +33,9 @@ interface HabitDao {
     @Query("SELECT * FROM habits")
     fun getAllHabits(): Flow<List<HabitEntity?>>
 
+    @Query("SELECT * FROM habit_regularity as reg WHERE reg.habit_id = :habitId")
+    fun getHabitRegularities(habitId: Long): Flow<List<HabitRegularity>>
+
     @Transaction
     @Query("SELECT * FROM habits")
     fun getFullInformationalHabits(): Flow<List<FullInfoHabit?>>
@@ -42,8 +45,8 @@ interface HabitDao {
     fun getHabitWithRecordings(): Flow<List<HabitWithRecordings?>>
 
     @Transaction
-    @Query("SELECT * FROM habits")
-    fun getHabitWithRegularity(): Flow<List<HabitWithRegularity?>>
+    @Query("SELECT * FROM habits WHERE id = :habitId")
+    suspend fun getHabitWithRegularity(habitId: Long): HabitWithRegularity
 
     @Transaction
     @Query("SELECT * FROM habits")

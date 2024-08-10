@@ -5,6 +5,7 @@ import com.drowsynomad.mirrovision.data.database.MirrovisionDatabase
 import com.drowsynomad.mirrovision.data.database.entities.CategoryAndHabits
 import com.drowsynomad.mirrovision.domain.models.Category
 import com.drowsynomad.mirrovision.domain.models.Habit
+import com.drowsynomad.mirrovision.domain.models.HabitRegularities
 import com.drowsynomad.mirrovision.domain.models.StringId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -16,7 +17,11 @@ import kotlinx.coroutines.flow.map
 interface ICategoryRepository {
     fun getCategoriesId(): Flow<List<StringId>>
 
-    suspend fun saveCategoriesPreset(categories: List<Category>, habits: List<Habit>)
+    suspend fun saveCategoriesPreset(
+        categories: List<Category>,
+        habits: List<Habit>,
+        habitRegularities: List<HabitRegularities>
+    )
     fun loadLocalCategoriesWithHabits(): Flow<List<CategoryAndHabits>>
     fun loadLocalCategories(): Flow<List<Category>>
 }
@@ -29,7 +34,8 @@ class CategoryRepository(
 
     override suspend fun saveCategoriesPreset(
         categories: List<Category>,
-        habits: List<Habit>
+        habits: List<Habit>,
+        habitRegularities: List<HabitRegularities>
     ) {
         val categoryDao = database.categoryDao()
         val habitDao = database.habitDao()
@@ -39,9 +45,12 @@ class CategoryRepository(
             categoryDao.insertCategory(entity)
         }
 
-        habits.forEach {
-            val entity = it.toData()
+        habits.forEachIndexed { index, habit ->
+            val entity = habit.toData()
             habitDao.insertHabit(entity)
+
+            val habitRecords = habitRegularities[index].regularities.map { it.toData() }
+            habitDao.insertHabitRegularity(habitRecords)
         }
     }
 

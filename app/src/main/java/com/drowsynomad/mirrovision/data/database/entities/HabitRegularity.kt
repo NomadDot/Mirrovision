@@ -32,7 +32,9 @@ data class HabitRegularity(
     val habitId: Long = 0,
     @ColumnInfo(name = "time")
     val time: String = emptyString(),
-    @Embedded
+    @ColumnInfo(name = "use_Reminder")
+    val useReminder: Boolean = false,
+    @Embedded("selected_")
     val days: RegularityDays = RegularityDays(),
     @ColumnInfo(name = "type")
     val type: String = emptyString()
@@ -42,21 +44,20 @@ data class HabitRegularity(
             id = id,
             habitId = habitId,
             time = time,
-            days = days.regularityDays.map { it.toDomain() },
+            useReminder = useReminder,
+            selectedDays = days.selectedDays.map { it.toDomain() },
             type = RegularityType.toType(type)
         )
 }
 
 data class RegularityDays(
-    val regularityDays: List<RegularityDay> = emptyList()
+    val selectedDays: List<RegularityDay> = emptyList()
 )
 
 data class RegularityDay(
     @ColumnInfo("day_position")
     val dayPosition: Int,
-    @ColumnInfo("is_selected")
-    val isSelected: Boolean
 ) {
     fun toDomain(): com.drowsynomad.mirrovision.domain.models.RegularityDay =
-        com.drowsynomad.mirrovision.domain.models.RegularityDay(dayPosition, isSelected)
+        com.drowsynomad.mirrovision.domain.models.RegularityDay(dayPosition)
 }

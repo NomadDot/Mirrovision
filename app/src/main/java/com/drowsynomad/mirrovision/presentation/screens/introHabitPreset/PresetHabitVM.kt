@@ -2,6 +2,7 @@ package com.drowsynomad.mirrovision.presentation.screens.introHabitPreset
 
 import androidx.compose.runtime.mutableStateListOf
 import com.drowsynomad.mirrovision.domain.categories.ICategoryRepository
+import com.drowsynomad.mirrovision.domain.models.HabitRegularities
 import com.drowsynomad.mirrovision.domain.user.IUserRepository
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
 import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
@@ -40,7 +41,10 @@ class PresetHabitVM @Inject constructor(
 
             categoryRepository.saveCategoriesPreset(
                 categories = categories.map(CategoryUI::toCategory),
-                habits = habits.filter { !it.isDefaultIcon }.map(HabitUI::toHabit)
+                habits = habits.filter { !it.isDefaultIcon }.map(HabitUI::toHabit),
+                habitRegularities = habits
+                        .map { HabitRegularities(it.presetRegularities.toDomain(it.id).regularities) }
+                        .filter { it.regularities.isNotEmpty() }
             )
 
             withContext(Dispatchers.Main) {

@@ -12,12 +12,13 @@ import com.voloshynroman.zirkon.presentation.core.common.UiEvent
 
 sealed class CreateHabitEvent: UiEvent {
     data class ConfigureStateForHabit(val habit: HabitUI): CreateHabitEvent()
-    data class SaveHabitDirectlyToStorage(val habit: HabitUI): CreateHabitEvent()
+    data class LoadExistedHabit(val habitId: Long?): CreateHabitEvent()
+    data class SaveHabitDirectlyToStorageIfNeed(val habit: HabitUI): CreateHabitEvent()
 
     // Regularity
     data class RegularityAddNew(val cancellable: Boolean): CreateHabitEvent()
-    data class RegularityRemove(val regularityId: Int): CreateHabitEvent()
-    data class RegularityTimeChanged(val time: Time?, val useTime: Boolean, val regularityId: Int): CreateHabitEvent()
-    data class RegularityDaysSelected(val days: DayUI, val regularityId: Int): CreateHabitEvent()
-    data class RegularityTypeChanged(val type: RegularityType, val regularityId: Int): CreateHabitEvent()
+    data class RegularityRemove(val regularityId: Long): CreateHabitEvent()
+    data class RegularityTimeChanged(val time: Time?, val useTime: Boolean, val regularityId: Long): CreateHabitEvent()
+    data class RegularityDaysSelected(val days: DayUI, val regularityId: Long): CreateHabitEvent()
+    data class RegularityTypeChanged(val type: RegularityType, val regularityId: Long): CreateHabitEvent()
 }
