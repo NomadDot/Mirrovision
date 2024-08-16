@@ -19,7 +19,7 @@ interface CategoryDao {
     fun insertCategory(categoryEntity: CategoryEntity)
 
     @Query("SELECT * FROM categories")
-    fun getAllCategories(): Flow<List<CategoryEntity>>
+    fun getAllCategories(): List<CategoryEntity>
 
     @Transaction
     @Query("SELECT * FROM categories")

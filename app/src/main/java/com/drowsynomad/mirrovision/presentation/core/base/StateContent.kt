@@ -35,7 +35,7 @@ fun <S: UiState, E: UiEvent, SE: SideEffect> StateContent(
     sideEffect: SE? = null,
     onBackPressed: (() -> Unit)? = null,
     launchedEffect: (() -> Unit)? = null,
-    isStatusBarPadding: Boolean = true,
+    useStatusBarPadding: Boolean = true,
     contentBackground: Color = MaterialTheme.colorScheme.surfaceContainer,
     content: @Composable BoxScope.(uiState: S) -> Unit
 ) {
@@ -58,7 +58,7 @@ fun <S: UiState, E: UiEvent, SE: SideEffect> StateContent(
         .fillMaxSize()
         .background(color = contentBackground)
         .windowInsetsPadding(WindowInsets.Companion.navigationBars)
-        .padding(top = if(isStatusBarPadding) 20.dp + LocalFixedInsets.current.statusBarHeight else 0.dp)
+        .padding(top = if(useStatusBarPadding) 25.dp + LocalFixedInsets.current.statusBarHeight else 0.dp)
 
     Box(
         modifier = contentModifier.imePadding()

@@ -1,14 +1,15 @@
-package com.drowsynomad.mirrovision.presentation.core.common.models
+package com.drowsynomad.mirrovision.presentation.core.components.models
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.domain.models.Habit
-import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CategoryAssets
 import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import kotlinx.parcelize.IgnoredOnParcel
@@ -19,50 +20,32 @@ import kotlin.random.Random
 /**
  * @author Roman Voloshyn (Created on 01.07.2024)
  */
-@Serializable
-@Parcelize
-data class HabitNavigationModel(
-    val id: Long = Random.nextLong(),
-    val name: String = emptyString(),
-    val description: String = emptyString(),
-    @DrawableRes val icon: Int = R.drawable.ic_add,
-    val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
-    val attachedCategoryId: Int = 0,
-    val stroke: StrokeAmountState = StrokeAmountState()
-) : Parcelable {
-    fun toHabitUI(): HabitUI {
-        return HabitUI(
-            id = id,
-            name = name,
-            description = description,
-            icon = icon,
-            backgroundColor = backgroundColor,
-            attachedCategoryId = attachedCategoryId,
-            stroke = stroke
-        )
-    }
-}
 
-
-@Serializable
-@Parcelize
 data class HabitUI(
     val id: Long = Random.nextLong(),
     val name: String = emptyString(),
     val description: String = emptyString(),
+    val presetRegularities: Regularities = Regularities(),
     @DrawableRes val icon: Int = R.drawable.ic_add,
     val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
     val attachedCategoryId: Int = 0,
     val stroke: StrokeAmountState = StrokeAmountState()
-) : Parcelable {
+) {
     @IgnoredOnParcel
     val isDefaultIcon = icon == R.drawable.ic_add
+
+    @IgnoredOnParcel
+    val isDefaultHabit = icon == R.drawable.ic_add && name.isEmpty() && description.isEmpty()
 
     @IgnoredOnParcel
     val accentColor = backgroundColor.accent
 
     @IgnoredOnParcel
     var strokeAmount by mutableStateOf(stroke)
+
+    @IgnoredOnParcel
+    val regularityState: SnapshotStateList<RegularityContentUI> =
+        presetRegularities.regularityList.toMutableStateList()
 
     fun incrementFilledCell() {
         if (strokeAmount.prefilledCellAmount < stroke.cellAmount)
@@ -93,20 +76,57 @@ data class HabitUI(
         filledCellAmount = stroke.prefilledCellAmount
     )
 
-    fun toHabitNavigation(): HabitNavigationModel {
+    fun toHabitNavigation(isForIntro: Boolean = false): HabitNavigationModel {
         return HabitNavigationModel(
             id = id,
             name = name,
             description = description,
+            regularity = NavigationRegularities(
+                presetRegularities.regularityList
+                    .map { it.toNavigationModel() }
+            ),
             icon = icon,
             backgroundColor = backgroundColor,
             attachedCategoryId = attachedCategoryId,
-            stroke = strokeAmount
+            stroke = strokeAmount,
+            isForIntro = isForIntro
         )
     }
+}
 
-    fun toCategoryAssets(): CategoryAssets =
-        CategoryAssets(this.attachedCategoryId, this.backgroundColor)
+@Serializable
+@Parcelize
+data class HabitDTO(
+    val habitNavigationModel: HabitNavigationModel? = null,
+    val habitId: Long? = null
+): Parcelable
+
+@Serializable
+@Parcelize
+data class HabitNavigationModel(
+    val id: Long,
+    val name: String = emptyString(),
+    val description: String = emptyString(),
+    val regularity: NavigationRegularities = NavigationRegularities(),
+    @DrawableRes val icon: Int = R.drawable.ic_add,
+    val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
+    val attachedCategoryId: Int = 0,
+    val stroke: StrokeAmountState = StrokeAmountState(),
+    val isForIntro: Boolean = false
+) : Parcelable {
+    fun toHabitUI(): HabitUI {
+        return HabitUI(
+            id = id,
+            name = name,
+            description = description,
+            presetRegularities = Regularities(
+                regularity.regularityList.map { it.toRegulationUI() }),
+            icon = icon,
+            backgroundColor = backgroundColor,
+            attachedCategoryId = attachedCategoryId,
+            stroke = stroke
+        )
+    }
 }
 
 @Serializable

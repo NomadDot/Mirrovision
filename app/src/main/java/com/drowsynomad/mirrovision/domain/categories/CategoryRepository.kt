@@ -5,10 +5,13 @@ import com.drowsynomad.mirrovision.data.database.MirrovisionDatabase
 import com.drowsynomad.mirrovision.data.database.entities.CategoryAndHabits
 import com.drowsynomad.mirrovision.domain.models.Category
 import com.drowsynomad.mirrovision.domain.models.Habit
+import com.drowsynomad.mirrovision.domain.models.HabitRegularities
 import com.drowsynomad.mirrovision.domain.models.StringId
-import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeAmountState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 
 /**
  * @author Roman Voloshyn (Created on 27.06.2024)
@@ -17,8 +20,13 @@ import kotlinx.coroutines.flow.flow
 interface ICategoryRepository {
     fun getCategoriesId(): Flow<List<StringId>>
 
-    suspend fun saveCategoriesPreset(categories: List<Category>, habits: List<Habit>)
-    fun loadLocalCategories(): Flow<List<CategoryAndHabits>>
+    suspend fun saveCategoriesPreset(
+        categories: List<Category>,
+        habits: List<Habit>,
+        habitRegularities: List<HabitRegularities>
+    )
+    fun loadLocalCategoriesWithHabits(): Flow<List<CategoryAndHabits>>
+    suspend fun loadCategoriesForDay(dayId: Long): List<CategoryUI>
 }
 
 class CategoryRepository(
@@ -29,7 +37,8 @@ class CategoryRepository(
 
     override suspend fun saveCategoriesPreset(
         categories: List<Category>,
-        habits: List<Habit>
+        habits: List<Habit>,
+        habitRegularities: List<HabitRegularities>
     ) {
         val categoryDao = database.categoryDao()
         val habitDao = database.habitDao()
@@ -39,12 +48,47 @@ class CategoryRepository(
             categoryDao.insertCategory(entity)
         }
 
-        habits.forEach {
-            val entity = it.toHabitEntity()
+        habits.forEachIndexed { index, habit ->
+            val entity = habit.toData()
             habitDao.insertHabit(entity)
+
+            val habitRecords = habitRegularities[index].regularities.map { it.toData() }
+            habitDao.insertHabitRegularity(habitRecords)
         }
     }
 
-    override fun loadLocalCategories(): Flow<List<CategoryAndHabits>> =
+    override fun loadLocalCategoriesWithHabits(): Flow<List<CategoryAndHabits>> =
         database.categoryDao().getCategoriesAndHabits()
+
+    override suspend fun loadCategoriesForDay(
+        dayId: Long
+    ): List<CategoryUI> = withContext(Dispatchers.IO) {
+        val categories = database.categoryDao().getAllCategories()
+        val recordingsWithHabits = database.habitDao().getRecordingWithHabit(dayId)
+
+        categories
+            .map { it.toDomain() }
+            .map { categoryDomain ->
+                val habits = recordingsWithHabits
+                    .map { it?.habit to it?.habitRecordings }
+                    .filter { it.first?.categoryId == categoryDomain.id }
+                    .map {
+                        val habit = it.first
+                        val recording = it.second
+                        val strokeAmount = recording?.amount
+
+                        val habitUI = habit?.toUI()
+                        habitUI
+                            ?.copy(
+                                stroke = StrokeAmountState(
+                                    cellAmount = strokeAmount?.cellAmount ?: 1,
+                                    prefilledCellAmount = strokeAmount?.prefilledCellAmount ?: 0,
+                                    filledColor = habitUI.accentColor
+                                )
+                            )
+                    }
+
+                categoryDomain.toCategoryUI(habits.filterNotNull())
+            }.sortedBy { it.habits.isEmpty() }
+    }
 }

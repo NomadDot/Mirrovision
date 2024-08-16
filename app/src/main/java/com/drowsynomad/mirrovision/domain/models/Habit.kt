@@ -2,6 +2,7 @@ package com.drowsynomad.mirrovision.domain.models
 
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.data.database.entities.HabitEntity
+import com.drowsynomad.mirrovision.data.database.entities.HabitRegularity
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 
 /**
@@ -18,7 +19,7 @@ data class Habit(
     val cellAmount: Int = 0,
     val filledCellAmount: Int = 0,
 ) {
-    fun toHabitEntity(): HabitEntity = let {
+    fun toData(): HabitEntity = let {
         return@let HabitEntity(
             id = id,
             categoryId = attachedCategoryId,
@@ -30,3 +31,8 @@ data class Habit(
         )
     }
 }
+
+data class RegularityHabit(
+    val habit: Habit,
+    val habitRegularity: List<HabitRegularity>
+)

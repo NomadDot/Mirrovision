@@ -1,5 +1,6 @@
 package com.drowsynomad.mirrovision.presentation.screens.splashLoading.model
 
+import android.content.Context
 import com.voloshynroman.zirkon.presentation.core.common.UiEvent
 
 /**
@@ -7,5 +8,8 @@ import com.voloshynroman.zirkon.presentation.core.common.UiEvent
  */
 
 sealed class SplashLoadingEvent: UiEvent {
-    data object LoadUserConfiguration: SplashLoadingEvent()
+    data class LoadUserConfiguration(
+        val context: Context,
+        val deviceLocalization: String
+    ): SplashLoadingEvent()
 }

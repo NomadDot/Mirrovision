@@ -62,6 +62,7 @@ lint/tmp/
 # lint/reports/
 # MacOS
 .DS_Store
-# App Specific cases 
+# App Specific cases
+keystore.properties
 app/release/output.json
 view rawandroid.gitignore hosted with ❤ by GitHub

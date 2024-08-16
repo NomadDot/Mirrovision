@@ -19,12 +19,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
-import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
+import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.DefaultProgress
+import com.drowsynomad.mirrovision.presentation.core.components.DefaultToolbar
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCategory
 import com.drowsynomad.mirrovision.presentation.core.components.PrimaryButton
-import com.drowsynomad.mirrovision.presentation.core.components.Toolbar
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent.SaveCategories
@@ -39,7 +39,7 @@ import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.P
 fun PresetHabitScreen(
     categories: List<CategoryUI>,
     viewModel: PresetHabitVM,
-    onCreateHabit: (HabitNavigationModel) -> Unit,
+    onCreateHabit: (HabitUI) -> Unit,
     onBackNavigation: Navigation,
     onNextNavigation: Navigation
 ) {
@@ -64,7 +64,7 @@ fun PresetHabitContent(
     state: PresetHabitState,
     modifier: Modifier = Modifier,
     onSaveCategories: () -> Unit,
-    onCreateHabit: (HabitNavigationModel) -> Unit,
+    onCreateHabit: (HabitUI) -> Unit,
     onBackNavigation: Navigation
 ) {
     val isSavingProgressShown = remember {
@@ -76,7 +76,7 @@ fun PresetHabitContent(
 
     Box(modifier = modifier.fillMaxSize()) {
         Column {
-            Toolbar(
+            DefaultToolbar(
                 text = stringResource(R.string.label_my_habits),
                 onBackClick = onBackNavigation::invoke
             )
@@ -86,7 +86,7 @@ fun PresetHabitContent(
             ) {
                 items(state.categories, key = { item -> item.id }) {
                     HabitCategory(category = it) { habit ->
-                        onCreateHabit.invoke(habit.toHabitNavigation())
+                        onCreateHabit.invoke(habit)
                     }
                 }
             }
@@ -109,5 +109,5 @@ fun PresetHabitContent(
 @Preview
 @Composable
 private fun Preview() {
-    PresetHabitContent(state = PresetHabitState(), onCreateHabit = {}, onSaveCategories = {}) {}
+    PresetHabitContent(state = PresetHabitState(), onCreateHabit = { }, onSaveCategories = {}) {}
 }

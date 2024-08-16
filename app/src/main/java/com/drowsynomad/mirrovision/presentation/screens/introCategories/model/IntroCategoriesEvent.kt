@@ -10,4 +10,5 @@ sealed class IntroCategoriesEvent: UiEvent {
     data object LoadLocalizedCategories: IntroCategoriesEvent()
     data class SelectCategory(val category: IntroCategoryUI): IntroCategoriesEvent()
     data class InsertCustomCategory(val category: IntroCategoryUI): IntroCategoriesEvent()
+    data class SetUserLocale(val locale: String): IntroCategoriesEvent()
 }

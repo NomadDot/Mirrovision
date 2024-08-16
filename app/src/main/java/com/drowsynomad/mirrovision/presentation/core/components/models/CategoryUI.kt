@@ -1,4 +1,4 @@
-package com.drowsynomad.mirrovision.presentation.core.common.models
+package com.drowsynomad.mirrovision.presentation.core.components.models
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.mutableStateListOf
@@ -7,7 +7,6 @@ import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.domain.models.Category
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
-import kotlinx.serialization.Serializable
 import kotlin.random.Random
 
 /**
@@ -19,7 +18,8 @@ data class CategoryUI(
     val name: String = emptyString(),
     val backgroundColor: CategoryMainColor = CategoryMainColor.Blue,
     @DrawableRes val iconRes: Int = R.drawable.ic_add,
-    val habits: SnapshotStateList<HabitUI> = mutableStateListOf()
+    val habits: SnapshotStateList<HabitUI> = mutableStateListOf(),
+    val customizationEnable: Boolean = true
 ) {
     val isPresetCategory = habits.isEmpty()
     val isFirstHabitPreset = if(habits.isEmpty()) true else habits.first().isDefaultIcon

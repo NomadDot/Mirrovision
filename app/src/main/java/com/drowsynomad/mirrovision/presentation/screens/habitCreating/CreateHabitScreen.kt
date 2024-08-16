@@ -1,7 +1,7 @@
 package com.drowsynomad.mirrovision.presentation.screens.habitCreating
 
-import android.os.Parcelable
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,22 +9,31 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastAll
 import com.drowsynomad.mirrovision.R
+import com.drowsynomad.mirrovision.domain.models.RegularityType
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmountState
-import com.drowsynomad.mirrovision.presentation.core.components.AddingButton
+import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
+import com.drowsynomad.mirrovision.presentation.core.components.models.DayUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitNavigationModel
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.Regularities
+import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeAmountState
 import com.drowsynomad.mirrovision.presentation.core.components.AmountHabit
 import com.drowsynomad.mirrovision.presentation.core.components.BackButton
 import com.drowsynomad.mirrovision.presentation.core.components.BigTitle
@@ -32,38 +41,81 @@ import com.drowsynomad.mirrovision.presentation.core.components.CancelableAndSav
 import com.drowsynomad.mirrovision.presentation.core.components.ExplainTitle
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCounter
 import com.drowsynomad.mirrovision.presentation.core.components.InputField
+import com.drowsynomad.mirrovision.presentation.core.components.RegularityColumn
+import com.drowsynomad.mirrovision.presentation.core.components.Time
 import com.drowsynomad.mirrovision.presentation.navigation.Navigation
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitState
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.LocalFixedInsets
-import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.Serializable
 
 /**
  * @author Roman Voloshyn (Created on 11.07.2024)
  */
 
-@Serializable
-@Parcelize
-data class CategoryAssets(
-    val categoryId: Int,
-    val color: CategoryMainColor
-): Parcelable
+interface CreateHabitSideEffect: SideEffect {
+    fun onSaveHabit(habitUi: HabitUI)
+}
 
 @Composable
 fun CreateHabitScreen(
     viewModel: CreateHabitVM,
-    habitUI: HabitUI,
+    habitUI: HabitNavigationModel? = null,
+    habitId: Long? = null,
+    onChooseIconNavigation: (CategoryMainColor) -> Unit,
     onBackNavigation: Navigation,
-    onSaveHabit: (HabitUI) -> Unit
+    onSaveHabitNavigation: (HabitUI) -> Unit
 ) {
+    val regularityActions = remember {
+        RegularityActions(
+            onAddNewRegularity = { viewModel.handleUiEvent(CreateHabitEvent.RegularityAddNew(it)) },
+            onRemoveRegularity = { regularityId ->
+                viewModel.handleUiEvent(CreateHabitEvent.RegularityRemove(regularityId))
+            },
+            onTimeChanged = { time: Time?, useTime: Boolean, regularityId: Long ->
+                viewModel.handleUiEvent(CreateHabitEvent.RegularityTimeChanged(time, useTime, regularityId))
+            },
+            onDaysSelected = { dayUI: DayUI, regularityId: Long ->
+                viewModel.handleUiEvent(CreateHabitEvent.RegularityDaysSelected(dayUI, regularityId))
+            },
+            onTypeChanged = { regularityType: RegularityType, regularityId: Long ->
+                viewModel.handleUiEvent(CreateHabitEvent.RegularityTypeChanged(regularityType, regularityId))
+            }
+        )
+    }
+
+    val saveHabitAction = remember {
+        object: (HabitUI) -> Unit {
+            override fun invoke(habit: HabitUI) {
+                viewModel.handleUiEvent(CreateHabitEvent.SaveHabitDirectlyToStorageIfNeed(habit))
+            }
+        }
+    }
+
     StateContent(
-        isStatusBarPadding = false,
+        useStatusBarPadding = false,
         viewModel = viewModel,
-        launchedEffect = { viewModel.handleUiEvent(CreateHabitEvent.ConfigureStateForHabit(habitUI)) }
+        sideEffect = object: CreateHabitSideEffect {
+            override fun onSaveHabit(habitUi: HabitUI) {
+                onSaveHabitNavigation.invoke(habitUi)
+            }
+        },
+        launchedEffect = {
+                viewModel.handleUiEvent(
+                    if(habitUI != null)
+                        CreateHabitEvent.ConfigureStateForHabit(habitUI.toHabitUI())
+                    else
+                        CreateHabitEvent.LoadExistedHabit(habitId)
+                )
+        }
     ) {
-        CreateHabitContent(it, onBackNavigation, onSaveHabit)
+        CreateHabitContent(
+            it,
+            onBackNavigation,
+            onSaveHabit = saveHabitAction,
+            onChooseIconNavigation,
+            regularityActions = regularityActions
+        )
     }
 }
 
@@ -71,40 +123,42 @@ fun CreateHabitScreen(
 fun CreateHabitContent(
     state: CreateHabitState,
     onBackNavigation: Navigation,
-    onSaveHabit: (HabitUI) -> Unit
+    onSaveHabit: (HabitUI) -> Unit,
+    onChooseIconNavigation: (CategoryMainColor) -> Unit,
+    regularityActions: RegularityActions
 ) {
     val habitUI = state.habitUI
+
     habitUI?.let {
         val accentColor = habitUI.accentColor.pureColor
 
-        val icon = remember {
-            mutableIntStateOf(habitUI.icon)
-        }
-        val habitName = remember { mutableStateOf(habitUI.name) }
-        val habitDescription = remember { mutableStateOf(habitUI.description) }
-        val habitCountPerDay = remember { mutableIntStateOf(habitUI.stroke.cellAmount) }
-        val selectedHabits = remember { mutableIntStateOf(0) }
-        val isSavingEnabled = remember { mutableStateOf(false) }
+        val icon = mutableIntStateOf(habitUI.icon)
+
+        val habitName = rememberSaveable { mutableStateOf(habitUI.name) }
+        val habitDescription = rememberSaveable { mutableStateOf(habitUI.description) }
+        val habitCountPerDay = rememberSaveable { mutableIntStateOf(habitUI.stroke.cellAmount) }
+        val selectedHabits = rememberSaveable { mutableIntStateOf(0) }
+        val isSavingEnabled = rememberSaveable { mutableStateOf(false) }
 
         fun checkIfSavingButtonEnabled() {
-            isSavingEnabled.value = icon.intValue == R.drawable.ic_add &&
-                    habitName.value.isNotEmpty() && habitDescription.value.isNotEmpty()
+            isSavingEnabled.value = icon.intValue != R.drawable.ic_add &&
+                    habitName.value.isNotEmpty() && habitDescription.value.isNotEmpty() &&
+                    habitUI.regularityState.fastAll { it.isFilled }
         }
 
+        checkIfSavingButtonEnabled()
+
         Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.fillMaxSize()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
             ) {
-                CircleIcon(
-                    icon = habitUI.icon,
-                    color = habitUI.backgroundColor,
-                    count = habitCountPerDay.intValue,
-                    selected = selectedHabits.intValue
-                ) {}
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp)
+                        .verticalScroll(rememberScrollState())
+                        .padding(top = 220.dp),
                 ) {
                     BigTitle(text = stringResource(R.string.label_habit_name), color = accentColor)
                     InputField(
@@ -133,6 +187,7 @@ fun CreateHabitContent(
                         color = accentColor,
                         elevation = 20.dp,
                         maxLimit = 100,
+                        maxLines = 3,
                         hint = stringResource(R.string.label_add_habit_description),
                         prefilledValue = habitDescription.value
                     ) {
@@ -153,25 +208,35 @@ fun CreateHabitContent(
                         defaultValue = habitCountPerDay.intValue,
                         styleColor = habitUI.backgroundColor.pureColor,
                         accentColor = accentColor
-                    ) { habitCountPerDay.intValue = it }
+                    ) {
+                        habitCountPerDay.intValue = it
+                        checkIfSavingButtonEnabled()
+                    }
                     BigTitle(
                         text = stringResource(R.string.label_regularity),
-                        modifier = Modifier.padding(top = 20.dp),
+                        modifier = Modifier.padding(top = 20.dp, bottom = 15.dp),
                         color = accentColor
                     )
-                    AddingButton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 15.dp),
-                        color = accentColor
-                    ) {
-
-                    }
+                    RegularityColumn(
+                        regularityContentUI = habitUI.regularityState,
+                        color = habitUI.backgroundColor,
+                        modifier = Modifier.padding(bottom = 100.dp),
+                        regularityActions = regularityActions
+                    )
+                }
+                CircleIcon(
+                    icon = habitUI.icon,
+                    color = habitUI.backgroundColor,
+                    count = habitCountPerDay.intValue,
+                    selected = selectedHabits.intValue
+                ) {
+                    onChooseIconNavigation.invoke(habitUI.backgroundColor)
                 }
             }
             CancelableAndSaveableButton(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
+                    .padding(horizontal = 16.dp)
                     .padding(bottom = 12.dp),
                 cancelButtonLabel = R.string.button_cancel,
                 primaryButtonLabel = R.string.button_save,
@@ -181,6 +246,7 @@ fun CreateHabitContent(
                 onPrimaryButtonClick = {
                     onSaveHabit.invoke(
                         habitUI.copy(
+                            presetRegularities = Regularities(habitUI.regularityState),
                             name = habitName.value,
                             description = habitDescription.value,
                             stroke = habitUI.stroke.copy(cellAmount = habitCountPerDay.intValue),
@@ -209,10 +275,13 @@ fun CircleIcon(
     selected: Int = 0,
     onClick: () -> Unit
 ) {
-    Box(modifier = Modifier) {
+    Box(modifier = Modifier
+        .height(230.dp)
+        .background(Color.Transparent)
+    ) {
         Canvas(modifier = modifier
             .fillMaxWidth()
-            .height(250.dp)
+            .height(230.dp)
             .clipToBounds()
         ) {
             drawCircle(
@@ -238,10 +307,19 @@ fun CircleIcon(
     }
 }
 
+data class RegularityActions(
+    val onRemoveRegularity: ((regularityId: Long) -> Unit)? = null,
+    val onAddNewRegularity: ((cancellable: Boolean) -> Unit)? = null,
+    val onTimeChanged: ((time: Time?, usetTime: Boolean, regularityId: Long) -> Unit)? = null,
+    val onDaysSelected: ((day: DayUI, regularityId: Long) -> Unit)? = null,
+    val onTypeChanged: ((type: RegularityType, regularityId: Long) -> Unit)? = null,
+)
+
 @Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
     Box(modifier = Modifier.fillMaxSize()) {
-        CreateHabitContent(state = CreateHabitState(HabitUI()), {}, {})
+        CreateHabitContent(state = CreateHabitState(HabitUI()), {}, {}, {}, regularityActions = RegularityActions()
+        )
     }
 }

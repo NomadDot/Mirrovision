@@ -2,7 +2,6 @@ package com.drowsynomad.mirrovision.presentation.navigation
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.toMutableStateList
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -11,14 +10,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.drowsynomad.mirrovision.R
-import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitDTO
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitNavigationModel
+import com.drowsynomad.mirrovision.presentation.screens.chooseIcon.ChooseIconScreen
 import com.drowsynomad.mirrovision.presentation.screens.dashboard.DashboardScreen
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CreateHabitScreen
 import com.drowsynomad.mirrovision.presentation.screens.introCategories.IntroCategoriesScreen
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.PresetHabitScreen
 import com.drowsynomad.mirrovision.presentation.screens.splashLoading.SplashLoadingScreen
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.composableOf
 import com.drowsynomad.mirrovision.presentation.utils.fromJson
 import com.drowsynomad.mirrovision.presentation.utils.toJson
@@ -58,14 +59,19 @@ fun RootNavigation(
 
         composableOf<Routes.PresetHabitScreen, StringParcel> { route, navBackStackEntry ->
             val createdHabits = rememberSaveable {
-                mutableListOf<HabitUI>()
+                mutableListOf<HabitNavigationModel>()
             }
             val createdHabit =
                 navBackStackEntry.savedStateHandle
-                    .get<HabitUI?>(Routes.CreateHabitScreen.parameterKey)
+                    .get<HabitNavigationModel?>(Routes.CreateHabitScreen.parameterKey)
+
 
             createdHabit?.let { habit ->
-                if(!createdHabits.contains(habit))
+                val existedItem = createdHabits.find { it.id == habit.id && it.hashCode() != habit.hashCode() }
+                if(existedItem != null)
+                    createdHabits.remove(existedItem)
+
+                if(createdHabits.find { it.id == habit.id } == null)
                     createdHabits.add(habit)
             }
 
@@ -73,38 +79,62 @@ fun RootNavigation(
                 .rawCategoryList.string
                 .fromJson<Array<CategoryUI>>().toList()
                 .map { category ->
-                    val attachedHabits =
-                        createdHabits.lastOrNull { habit -> habit.attachedCategoryId == category.id }
-                    if(attachedHabits != null)
-                        category.copy(habits = mutableStateListOf(attachedHabits))
+                    val attachedHabits = createdHabits.filter { habit -> habit.attachedCategoryId == category.id }
+                    if(attachedHabits.isNotEmpty())
+                        category.copy(
+                            habits = attachedHabits
+                                .map { it.toHabitUI() }
+                                .toMutableStateList()
+                        )
                     else category
                 }
             PresetHabitScreen(
                 categories = categories,
                 viewModel = hiltViewModel(),
-                onCreateHabit = navController::navigateToHabitCreating,
+                onCreateHabit = { navController.navigateToHabitCreating(it) },
                 onBackNavigation = navController::popBackStack,
                 onNextNavigation = {
                     createdHabits.clear()
-                    navController.navigateToHomeFromPreset()
+                    navController.navigateToDashboardFromPreset()
                 }
             )
         }
 
-        composableOf<Routes.CreateHabitScreen, HabitNavigationModel> { route, navBackStackEntry ->
-            val assets = route.categoryAssets
-            CreateHabitScreen(
+        composableOf<Routes.ChooseIconScreen, CategoryMainColor> { args, _ ->
+            ChooseIconScreen(
                 viewModel = hiltViewModel(),
-                habitUI = assets.toHabitUI(),
+                categoryMainColor = args.color,
                 onBackNavigation = navController::popBackStack,
-                onSaveHabit = navController::returnToHabitPresetWithCreatedHabit
+                onIconSelected = { iconRes ->
+                    navController.returnWithResult(iconRes, Routes.ChooseIconScreen.parameterKey)
+                }
             )
         }
 
-        composableOf<Routes.HomeScreen, EmptyParameters> { _, _ ->
+        composableOf<Routes.CreateHabitScreen, HabitDTO> { route, navBackStackEntry ->
+            val habitDto = route.habitDto
+            val habit = habitDto.habitNavigationModel
+            val habitId = habitDto.habitId
+
+            val selectedIcon: Int? =
+                navBackStackEntry.savedStateHandle[Routes.ChooseIconScreen.parameterKey]
+
+            val habitUI = if(selectedIcon != null) habit?.copy(icon = selectedIcon) else habit
+
+            CreateHabitScreen(
+                viewModel = hiltViewModel(),
+                habitUI = habitUI,
+                habitId = habitId,
+                onChooseIconNavigation = navController::navigateToIconChooser,
+                onBackNavigation = navController::popBackStack,
+                onSaveHabitNavigation = navController::returnToHabitPresetWithCreatedHabit
+            )
+        }
+
+        composableOf<Routes.DashboardScreen, EmptyParameters> { _, navBackStackEntry ->
             DashboardScreen(
                 viewModel = hiltViewModel(),
-                onBackNavigation = navController::popBackStack
+                onEditHabitClick = navController::navigateToHabitCreating
             )
         }
     }

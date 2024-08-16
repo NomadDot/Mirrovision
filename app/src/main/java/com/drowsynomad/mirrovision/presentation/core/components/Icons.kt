@@ -73,6 +73,22 @@ fun HabitIcon(
 }
 
 @Composable
+fun StateIcon(
+    modifier: Modifier = Modifier,
+    state: Boolean,
+    @DrawableRes onStateTrueIcon: Int,
+    @DrawableRes onStateFalseIcon: Int,
+    tint: Color
+) {
+    Icon(
+        painter = painterResource(id = if(state) onStateTrueIcon else onStateFalseIcon),
+        contentDescription = emptyString(),
+        modifier = modifier,
+        tint = tint
+    )
+}
+
+@Composable
 fun CategoryChooserIcon(
     modifier: Modifier = Modifier,
     iconSpec: Dp = 40.dp,

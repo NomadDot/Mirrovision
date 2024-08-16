@@ -1,7 +1,10 @@
 package com.drowsynomad.mirrovision.presentation.theme
 
+import android.os.Parcelable
 import androidx.compose.ui.graphics.Color
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor.*
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
 val Purple80 = Color(0xFFD0BCFF)
@@ -18,6 +21,7 @@ val LightPrimaryAccentColor = Color(0xFF68509A)
 val LightMainHintColor = Color(0xFFA48EFF)
 
 val LightPrimaryInactive = Color(0xFFC0B3F0)
+val MenuAccent = Color(0xFFE5D4FC)
 val LightTextInactive = Color(0xFFF2F4F5)
 
 val ShadowColor = Color(0xFFEDEDF3)
@@ -44,9 +48,12 @@ val RedCategoryAccent = Color(0xFF8F0009)
 val BrownCategoryAccent = Color(0xFF78431A)
 
 @Serializable
-enum class CategoryMainColor {
+@Parcelize
+enum class CategoryMainColor: Parcelable {
     Blue, Green, Yellow, Pink, Purple, Orange, Red, Brown;
+    @IgnoredOnParcel
     val pureColor  by lazy { CategoryMainColorsMap[this] ?: BlueCategory }
+    @IgnoredOnParcel
     val accent by lazy { CategoryMainToAccentColors[this] ?: CategoryAccentColor.BlueAccent }
 
     companion object {
@@ -126,6 +133,15 @@ val GradientMain by lazy {
     listOf(
         Color(0xFFA58EFF),
         Color(0xFFFFC9DE)
+    )
+}
+
+val GradientButtonColors by lazy {
+    listOf(
+        Color(0xFF8567FA),
+        Color(0xFF7755FA),
+        Color(0xFFEE1683),
+        Color(0xFFEE4098),
     )
 }
 

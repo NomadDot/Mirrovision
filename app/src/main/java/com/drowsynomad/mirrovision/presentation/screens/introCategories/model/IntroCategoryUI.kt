@@ -3,7 +3,7 @@ package com.drowsynomad.mirrovision.presentation.screens.introCategories.model
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.mutableStateOf
 import com.drowsynomad.mirrovision.core.emptyString
-import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import kotlin.random.Random
 
