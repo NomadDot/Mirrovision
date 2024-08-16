@@ -5,9 +5,9 @@ import com.drowsynomad.mirrovision.domain.categories.ICategoryRepository
 import com.drowsynomad.mirrovision.domain.models.HabitRegularities
 import com.drowsynomad.mirrovision.domain.user.IUserRepository
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
-import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmountState
+import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeAmountState
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitState
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetSideEffect

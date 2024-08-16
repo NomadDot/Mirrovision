@@ -1,5 +1,6 @@
 package com.drowsynomad.mirrovision.presentation.utils
 
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.compose.animation.AnimatedContentScope
@@ -19,6 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.drowsynomad.mirrovision.presentation.navigation.Routes
 import com.google.gson.Gson
+import org.joda.time.LocalDate
 import java.util.Locale
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -71,12 +73,12 @@ class NavTypeFactory {
         inline fun <reified T: Parcelable> create(): NavType<T> {
             return object : NavType<T>(false) {
                 override fun get(bundle: Bundle, key: String): T? =
-                 /*   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         bundle.getParcelable(key, T::class.java)
-                    } else {*/
+                    } else {
                         @Suppress("DEPRECATION") // for backwards compatibility
                         bundle.getParcelable(key)
-//                    }
+                    }
 
                 override fun put(bundle: Bundle, key: String, value: T) =
                     bundle.putParcelable(key, value)
@@ -92,9 +94,7 @@ class NavTypeFactory {
 }
 
 fun Any.toJson(): String = GlobalGson.toJson(this)
-//fun <T> T.toJsonArgument(): JsonArgument = JsonArgument(Gson().toJson(this))
 
-//inline fun <reified T> String.fromJson(): T = Gson().fromJson(this, T::class.java)
 inline fun <reified T> String.fromJson(): T =
     GlobalGson.newBuilder().create().fromJson(
         this,
@@ -109,3 +109,5 @@ fun getLocale(): Locale {
     val configuration = LocalConfiguration.current
     return ConfigurationCompat.getLocales(configuration).get(0) ?: LocaleListCompat.getDefault()[0]!!
 }
+
+val calendar: LocalDate by lazy { LocalDate.now() }

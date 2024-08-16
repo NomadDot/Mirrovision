@@ -1,4 +1,4 @@
-package com.drowsynomad.mirrovision.presentation.core.common.models
+package com.drowsynomad.mirrovision.presentation.core.components.models
 
 import android.os.Parcelable
 import androidx.compose.runtime.mutableStateOf
@@ -94,6 +94,22 @@ data class RegularityContentUI(
 data class Regularities(
     val regularityList: List<RegularityContentUI> = emptyList()
 ) {
+    fun containsCurrentDay(currentDayInWeek: Int, currentDayInMonth: Int): Boolean {
+        val item = regularityList.find {
+             when (it.stateType.value) {
+                RegularityType.MonthlyType ->
+                    it.month.days
+                        .filter { it.isSelected.value }
+                        .find { it.dayPosition == currentDayInMonth } != null
+
+                is RegularityType.WeeklyType ->
+                    it.week.days
+                        .filter { it.isSelected.value }
+                        .find { it.dayPosition == currentDayInWeek } != null
+            }
+        }
+        return item != null
+    }
 
     fun toDomain(habitId: Long): HabitRegularities {
         return HabitRegularities(this.regularityList.map { it.toDomain(habitId) })

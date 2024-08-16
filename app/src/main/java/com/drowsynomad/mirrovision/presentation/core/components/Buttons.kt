@@ -64,7 +64,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
-import com.drowsynomad.mirrovision.presentation.core.common.models.ExpandableButtonContent
+import com.drowsynomad.mirrovision.presentation.core.components.models.ExpandableButtonContent
 import com.drowsynomad.mirrovision.presentation.theme.GradientButtonColors
 import com.drowsynomad.mirrovision.presentation.theme.GradientMain
 import com.drowsynomad.mirrovision.presentation.theme.LightPrimary

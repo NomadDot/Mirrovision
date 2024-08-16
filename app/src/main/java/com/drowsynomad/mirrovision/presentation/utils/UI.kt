@@ -39,8 +39,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.drowsynomad.mirrovision.presentation.core.common.models.DayUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.Days
+import com.drowsynomad.mirrovision.presentation.core.components.models.DayUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.Days
 import com.drowsynomad.mirrovision.presentation.core.components.Time
 
 /**

@@ -13,7 +13,7 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "habit_record",
-    indices = [Index("day_date", unique = true)],
+    indices = [Index("day_date")],
     foreignKeys = [
         ForeignKey(
             entity = HabitEntity::class,

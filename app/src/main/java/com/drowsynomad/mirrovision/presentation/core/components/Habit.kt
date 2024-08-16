@@ -32,9 +32,9 @@ import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.isNegative
 import com.drowsynomad.mirrovision.core.isZero
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmountState
-import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeWidth
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeAmountState
+import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeWidth
 import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.theme.LightPrimary
@@ -250,6 +250,7 @@ private fun Preview() {
                     prefilledCellAmount = 15,
                     filledColor = CategoryAccentColor.GreenAccent
                 )
-            ))
+            )
+        )
     }
 }

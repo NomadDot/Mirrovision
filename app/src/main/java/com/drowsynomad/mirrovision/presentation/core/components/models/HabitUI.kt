@@ -1,4 +1,4 @@
-package com.drowsynomad.mirrovision.presentation.core.common.models
+package com.drowsynomad.mirrovision.presentation.core.components.models
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes

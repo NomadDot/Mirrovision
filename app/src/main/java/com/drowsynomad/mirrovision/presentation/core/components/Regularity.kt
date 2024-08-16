@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.domain.models.RegularityType
-import com.drowsynomad.mirrovision.presentation.core.common.models.DayUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.RegularityContentUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.DayUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.RegularityContentUI
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.RegularityActions
 import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor

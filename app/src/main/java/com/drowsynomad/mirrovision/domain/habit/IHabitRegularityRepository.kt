@@ -20,9 +20,10 @@ interface IHabitRegularityRepository {
 class HabitRegularityRepository(
     private val database: MirrovisionDatabase,
 ): IHabitRegularityRepository {
-    override suspend fun createOrUpdateRegularity(regularity: HabitRegularities) =
+    override suspend fun createOrUpdateRegularity(regularity: HabitRegularities) {
         database.habitDao()
             .insertHabitRegularity(regularity.regularities.map { it.toData() })
+    }
 
     override fun loadRegularityForHabit(
         habitId: Long

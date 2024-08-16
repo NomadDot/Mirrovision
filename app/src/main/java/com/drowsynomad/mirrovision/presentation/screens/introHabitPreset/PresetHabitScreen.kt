@@ -19,8 +19,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
-import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.DefaultProgress
 import com.drowsynomad.mirrovision.presentation.core.components.DefaultToolbar
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCategory

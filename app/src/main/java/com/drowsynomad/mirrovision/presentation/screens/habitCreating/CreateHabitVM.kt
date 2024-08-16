@@ -1,20 +1,23 @@
 package com.drowsynomad.mirrovision.presentation.screens.habitCreating
 
 import com.drowsynomad.mirrovision.R
+import com.drowsynomad.mirrovision.core.generateDayId
 import com.drowsynomad.mirrovision.domain.habit.IHabitRecordingRepository
 import com.drowsynomad.mirrovision.domain.habit.IHabitRegularityRepository
 import com.drowsynomad.mirrovision.domain.habit.IHabitRepository
 import com.drowsynomad.mirrovision.domain.models.RegularityType
 import com.drowsynomad.mirrovision.domain.user.IUserRepository
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
-import com.drowsynomad.mirrovision.presentation.core.common.models.DayUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.Regularities
-import com.drowsynomad.mirrovision.presentation.core.common.models.RegularityContentUI
 import com.drowsynomad.mirrovision.presentation.core.components.Time
+import com.drowsynomad.mirrovision.presentation.core.components.models.DayUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.Regularities
+import com.drowsynomad.mirrovision.presentation.core.components.models.RegularityContentUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeAmountState
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.model.CreateHabitState
 import com.drowsynomad.mirrovision.presentation.utils.IStringConverterManager
+import com.drowsynomad.mirrovision.presentation.utils.calendar
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -23,7 +26,8 @@ import javax.inject.Inject
  */
 
 @HiltViewModel
-class CreateHabitVM@Inject constructor(
+class
+CreateHabitVM @Inject constructor(
     private val habitRepository: IHabitRepository,
     private val habitRecordingRepository: IHabitRecordingRepository,
     private val habitRegularityRepository: IHabitRegularityRepository,
@@ -46,6 +50,8 @@ class CreateHabitVM@Inject constructor(
             is CreateHabitEvent.RegularityTypeChanged -> updateRegularityType(uiEvent.type, uiEvent.regularityId)
         }
     }
+
+    private val dayId by lazy { generateDayId() }
 
     private val weekLabels by lazy {
         stringConverterManager.getStringArray(R.array.weekly_days).toList()
@@ -76,8 +82,14 @@ class CreateHabitVM@Inject constructor(
             val habitWithRegularities = habitRepository.loadHabitWithRegularity(habitId)
             val savedHabit = habitWithRegularities.habit.toUI()
             val regularities = habitWithRegularities.habitRegularity
+            val todayRecord = habitRecordingRepository.getTodayRecording(dayId, habitId)?.amount
 
             val habit = savedHabit.copy(
+                stroke =
+                    StrokeAmountState(
+                        cellAmount = todayRecord?.cellAmount ?: savedHabit.strokeAmount.cellAmount,
+                        prefilledCellAmount = todayRecord?.prefilledCellAmount ?: 0
+                    ),
                 presetRegularities = Regularities(
                     regularities.mapIndexed { index, item ->
                          item.toDomain()
@@ -116,6 +128,8 @@ class CreateHabitVM@Inject constructor(
                                     Regularities(habitUI.presetRegularities.regularityList)
                                         .toDomain(habitUI.id)
                                 )
+
+                            createOrRemoveRecordForToday(habitUI)
                         }
                     }
                     sideEffect?.onSaveHabit(habitUI)
@@ -123,10 +137,31 @@ class CreateHabitVM@Inject constructor(
         }
     }
 
+    private suspend fun createOrRemoveRecordForToday(habitUI: HabitUI) {
+        val currentDayInWeek = calendar.dayOfWeek
+        val currentDayInMonth = calendar.dayOfMonth
+        val stroke = habitUI.stroke
+
+        if(habitUI.presetRegularities.containsCurrentDay(currentDayInWeek, currentDayInMonth)) {
+            habitRecordingRepository.updateRecordingForToday(
+                dayId = dayId,
+                habitId = habitUI.id,
+                cellAmount = stroke.cellAmount,
+                filledCellAmount =
+                    if(stroke.prefilledCellAmount > stroke.cellAmount) stroke.cellAmount
+                    else stroke.prefilledCellAmount
+            )
+        } else {
+            habitRecordingRepository.removeRecordingForToday(
+                dayId = dayId,
+                habitId = habitUI.id
+            )
+        }
+    }
+
     private fun addNewRegularityBlock(cancellable: Boolean = false) {
-        uiState.value.habitUI?.regularityState?.add(
-            RegularityContentUI.getDefaultRegularity(weekLabels, cancellable)
-        )
+        uiState.value.habitUI?.regularityState
+            ?.add(RegularityContentUI.getDefaultRegularity(weekLabels, cancellable))
     }
 
     private fun updateRegularityDays(

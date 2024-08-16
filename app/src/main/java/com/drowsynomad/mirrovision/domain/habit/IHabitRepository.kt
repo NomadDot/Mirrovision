@@ -1,7 +1,6 @@
 package com.drowsynomad.mirrovision.domain.habit
 
 import com.drowsynomad.mirrovision.data.database.MirrovisionDatabase
-import com.drowsynomad.mirrovision.data.database.entities.HabitActivityUpdate
 import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRegularity
 import com.drowsynomad.mirrovision.domain.models.Habit
 
@@ -10,7 +9,11 @@ import com.drowsynomad.mirrovision.domain.models.Habit
  */
 
 interface IHabitRepository {
-    fun updateActivityCell(habitId: Long, newFilledCount: Int)
+    fun updateActivityCell(
+        habitId: Long,
+        newFilledCount: Int,
+        dayId: Long
+    )
     suspend fun createNewOrUpdateHabit(habit: Habit)
 
     suspend fun loadHabitWithRegularity(habitId: Long): HabitWithRegularity
@@ -19,9 +22,9 @@ interface IHabitRepository {
 class HabitRepository(
     private val database: MirrovisionDatabase
 ): IHabitRepository {
-    override fun updateActivityCell(habitId: Long, newFilledCount: Int) {
+    override fun updateActivityCell(habitId: Long, newFilledCount: Int, dayId: Long) {
         database.habitDao()
-            .updateHabitActivity(HabitActivityUpdate(habitId, newFilledCount))
+            .updateHabitRecordActivity(habitId, dayId, newFilledCount)
     }
 
     override suspend fun createNewOrUpdateHabit(habit: Habit) {

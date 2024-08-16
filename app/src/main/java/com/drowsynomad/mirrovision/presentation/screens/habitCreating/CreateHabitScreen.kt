@@ -25,16 +25,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastAll
-import androidx.compose.ui.util.fastAny
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.domain.models.RegularityType
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
 import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
-import com.drowsynomad.mirrovision.presentation.core.common.models.DayUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.Regularities
-import com.drowsynomad.mirrovision.presentation.core.common.models.StrokeAmountState
+import com.drowsynomad.mirrovision.presentation.core.components.models.DayUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitNavigationModel
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.Regularities
+import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeAmountState
 import com.drowsynomad.mirrovision.presentation.core.components.AmountHabit
 import com.drowsynomad.mirrovision.presentation.core.components.BackButton
 import com.drowsynomad.mirrovision.presentation.core.components.BigTitle
@@ -282,7 +281,7 @@ fun CircleIcon(
     ) {
         Canvas(modifier = modifier
             .fillMaxWidth()
-            .height(220.dp)
+            .height(230.dp)
             .clipToBounds()
         ) {
             drawCircle(

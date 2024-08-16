@@ -10,9 +10,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.drowsynomad.mirrovision.R
-import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitDTO
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
+import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitDTO
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitNavigationModel
 import com.drowsynomad.mirrovision.presentation.screens.chooseIcon.ChooseIconScreen
 import com.drowsynomad.mirrovision.presentation.screens.dashboard.DashboardScreen
 import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CreateHabitScreen

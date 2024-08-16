@@ -2,7 +2,7 @@ package com.drowsynomad.mirrovision.domain.models
 
 import androidx.annotation.StringRes
 import com.drowsynomad.mirrovision.core.emptyString
-import com.drowsynomad.mirrovision.presentation.core.common.models.ExpandableButtonContent
+import com.drowsynomad.mirrovision.presentation.core.components.models.ExpandableButtonContent
 
 /**
  * @author Roman Voloshyn (Created on 27.07.2024)

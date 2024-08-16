@@ -1,8 +1,8 @@
 package com.drowsynomad.mirrovision.presentation.screens.habitCreating.model
 
 import com.drowsynomad.mirrovision.domain.models.RegularityType
-import com.drowsynomad.mirrovision.presentation.core.common.models.DayUI
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.DayUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.Time
 import com.voloshynroman.zirkon.presentation.core.common.UiEvent
 

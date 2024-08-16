@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.drowsynomad.mirrovision.presentation.core.common.models.DayUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.DayUI
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 import com.drowsynomad.mirrovision.presentation.utils.roundBox

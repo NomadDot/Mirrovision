@@ -2,7 +2,7 @@ package com.drowsynomad.mirrovision.presentation.navigation
 
 import android.os.Parcelable
 import com.drowsynomad.mirrovision.core.emptyString
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitDTO
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitDTO
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable

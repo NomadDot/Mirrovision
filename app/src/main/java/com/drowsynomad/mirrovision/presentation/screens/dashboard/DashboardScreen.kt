@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.BottomNavigationBar
 import com.drowsynomad.mirrovision.presentation.core.components.DefaultToolbar
 import com.drowsynomad.mirrovision.presentation.dialogs.settings.SettingsDialog
@@ -94,8 +94,9 @@ fun DashboardContent(
         topBar = {
             DefaultToolbar(
                 modifier = Modifier.padding(top =
-                if(settingsVisibility.value) 25.dp + LocalFixedInsets.current.statusBarHeight
-                else 0.dp),
+                    if(settingsVisibility.value) 25.dp + LocalFixedInsets.current.statusBarHeight
+                    else 0.dp
+                ),
                 text = stringResource(id = R.string.label_my_habits),
                 onSettingsClick = {
                     settingsVisibility.value = !settingsVisibility.value

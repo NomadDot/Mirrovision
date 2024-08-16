@@ -1,6 +1,5 @@
 package com.drowsynomad.mirrovision.di
 
-import android.app.Application
 import android.content.Context
 import com.drowsynomad.mirrovision.presentation.utils.IStringConverterManager
 import com.drowsynomad.mirrovision.presentation.utils.StringConverterManager

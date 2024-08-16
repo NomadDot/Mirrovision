@@ -1,4 +1,4 @@
-package com.drowsynomad.mirrovision.presentation.core.common.models
+package com.drowsynomad.mirrovision.presentation.core.components.models
 
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.mutableStateListOf

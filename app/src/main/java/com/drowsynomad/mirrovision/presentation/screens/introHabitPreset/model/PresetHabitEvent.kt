@@ -1,6 +1,6 @@
 package com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model
 
-import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
 import com.voloshynroman.zirkon.presentation.core.common.UiEvent
 
 /**

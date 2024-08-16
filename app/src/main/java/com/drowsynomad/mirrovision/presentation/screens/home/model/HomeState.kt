@@ -1,7 +1,7 @@
-package com.drowsynomad.mirrovision.presentation.home.model
+package com.drowsynomad.mirrovision.presentation.screens.home.model
 
 import com.drowsynomad.mirrovision.presentation.core.common.UiState
-import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
 
 /**
  * @author Roman Voloshyn (Created on 31.07.2024)

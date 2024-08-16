@@ -3,7 +3,7 @@ package com.drowsynomad.mirrovision.domain.models
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.data.database.entities.HabitRegularity
 import com.drowsynomad.mirrovision.data.database.entities.RegularityDays
-import com.drowsynomad.mirrovision.presentation.core.common.models.RegularityContentUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.RegularityContentUI
 
 /**
  * @author Roman Voloshyn (Created on 31.07.2024)

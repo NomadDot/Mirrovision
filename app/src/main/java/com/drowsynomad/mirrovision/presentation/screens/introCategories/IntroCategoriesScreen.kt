@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
-import com.drowsynomad.mirrovision.presentation.core.common.models.CategoryUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.components.AdviceText
 import com.drowsynomad.mirrovision.presentation.core.components.BigTitle
 import com.drowsynomad.mirrovision.presentation.core.components.PrimaryButton

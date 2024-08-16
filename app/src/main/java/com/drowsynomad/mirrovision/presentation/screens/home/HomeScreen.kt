@@ -1,4 +1,4 @@
-package com.drowsynomad.mirrovision.presentation.home
+package com.drowsynomad.mirrovision.presentation.screens.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,14 +9,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCategory
-import com.drowsynomad.mirrovision.presentation.home.model.HomeEvent
-import com.drowsynomad.mirrovision.presentation.home.model.HomeState
+import com.drowsynomad.mirrovision.presentation.screens.home.model.HomeEvent
+import com.drowsynomad.mirrovision.presentation.screens.home.model.HomeState
 
 /**
  * @author Roman Voloshyn (Created on 31.07.2024)
  */
+
 @Composable
 fun HomeScreen(
     viewModel: HomeVM,

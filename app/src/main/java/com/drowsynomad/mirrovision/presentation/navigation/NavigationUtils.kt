@@ -1,9 +1,9 @@
 package com.drowsynomad.mirrovision.presentation.navigation
 
 import androidx.navigation.NavController
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitDTO
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitNavigationModel
-import com.drowsynomad.mirrovision.presentation.core.common.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitDTO
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitNavigationModel
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 
 /**
