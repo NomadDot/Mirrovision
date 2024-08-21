@@ -25,7 +25,8 @@ import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.Colo
 import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColoredCategory
 import com.drowsynomad.mirrovision.presentation.navigation.TestNavigation
 import com.drowsynomad.mirrovision.presentation.theme.CategoryColors
-import com.drowsynomad.mirrovision.presentation.theme.GreenCategoryAccent
+import com.drowsynomad.mirrovision.presentation.theme.LightGreenCategoryAccent
+import com.drowsynomad.mirrovision.presentation.theme.accent
 
 /**
  * @author Roman Voloshyn (Created on 25.06.2024)
@@ -53,7 +54,7 @@ private fun ComponentsPreview(
         )
 
         CategoryTitle(text = "Спорт",
-            color = GreenCategoryAccent,
+            color = LightGreenCategoryAccent,
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.Start)

@@ -20,6 +20,7 @@ class DataStorePreferences(
     companion object {
         val IS_PRESET_CONFIGURED = booleanPreferencesKey(name = "IS_PRESET_CONFIGURED")
         val USER_LANGUAGE = stringPreferencesKey(name = "USER_LANGUAGE")
+        val THEME = booleanPreferencesKey(name = "THEME")
     }
 
     fun <T> getDataStoreFlow(key: Preferences.Key<T>): Flow<T?>  =

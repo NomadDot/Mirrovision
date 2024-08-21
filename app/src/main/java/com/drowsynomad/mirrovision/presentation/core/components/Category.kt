@@ -38,6 +38,8 @@ import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryU
 import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeWidth
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
+import com.drowsynomad.mirrovision.presentation.theme.accent
+import com.drowsynomad.mirrovision.presentation.theme.pureColor
 import com.drowsynomad.mirrovision.presentation.utils.ExpandableContainer
 import com.drowsynomad.mirrovision.presentation.utils.VisibilityContainer
 import com.drowsynomad.mirrovision.presentation.utils.roundBox

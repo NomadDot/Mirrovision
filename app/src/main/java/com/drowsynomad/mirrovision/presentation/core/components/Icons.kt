@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
+import com.drowsynomad.mirrovision.presentation.theme.accent
+import com.drowsynomad.mirrovision.presentation.theme.pureColor
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 
 /**

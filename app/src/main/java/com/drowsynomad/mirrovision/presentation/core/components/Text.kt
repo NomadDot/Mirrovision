@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.presentation.theme.LightPrimary
-import com.drowsynomad.mirrovision.presentation.theme.PinkCategoryAccent
+import com.drowsynomad.mirrovision.presentation.theme.LightPinkCategoryAccent
 
 /**
  * @author Roman Voloshyn (Created on 27.06.2024)
@@ -104,7 +104,7 @@ fun ExplainTitle(
 private fun TextPreviews() {
     Column {
         BigTitle("Звичка")
-        CategoryTitle(text = "Title", color = PinkCategoryAccent)
+        CategoryTitle(text = "Title", color = LightPinkCategoryAccent)
         CounterText("12", color = LightPrimary)
         ExplainTitle(title = "Кількість", explain = "(разів на день)", titleColor = LightPrimary)
     }

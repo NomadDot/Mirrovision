@@ -1,16 +1,18 @@
 package com.drowsynomad.mirrovision.presentation.dialogs.settings
 
 import androidx.compose.runtime.toMutableStateList
-import com.drowsynomad.mirrovision.domain.language.ILanguageRepository
+import com.drowsynomad.mirrovision.domain.user.IUserRepository
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
 import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
 import com.drowsynomad.mirrovision.presentation.dialogs.settings.model.SettingsDialogEvent
 import com.drowsynomad.mirrovision.presentation.dialogs.settings.model.SettingsDialogState
+import com.drowsynomad.mirrovision.presentation.theme.updateColorPalette
 import com.drowsynomad.mirrovision.presentation.utils.IStringConverterManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.zip
 import javax.inject.Inject
 
 /**
@@ -20,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsDialogVM @Inject constructor(
     private val stringManager: IStringConverterManager,
-    private val languageRepository: ILanguageRepository
+    private val userRepository: IUserRepository
 ): StateViewModel<SettingsDialogState, SettingsDialogEvent, SideEffect>(
     SettingsDialogState()
 ) {
@@ -28,12 +30,29 @@ class SettingsDialogVM @Inject constructor(
         when(uiEvent) {
             SettingsDialogEvent.LoadContent -> loadContent()
             is SettingsDialogEvent.SelectLanguage -> selectLanguage(uiEvent.localeId)
+            SettingsDialogEvent.UpdateTheme -> updateTheme()
+        }
+    }
+
+    private fun updateTheme() {
+        launch {
+            val isDarkMode = uiState.value.darkModeEnabled.not()
+            userRepository.changeUserTheme(isDarkMode)
+            updateColorPalette(isDarkMode)
+            updateState {
+                it.copy(darkModeEnabled = isDarkMode)
+            }
         }
     }
 
     private fun loadContent() {
+        var darkModeEnabled = false
         launch {
-            languageRepository.getSupportedLanguagesWithUserSelected()
+            userRepository.getSupportedLanguagesWithUserSelected()
+                .zip(userRepository.isDarkMode()) { language, isDarkMode ->
+                    darkModeEnabled = isDarkMode
+                    language
+                }
                 .map {
                     it.map {
                         it.toExpandableButtonItem(
@@ -44,7 +63,10 @@ class SettingsDialogVM @Inject constructor(
                 .flowOn(Dispatchers.IO)
                 .collect { language ->
                     updateState {
-                        it.copy(languageContent = language.toMutableStateList())
+                        it.copy(
+                            languageContent = language.toMutableStateList(),
+                            darkModeEnabled = darkModeEnabled
+                        )
                     }
                 }
         }
@@ -56,7 +78,7 @@ class SettingsDialogVM @Inject constructor(
             ?.isSelected?.value = true
 
         launch {
-            languageRepository.saveUserLanguage(id)
+            userRepository.saveUserLanguage(id)
         }
     }
 }

@@ -40,6 +40,7 @@ import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.Colo
 import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColoredCategory
 import com.drowsynomad.mirrovision.presentation.theme.convertToAccentCategoryColor
 import com.drowsynomad.mirrovision.presentation.theme.convertToMainCategoryColor
+import com.drowsynomad.mirrovision.presentation.theme.pureColor
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
 
 /**

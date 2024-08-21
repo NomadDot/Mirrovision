@@ -12,26 +12,12 @@ import kotlinx.coroutines.flow.zip
  */
 
 interface ILanguageRepository {
-    fun getSupportedLanguagesWithUserSelected(): Flow<List<Locale>>
-    suspend fun saveUserLanguage(locale: String)
+
 }
 
 class LanguageRepository(
     private val dataStorePreferences: DataStorePreferences,
     private val assetStore: IAssetStore,
 ) : ILanguageRepository {
-    override fun getSupportedLanguagesWithUserSelected(): Flow<List<Locale>> {
-        return dataStorePreferences
-            .getDataStoreFlow(DataStorePreferences.USER_LANGUAGE)
-            .zip(assetStore.getSupportedLanguages()) { userLanguage, allLanguages ->
-                val languages = allLanguages
-                    .map { Locale(it, false) }
-                languages.find { userLanguage == it.id }?.isSelected = true
-                languages
-            }
-    }
 
-    override suspend fun saveUserLanguage(locale: String) {
-        dataStorePreferences.saveData(USER_LANGUAGE, locale)
-    }
 }

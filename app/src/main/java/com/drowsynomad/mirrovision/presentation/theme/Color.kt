@@ -2,18 +2,16 @@ package com.drowsynomad.mirrovision.presentation.theme
 
 import android.os.Parcelable
 import androidx.compose.ui.graphics.Color
-import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor.*
-import kotlinx.parcelize.IgnoredOnParcel
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor.Blue
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor.Brown
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor.Green
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor.Ocean
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor.Orange
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor.Pink
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor.Purple
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor.Red
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
-
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
-
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
 
 val LightPrimary = Color(0xFFA58EFF)
 val LightMainBackground = Color(0xFFF9F9FF)
@@ -24,37 +22,56 @@ val LightPrimaryInactive = Color(0xFFC0B3F0)
 val MenuAccent = Color(0xFFE5D4FC)
 val LightTextInactive = Color(0xFFF2F4F5)
 
+val DarkPrimary = Color(0xFFA58EFF)
+val DarkMainBackground = Color(0xFF3C3A3F)
+val DarkPrimaryAccentColor = Color(0xFFA58EFF)
+val DarkMainHintColor = Color(0xFFA48EFF)
+
 val ShadowColor = Color(0xFFEDEDF3)
 
 // Category colors
-val BlueCategory = Color(0xFFCDDAFD)
-val GreenCategory = Color(0xFFCADBBB)
-val YellowCategory = Color(0xFFFBF8CB)
-val PinkCategory = Color(0xFFFBD2E2)
-val PurpleCategory = Color(0xFFE7D5FE)
-val OrangeCategory = Color(0xFFFFD8B9)
-val RedCategory = Color(0xFFFFB4B9)
-val BrownCategory = Color(0xFFC7A78E)
+val LightBlueCategory = Color(0xFFCDDAFD)
+val LightGreenCategory = Color(0xFFCADBBB)
+val LightOceanBlueCategory = Color(0xFFC3ECFF)
+val LightPinkCategory = Color(0xFFFBD2E2)
+val LightPurpleCategory = Color(0xFFE7D5FE)
+val LightOrangeCategory = Color(0xFFFFD8B9)
+val LightRedCategory = Color(0xFFFFB4B9)
+val LightBrownCategory = Color(0xFFC7A78E)
 
-val DefaultCategoryColor = PurpleCategory
+val DarkBlueCategory = Color(0xFF51618E)
+val DarkGreenCategory = Color(0xFF71734D)
+val DarkOceanBlueCategory = Color(0xFF2D6B85)
+val DarkPinkCategory = Color(0xFF875669)
+val DarkPurpleCategory = Color(0xFF70628C)
+val DarkOrangeCategory = Color(0xFF8E6D46)
+val DarkRedCategory = Color(0xFF855053)
+val DarkBrownCategory = Color(0xFF735C48)
 
-val BlueCategoryAccent = Color(0xFF001F74)
-val GreenCategoryAccent = Color(0xFF686D00)
-val YellowCategoryAccent = Color(0xFFA07300)
-val PinkCategoryAccent = Color(0xFF9B003D)
-val PurpleCategoryAccent = Color(0xFF68509A)
-val OrangeCategoryAccent = Color(0xFFAB4C00)
-val RedCategoryAccent = Color(0xFF8F0009)
-val BrownCategoryAccent = Color(0xFF78431A)
+val DefaultCategoryColor = LightPurpleCategory
+
+val LightBlueCategoryAccent = Color(0xFF001F74)
+val LightGreenCategoryAccent = Color(0xFF686D00)
+val LightOceanBlueCategoryAccent = Color(0xFF4A6B79)
+val LightPinkCategoryAccent = Color(0xFF9B003D)
+val LightPurpleCategoryAccent = Color(0xFF68509A)
+val LightOrangeCategoryAccent = Color(0xFFAB4C00)
+val LightRedCategoryAccent = Color(0xFF8F0009)
+val LightBrownCategoryAccent = Color(0xFF78431A)
+
+val DarkBlueCategoryAccent = Color(0xFFE3EBFF)
+val DarkGreenCategoryAccent = Color(0xFFF1FFE5)
+val DarkOceanBlueCategoryAccent = Color(0xFFDDF3FC)
+val DarkPinkCategoryAccent = Color(0xFFFFE4EE)
+val DarkPurpleCategoryAccent = Color(0xFFF1E5FF)
+val DarkOrangeCategoryAccent = Color(0xFFFFEEE0)
+val DarkRedCategoryAccent = Color(0xFFFFE4E5)
+val DarkBrownCategoryAccent = Color(0xFFFFEFDF)
 
 @Serializable
 @Parcelize
 enum class CategoryMainColor: Parcelable {
-    Blue, Green, Yellow, Pink, Purple, Orange, Red, Brown;
-    @IgnoredOnParcel
-    val pureColor  by lazy { CategoryMainColorsMap[this] ?: BlueCategory }
-    @IgnoredOnParcel
-    val accent by lazy { CategoryMainToAccentColors[this] ?: CategoryAccentColor.BlueAccent }
+    Blue, Green, Ocean, Pink, Purple, Orange, Red, Brown;
 
     companion object {
         fun parse(stringValue: String): CategoryMainColor = let {
@@ -67,38 +84,91 @@ enum class CategoryMainColor: Parcelable {
     }
 }
 
+private var darkModeEnabled = false
+fun updateColorPalette(isDarkMode: Boolean) {
+    darkModeEnabled = isDarkMode
+}
+
+fun isDarkTheme(): Boolean = darkModeEnabled
+
 @Serializable
 enum class CategoryAccentColor {
-    BlueAccent, GreenAccent, YellowAccent, PinkAccent, PurpleAccent, OrangeAccent, RedAccent, BrownAccent;
-    val pureColor by lazy { CategoryAccentColorsMap[this] ?: BlueCategoryAccent }
+    BlueAccent, GreenAccent, OceanAccent, PinkAccent, PurpleAccent, OrangeAccent, RedAccent, BrownAccent;
 }
+
+val CategoryMainColor.pureColor: Color
+    get() = getMainColor(this)
+
+val CategoryAccentColor.pureColor: Color
+    get() = getAccentColor(this)
+
+val CategoryMainColor.accent : CategoryAccentColor
+    get() = CategoryMainToAccentColors[this] ?: CategoryAccentColor.PurpleAccent
+
 
 val CategoryColors by lazy { CategoryMainColor.entries.toTypedArray() }
 
 val CategoryMainColorsMap by lazy {
     mapOf(
-        Blue to BlueCategory,
-        Green to GreenCategory,
-        Yellow to YellowCategory,
-        Pink to PinkCategory,
-        Purple to PurpleCategory,
-        Orange to OrangeCategory,
-        Red to RedCategory,
-        Brown to BrownCategory,
+        Blue to LightBlueCategory,
+        Green to LightGreenCategory,
+        Ocean to LightOceanBlueCategory,
+        Pink to LightPinkCategory,
+        Purple to LightPurpleCategory,
+        Orange to LightOrangeCategory,
+        Red to LightRedCategory,
+        Brown to LightBrownCategory,
     )
+}
+
+val DarkCategoryMainColorsMap by lazy {
+    mapOf(
+        Blue to DarkBlueCategory,
+        Green to DarkGreenCategory,
+        Ocean to DarkOceanBlueCategory,
+        Pink to DarkPinkCategory,
+        Purple to DarkPurpleCategory,
+        Orange to DarkOrangeCategory,
+        Red to DarkRedCategory,
+        Brown to DarkBrownCategory,
+    )
+}
+
+fun getMainColor(color: CategoryMainColor): Color {
+    return if(darkModeEnabled) DarkCategoryMainColorsMap[color] ?: LightPurpleCategory
+    else CategoryMainColorsMap[color] ?: DarkPurpleCategory
+}
+
+fun getAccentColor(color: CategoryAccentColor): Color {
+    return if(darkModeEnabled) DarkCategoryAccentColorsMap[color] ?: LightPurpleCategoryAccent
+    else CategoryAccentColorsMap[color] ?: DarkPurpleCategoryAccent
 }
 
 @Serializable
 val CategoryAccentColorsMap by lazy {
     mapOf(
-        CategoryAccentColor.BlueAccent to BlueCategoryAccent,
-        CategoryAccentColor.GreenAccent to GreenCategoryAccent,
-        CategoryAccentColor.YellowAccent to YellowCategoryAccent,
-        CategoryAccentColor.PinkAccent to PinkCategoryAccent,
-        CategoryAccentColor.PurpleAccent to PurpleCategoryAccent,
-        CategoryAccentColor.OrangeAccent to OrangeCategoryAccent,
-        CategoryAccentColor.RedAccent to RedCategoryAccent,
-        CategoryAccentColor.BrownAccent to BrownCategoryAccent,
+        CategoryAccentColor.BlueAccent to LightBlueCategoryAccent,
+        CategoryAccentColor.GreenAccent to LightGreenCategoryAccent,
+        CategoryAccentColor.OceanAccent to LightOceanBlueCategoryAccent,
+        CategoryAccentColor.PinkAccent to LightPinkCategoryAccent,
+        CategoryAccentColor.PurpleAccent to LightPurpleCategoryAccent,
+        CategoryAccentColor.OrangeAccent to LightOrangeCategoryAccent,
+        CategoryAccentColor.RedAccent to LightRedCategoryAccent,
+        CategoryAccentColor.BrownAccent to LightBrownCategoryAccent,
+    )
+}
+
+@Serializable
+val DarkCategoryAccentColorsMap by lazy {
+    mapOf(
+        CategoryAccentColor.BlueAccent to DarkBlueCategoryAccent,
+        CategoryAccentColor.GreenAccent to DarkGreenCategoryAccent,
+        CategoryAccentColor.OceanAccent to DarkOceanBlueCategoryAccent,
+        CategoryAccentColor.PinkAccent to DarkPinkCategoryAccent,
+        CategoryAccentColor.PurpleAccent to DarkPurpleCategoryAccent,
+        CategoryAccentColor.OrangeAccent to DarkOrangeCategoryAccent,
+        CategoryAccentColor.RedAccent to DarkRedCategoryAccent,
+        CategoryAccentColor.BrownAccent to DarkBrownCategoryAccent,
     )
 }
 
@@ -107,7 +177,7 @@ val CategoryMainToAccentColors by lazy {
     mapOf(
         Blue to CategoryAccentColor.BlueAccent,
         Green to CategoryAccentColor.GreenAccent,
-        Yellow to CategoryAccentColor.YellowAccent,
+        Ocean to CategoryAccentColor.OceanAccent,
         Pink to CategoryAccentColor.PinkAccent,
         Purple to CategoryAccentColor.PurpleAccent,
         Orange to CategoryAccentColor.OrangeAccent,
@@ -118,22 +188,22 @@ val CategoryMainToAccentColors by lazy {
 
 val CategoryAccentPairsColor by lazy {
     mapOf(
-        Blue to BlueCategoryAccent,
-        Green to GreenCategoryAccent,
-        Yellow to YellowCategoryAccent,
-        Pink to PinkCategoryAccent,
-        Purple to PurpleCategoryAccent,
-        Orange to OrangeCategoryAccent,
-        Red to RedCategoryAccent,
-        Brown to BrownCategoryAccent
+        Blue to LightBlueCategoryAccent,
+        Green to LightGreenCategoryAccent,
+        Ocean to LightOceanBlueCategoryAccent,
+        Pink to LightPinkCategoryAccent,
+        Purple to LightPurpleCategoryAccent,
+        Orange to LightOrangeCategoryAccent,
+        Red to LightRedCategoryAccent,
+        Brown to LightBrownCategoryAccent
     )
 }
 
 val GradientMain by lazy {
-    listOf(
-        Color(0xFFA58EFF),
-        Color(0xFFFFC9DE)
-    )
+    if(darkModeEnabled)
+        listOf(Color(0xFF8482DD), Color(0xFFE674C4))
+    else
+        listOf(Color(0xFFA58EFF), Color(0xFFFFC9DE))
 }
 
 val GradientButtonColors by lazy {
@@ -153,9 +223,11 @@ val GradientAccent by lazy {
 }
 
 fun convertToMainCategoryColor(color: Color): CategoryMainColor {
-    return CategoryMainColorsMap.filter { entry -> entry.value == color }.entries.first().key
+    val map = if(darkModeEnabled) DarkCategoryMainColorsMap else CategoryMainColorsMap
+    return map.filter { entry -> entry.value == color }.entries.first().key
 }
 
 fun convertToAccentCategoryColor(color: Color): CategoryAccentColor {
-    return CategoryAccentColorsMap.filter { entry -> entry.value == color }.entries.first().key
+    val map = if(darkModeEnabled) DarkCategoryAccentColorsMap else CategoryAccentColorsMap
+    return map.filter { entry -> entry.value == color }.entries.first().key
 }

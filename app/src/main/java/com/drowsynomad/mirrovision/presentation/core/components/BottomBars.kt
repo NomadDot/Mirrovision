@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
@@ -50,7 +51,6 @@ data class BottomNavigationActions(
     val onTutorialNavigation: Navigation? = null
 ) {
     fun getNavigationByRoute(route: Routes): Navigation? {
-        Log.i("!!!!", "!!!!!")
         return when(route) {
             is Routes.GuideScreen -> onTutorialNavigation
             is Routes.HomeScreen -> onHomeNavigation
@@ -124,13 +124,14 @@ fun BottomNavigationBar(
 
 @Composable
 private fun Semicircle(modifier: Modifier = Modifier) {
+    val color = MaterialTheme.colorScheme.surfaceContainer
     Canvas(modifier = modifier
         .size(60.dp)
         .clipToBounds()
         .offset(y = (-15.1).dp)
     ) {
         drawArc(
-            color = Color.White,
+            color = color,
             0f,
             180f,
             useCenter = true,

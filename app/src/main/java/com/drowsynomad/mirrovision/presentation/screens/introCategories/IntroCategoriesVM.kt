@@ -4,6 +4,7 @@ import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.domain.categories.ICategoryRepository
 import com.drowsynomad.mirrovision.domain.language.ILanguageRepository
+import com.drowsynomad.mirrovision.domain.user.IUserRepository
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
 import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
 import com.drowsynomad.mirrovision.presentation.screens.introCategories.model.CategoriesId
@@ -26,7 +27,7 @@ import javax.inject.Inject
 class IntroCategoriesVM @Inject constructor(
     private val stringManager: IStringConverterManager,
     private val categoryRepository: ICategoryRepository,
-    private val languageRepository: ILanguageRepository
+    private val userRepository: IUserRepository
 ): StateViewModel<IntroCategoriesState, IntroCategoriesEvent, SideEffect>(
     IntroCategoriesState(isProgress = true)
 ) {
@@ -41,7 +42,7 @@ class IntroCategoriesVM @Inject constructor(
 
     private fun saveUserLocalization(pref: String) {
         launch {
-            languageRepository.saveUserLanguage(pref)
+            userRepository.saveUserLanguage(pref)
         }
     }
 

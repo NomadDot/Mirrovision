@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.presentation.core.components.models.DayUI
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
+import com.drowsynomad.mirrovision.presentation.theme.accent
+import com.drowsynomad.mirrovision.presentation.theme.pureColor
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
 

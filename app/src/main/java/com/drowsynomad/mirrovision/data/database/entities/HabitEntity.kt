@@ -10,6 +10,7 @@ import com.drowsynomad.mirrovision.domain.models.Habit
 import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeAmountState
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
+import com.drowsynomad.mirrovision.presentation.theme.accent
 
 /**
  * @author Roman Voloshyn (Created on 23.06.2024)

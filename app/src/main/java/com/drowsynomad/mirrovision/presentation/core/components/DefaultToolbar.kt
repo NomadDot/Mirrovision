@@ -89,7 +89,7 @@ fun DefaultToolbar(
         modifier = modifier,
         title = text,
         accentColor = MaterialTheme.colorScheme.secondary,
-        backgroundColor = LightMainBackground,
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainer,
         subTitle = subTitle,
         onSettingsClick = onSettingsClick,
         onBackClick = onBackClick

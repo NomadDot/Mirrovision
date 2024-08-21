@@ -47,6 +47,8 @@ import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.theme.LightMainBackground
 import com.drowsynomad.mirrovision.presentation.theme.ShadowColor
+import com.drowsynomad.mirrovision.presentation.theme.accent
+import com.drowsynomad.mirrovision.presentation.theme.pureColor
 import com.drowsynomad.mirrovision.presentation.utils.ExpandableContainer
 import com.drowsynomad.mirrovision.presentation.utils.VisibilityContainer
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick

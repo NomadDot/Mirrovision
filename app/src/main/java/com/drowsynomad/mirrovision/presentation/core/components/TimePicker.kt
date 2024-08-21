@@ -23,6 +23,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
+import com.drowsynomad.mirrovision.presentation.theme.accent
+import com.drowsynomad.mirrovision.presentation.theme.pureColor
 import com.drowsynomad.mirrovision.presentation.utils.formatTime
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
 import java.util.Calendar

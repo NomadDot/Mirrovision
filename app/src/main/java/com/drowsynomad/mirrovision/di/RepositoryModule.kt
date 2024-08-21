@@ -50,8 +50,11 @@ object RepositoryModule {
 
     @Provides
     @ViewModelScoped
-    fun provideUserRepository(dataStorePreferences: DataStorePreferences): IUserRepository =
-        UserRepository(dataStorePreferences)
+    fun provideUserRepository(
+        dataStorePreferences: DataStorePreferences,
+        assetStore: IAssetStore
+    ): IUserRepository =
+        UserRepository(dataStorePreferences, assetStore)
 
     @Provides
     @ViewModelScoped

@@ -65,12 +65,14 @@ import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.presentation.core.components.models.ExpandableButtonContent
+import com.drowsynomad.mirrovision.presentation.theme.DarkPurpleCategoryAccent
 import com.drowsynomad.mirrovision.presentation.theme.GradientButtonColors
 import com.drowsynomad.mirrovision.presentation.theme.GradientMain
 import com.drowsynomad.mirrovision.presentation.theme.LightPrimary
 import com.drowsynomad.mirrovision.presentation.theme.LightTextInactive
 import com.drowsynomad.mirrovision.presentation.theme.MenuAccent
 import com.drowsynomad.mirrovision.presentation.theme.ShadowColor
+import com.drowsynomad.mirrovision.presentation.theme.isDarkTheme
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 import com.drowsynomad.mirrovision.presentation.utils.gradient
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
@@ -85,7 +87,7 @@ fun PrimaryButton(
     modifier: Modifier = Modifier,
     isEnabled: Boolean = true,
     @DrawableRes icon: Int? = null,
-    containerColor: Color = LightPrimary,
+    containerColor: Color = MaterialTheme.colorScheme.primary,
     onClick: (() -> Unit)? = null
 ) {
     Button(
@@ -152,17 +154,16 @@ fun ConfigurationButton(
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.surfaceTint,
             modifier = Modifier.wrapContentSize())
         Icon(
             painter = painterResource(id = icon),
             contentDescription = emptyString(),
-            tint = Color.White,
+            tint = MaterialTheme.colorScheme.surfaceTint,
             modifier = Modifier.size(24.dp)
         )
     }
 }
-
 
 @Composable
 fun GradientButton(
@@ -368,7 +369,8 @@ fun ExpandableButton(
             modifier = Modifier.fillMaxWidth(),
             text = title,
             icon = icon,
-            containerColor = MaterialTheme.colorScheme.secondary
+            containerColor = if(isDarkTheme()) MaterialTheme.colorScheme.secondary
+                else DarkPurpleCategoryAccent
         ) { onButtonClick?.invoke() }
     }
 }

@@ -43,6 +43,8 @@ import com.drowsynomad.mirrovision.presentation.navigation.Navigation
 import com.drowsynomad.mirrovision.presentation.screens.chooseIcon.model.ChooseIconEvent
 import com.drowsynomad.mirrovision.presentation.screens.chooseIcon.model.ChooseIconState
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
+import com.drowsynomad.mirrovision.presentation.theme.accent
+import com.drowsynomad.mirrovision.presentation.theme.pureColor
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
 import kotlin.random.Random

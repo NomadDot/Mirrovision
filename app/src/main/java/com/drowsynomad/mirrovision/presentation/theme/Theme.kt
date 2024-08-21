@@ -8,11 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
-    primary = LightPrimary,
-    secondary = LightPrimaryAccentColor,
+    primary = DarkPrimary,
+    secondary = DarkPrimaryAccentColor,
     tertiary = LightMainHintColor,
-    primaryContainer = Color.White,
-    surfaceContainer = LightMainBackground
+    primaryContainer = Color.Black,
+    surfaceContainer = DarkMainBackground,
+    surfaceTint = DarkMainBackground
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -20,7 +21,8 @@ private val LightColorScheme = lightColorScheme(
     secondary = LightPrimaryAccentColor,
     tertiary = LightMainHintColor,
     primaryContainer = Color.White,
-    surfaceContainer = LightMainBackground
+    surfaceContainer = LightMainBackground,
+    surfaceTint = DarkMainBackground
 )
 
 @Composable
@@ -28,11 +30,13 @@ fun MirrovisionTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
+    isSystemInDarkTheme()
     val colorScheme = when {
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
 
+    updateColorPalette(darkTheme)
     MaterialTheme(
         colorScheme = colorScheme,
         typography = MirrovisionTypography,

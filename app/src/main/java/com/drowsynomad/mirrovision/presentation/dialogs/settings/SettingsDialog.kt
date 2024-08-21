@@ -17,6 +17,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -114,8 +115,7 @@ fun SettingsDialog(
                             )
                         }
                         Spacer(modifier = Modifier.height(20.dp))
-                        Column(
-                        ) {
+                        Column {
                             ExpandableButton(
                                 modifier = Modifier.fillMaxWidth(),
                                 isExpanded = isLanguageExpanded.value,
@@ -134,9 +134,9 @@ fun SettingsDialog(
                                     .padding(top = 15.dp),
                                 title = stringResource(R.string.label_theme),
                                 icon = R.drawable.ic_theme,
-                                expandableContent = it.themeContent
+                                expandableContent = SnapshotStateList()
                             ) {
-                                // TODO: Change theme
+                                viewModel.handleUiEvent(SettingsDialogEvent.UpdateTheme)
                             }
                             GradientButton(
                                 modifier = Modifier

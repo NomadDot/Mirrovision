@@ -38,6 +38,7 @@ import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeWid
 import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.theme.LightPrimary
+import com.drowsynomad.mirrovision.presentation.theme.pureColor
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

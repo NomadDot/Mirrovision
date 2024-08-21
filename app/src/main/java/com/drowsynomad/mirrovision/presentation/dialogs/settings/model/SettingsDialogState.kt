@@ -11,5 +11,5 @@ import com.drowsynomad.mirrovision.presentation.core.components.models.Expandabl
 
 data class SettingsDialogState(
     val languageContent: SnapshotStateList<ExpandableButtonContent> = mutableStateListOf(),
-    val themeContent: SnapshotStateList<ExpandableButtonContent> = mutableStateListOf()
+    val darkModeEnabled: Boolean = false
 ): UiState

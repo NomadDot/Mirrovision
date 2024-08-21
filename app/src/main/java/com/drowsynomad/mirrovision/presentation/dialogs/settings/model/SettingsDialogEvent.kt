@@ -9,4 +9,5 @@ import com.voloshynroman.zirkon.presentation.core.common.UiEvent
 sealed class SettingsDialogEvent: UiEvent {
     data object LoadContent: SettingsDialogEvent()
     data class SelectLanguage(val localeId: String): SettingsDialogEvent()
+    data object UpdateTheme: SettingsDialogEvent()
 }

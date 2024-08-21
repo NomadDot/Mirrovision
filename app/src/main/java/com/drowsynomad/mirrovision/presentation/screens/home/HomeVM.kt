@@ -14,6 +14,7 @@ import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeAmo
 import com.drowsynomad.mirrovision.presentation.screens.home.model.HomeEvent
 import com.drowsynomad.mirrovision.presentation.screens.home.model.HomeState
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
+import com.drowsynomad.mirrovision.presentation.theme.accent
 import com.drowsynomad.mirrovision.presentation.utils.calendar
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

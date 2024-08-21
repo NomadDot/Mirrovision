@@ -11,6 +11,7 @@ import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeAmo
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitEvent
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetHabitState
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.model.PresetSideEffect
+import com.drowsynomad.mirrovision.presentation.theme.accent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
