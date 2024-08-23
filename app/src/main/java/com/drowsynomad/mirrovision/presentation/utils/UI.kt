@@ -122,8 +122,8 @@ val LocalFixedInsets = compositionLocalOf<FixedInsets> { error("no FixedInsets p
 fun Int.pxToDp(): Dp =  with(LocalDensity.current) { this@pxToDp.toDp() }
 
 
-fun <T> defaultTween(): TweenSpec<T> = tween(
-    durationMillis = 300,
+fun <T> defaultTween(duration: Int = 300): TweenSpec<T> = tween(
+    durationMillis = duration,
     easing = LinearEasing
 )
 

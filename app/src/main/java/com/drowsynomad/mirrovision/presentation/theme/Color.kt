@@ -26,6 +26,8 @@ val LightTextInactive = Color(0xFFF2F4F5)
 
 val ShadowColor = Color(0xFFEDEDF3)
 
+val ProgressBackground = Color(0xFFF5EDFF)
+
 // Category colors
 val BlueCategory = Color(0xFFCDDAFD)
 val GreenCategory = Color(0xFFCADBBB)

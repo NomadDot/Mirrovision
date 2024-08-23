@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,6 +42,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
@@ -49,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.LinearGradientShader
 import androidx.compose.ui.graphics.Paint
@@ -62,6 +65,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.presentation.core.components.models.ExpandableButtonContent
@@ -239,7 +243,9 @@ fun GradientButton(
         .padding(horizontal = 8.dp)
         .height(40.dp)
     ) {
-        Canvas(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+        Canvas(modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)) {
             val width = this.size.width
             val height = this.size.height
 
@@ -279,7 +285,9 @@ fun GradientButton(
             painter = painterResource(id = icon),
             contentDescription = "icon",
             tint = Color.White,
-            modifier = Modifier.align(Alignment.CenterEnd).padding(end = 8.dp)
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 8.dp)
         )
     }
 }
@@ -453,6 +461,80 @@ fun CancelableAndSaveableButton(
     }
 }
 
+@Composable
+fun DoubleSelector(
+    modifier: Modifier = Modifier,
+    leftButtonLabel: String = emptyString(),
+    rightButtonLabel: String = emptyString(),
+    onLeftButtonClick: (() -> Unit)? = null,
+    onRightButtonClick: (() -> Unit)? = null,
+) {
+    val firstButtonSelected = remember {
+        mutableStateOf(true)
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(15.dp)
+    ) {
+        val primaryColor = MaterialTheme.colorScheme.primary
+
+        val defaultModifier = remember {
+            Modifier.bounceClick().weight(1f).height(40.dp)
+        }
+
+        val unselectedModifier = remember {
+            defaultModifier
+                .border(
+                    width = 2.dp,
+                    color = primaryColor,
+                    shape = RoundedCornerShape(25.dp))
+        }
+
+        val activeModifier = remember {
+            defaultModifier
+                .background(
+                    brush = Brush.horizontalGradient(GradientMain),
+                    shape = RoundedCornerShape(25.dp))
+        }
+
+        Button(
+            onClick = {
+                if(!firstButtonSelected.value)
+                    firstButtonSelected.value = true
+                onLeftButtonClick?.invoke()
+            },
+            modifier = if(firstButtonSelected.value) activeModifier else unselectedModifier,
+            colors = ButtonColors(containerColor = Color.Transparent, contentColor = MaterialTheme.colorScheme.primary,
+                disabledContentColor = Color.Transparent, disabledContainerColor = Color.Transparent),
+
+        ) {
+            Text(
+                text = leftButtonLabel,
+                style = MaterialTheme.typography.bodyMedium,
+                fontSize = 14.sp,
+                color = if(firstButtonSelected.value) Color.White else MaterialTheme.colorScheme.primary
+            )
+        }
+        Button(
+            onClick = {
+                firstButtonSelected.value = false
+                onRightButtonClick?.invoke()
+            },
+            modifier = if(!firstButtonSelected.value) activeModifier else unselectedModifier,
+            colors = ButtonColors(containerColor = Color.Transparent, contentColor = MaterialTheme.colorScheme.primary,
+                disabledContentColor = Color.Transparent, disabledContainerColor = Color.Transparent)
+        ) {
+            Text(
+                text = rightButtonLabel,
+                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodyMedium,
+                color = if(!firstButtonSelected.value) Color.White else MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
 @Preview(showSystemUi = true)
 @Composable
 private fun Buttons() {
@@ -484,5 +566,12 @@ private fun Buttons() {
         ) {
             it.isSelected.value = !it.isSelected.value
         }
+        DoubleSelector(
+            modifier = Modifier,
+            leftButtonLabel = "eirmod",
+            rightButtonLabel = "commune",
+            onLeftButtonClick = {},
+            onRightButtonClick = {}
+        )
     }
 }

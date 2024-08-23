@@ -50,7 +50,6 @@ data class BottomNavigationActions(
     val onTutorialNavigation: Navigation? = null
 ) {
     fun getNavigationByRoute(route: Routes): Navigation? {
-        Log.i("!!!!", "!!!!!")
         return when(route) {
             is Routes.GuideScreen -> onTutorialNavigation
             is Routes.HomeScreen -> onHomeNavigation

@@ -39,6 +39,8 @@
     <string name="label_days">Days</string>
     <string name="label_weekly_brackets">(Weekly)</string>
     <string name="label_monthly_brackets">(Monthly)</string>
+    <string name="toolbar_today_habits">Today habits</string>
+    <string name="toolbar_statistics">Statistics</string>
 
     <string-array name="categories">
         <item>Sport</item>

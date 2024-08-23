@@ -29,6 +29,18 @@ fun NavController.navigateToHabitCreating(args: HabitUI) {
     )
 }
 
+fun NavController.navigateToStatistics() {
+    this.navigate(Routes.StatisticScreen) {
+        popUpTo(Routes.StatisticScreen) { inclusive = true }
+    }
+}
+
+fun NavController.navigateToHome() {
+    this.navigate(Routes.HomeScreen) {
+        popUpTo(Routes.HomeScreen) { inclusive = true }
+    }
+}
+
 fun NavController.navigateToDashboardFromPreset() {
     this.navigate(Routes.DashboardScreen) {
         popUpTo<Routes.DashboardScreen> { inclusive = true }
