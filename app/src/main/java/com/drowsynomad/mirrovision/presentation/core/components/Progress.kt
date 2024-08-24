@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -69,7 +70,7 @@ fun WeeklyProgress(
     percent: Float,
     modifier: Modifier = Modifier
 ) {
-    val showed = remember {
+    val showed = rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -89,10 +90,11 @@ fun WeeklyProgress(
         animationSpec = defaultTween(600)
     )
     
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(key1 = showed.value) {
         showed.value = true
     }
 
+    val primaryColor = MaterialTheme.colorScheme.primary
     val brush = Brush.horizontalGradient(GradientButtonColors)
     val textMeasurer = rememberTextMeasurer()
 
@@ -131,8 +133,12 @@ fun WeeklyProgress(
             drawText(
                 textMeasurer,
                 "${widthProgress.value * 100f}".take(2).plus("%"),
-                topLeft = Offset(-(16f).dp.toPx(), 15.dp.toPx()),
-                style = TextStyle(fontStyle = font.fontStyle, fontFamily = font.fontFamily, textAlign = TextAlign.End, color = Color.White),
+                topLeft = Offset(if(percent > 0.15f) -(16f).dp.toPx() else (32f).dp.toPx(), 15.dp.toPx()),
+                style = TextStyle(
+                    fontStyle = font.fontStyle,
+                    fontFamily = font.fontFamily,
+                    textAlign = TextAlign.End,
+                    color = if(percent > 0.15f) Color.White else primaryColor),
                 size = Size((this.size.width * widthProgress.value), 50.dp.toPx())
             )
         }

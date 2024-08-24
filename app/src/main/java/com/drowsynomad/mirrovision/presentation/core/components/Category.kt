@@ -1,45 +1,65 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
+import android.health.connect.datatypes.units.Percentage
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.repeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeWidth
+import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.ExpandableContainer
 import com.drowsynomad.mirrovision.presentation.utils.VisibilityContainer
+import com.drowsynomad.mirrovision.presentation.utils.defaultTween
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
 
 /**
@@ -255,6 +275,122 @@ fun EditAmountHabit(
     }
 }
 
+data class HabitStatistic(
+    @DrawableRes val icon: Int,
+    val percentage: Float,
+    val color: CategoryAccentColor
+)
+
+data class CategoryStatistic(
+    val habitStatistics: List<HabitStatistic>,
+    val color: CategoryMainColor,
+    val percentage: Float
+)
+
+@Composable
+fun StatisticCategory(
+    modifier: Modifier = Modifier,
+    stat: CategoryStatistic
+) {
+    Box(modifier = modifier
+        .fillMaxWidth()
+        .roundBox(stat.color.pureColor)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                stat.habitStatistics.forEach {
+                    StatisticHabit(habitStat = it)
+                }
+            }
+            CategoryPercentage(percentage = stat.percentage, categoryAccent = stat.color.accent)
+        }
+    }
+}
+
+@Composable
+fun CategoryPercentage(
+    modifier: Modifier = Modifier,
+    strokeSize: Dp = 75.dp,
+    strWidth: StrokeWidth = StrokeWidth.Custom(18f),
+    percentage: Float,
+    categoryAccent: CategoryAccentColor
+) {
+    val color = remember { categoryAccent.pureColor }
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box {
+            val showed = remember { mutableStateOf(false) }
+
+            val percent = animateFloatAsState(
+                targetValue = if (showed.value) percentage else 0f,
+                label = "widthProgress",
+                animationSpec = defaultTween(600)
+            )
+
+            LaunchedEffect(key1 = Unit) { showed.value = true }
+
+            val categoryPercentage = remember { percentage * 100 }
+
+            Text(
+                text = "$categoryPercentage"
+                    .take(if(categoryPercentage < 100) 2 else 3)
+                    .plus("%"),
+                style = MaterialTheme.typography.bodyMedium,
+                color = color,
+                fontSize = 18.sp,
+                modifier = Modifier.align(Alignment.Center)
+            )
+            Canvas(
+                modifier = Modifier
+                    .size(strokeSize, strokeSize)
+                    .align(Alignment.Center)
+            ) {
+                drawIntoCanvas {
+                    val width = size.width
+                    val strokeWidth = strWidth.width
+                    val angle = 270f
+
+                    val arcSize = Size(width - strokeWidth, width - strokeWidth)
+                    val arcOffset = Offset(strokeWidth / 2, strokeWidth / 2)
+                    val arcStroke = Stroke(strokeWidth, cap = StrokeCap.Round)
+
+                    val sweepAngle = 360f
+
+                    val defaultGap = 25f
+                    val gapByAmount = (defaultGap - 1)
+                    val gap = gapByAmount / 2f
+                    val doubledGap = gap * 2
+
+                    val calculatedSweepAngle = (sweepAngle - doubledGap)
+
+                    drawArc(
+                        color = Color.White,
+                        startAngle = angle + gap, sweepAngle = calculatedSweepAngle,
+                        useCenter = false, topLeft = arcOffset,
+                        size = arcSize, style = arcStroke
+                    )
+
+                    drawArc(
+                        color = color,
+                        startAngle = angle + gap,
+                        sweepAngle = calculatedSweepAngle * percent.value,
+                        useCenter = false, topLeft = arcOffset,
+                        size = arcSize, style = arcStroke
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
@@ -264,5 +400,41 @@ private fun Preview() {
         HabitCategory(
             category = CategoryUI(backgroundColor = CategoryMainColor.Blue)
         ) {}
+
+        getMockStat().forEach {
+            StatisticCategory(stat = it)
+        }
+
+        CategoryPercentage(percentage = 0.5f, categoryAccent = CategoryAccentColor.GreenAccent)
     }
 }
+
+fun getMockStat(): List<CategoryStatistic> =
+    listOf(
+        CategoryStatistic(
+            habitStatistics = listOf(
+                HabitStatistic(
+                    color = CategoryAccentColor.GreenAccent,
+                    icon = R.drawable.ic_sport_ball,
+                    percentage = 0.8f
+                ),
+                HabitStatistic(
+                    color = CategoryAccentColor.GreenAccent,
+                    icon = R.drawable.ic_sport_ball,
+                    percentage = 0.8f
+                ),
+                HabitStatistic(
+                    color = CategoryAccentColor.GreenAccent,
+                    icon = R.drawable.ic_sport_ball,
+                    percentage = 0.8f
+                ),
+                HabitStatistic(
+                    color = CategoryAccentColor.GreenAccent,
+                    icon = R.drawable.ic_sport_ball,
+                    percentage = 0.8f
+                )
+            ),
+            color = CategoryMainColor.Green,
+            percentage = 1f
+        )
+    )
