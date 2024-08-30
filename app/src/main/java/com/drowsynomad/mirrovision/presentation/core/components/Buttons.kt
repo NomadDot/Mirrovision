@@ -474,7 +474,7 @@ fun DoubleSelector(
     }
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         val primaryColor = MaterialTheme.colorScheme.primary

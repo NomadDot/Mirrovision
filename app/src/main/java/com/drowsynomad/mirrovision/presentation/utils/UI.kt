@@ -39,9 +39,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.drowsynomad.mirrovision.presentation.core.components.Time
 import com.drowsynomad.mirrovision.presentation.core.components.models.DayUI
 import com.drowsynomad.mirrovision.presentation.core.components.models.Days
-import com.drowsynomad.mirrovision.presentation.core.components.Time
+import com.drowsynomad.mirrovision.presentation.theme.GradientButtonColors
 
 /**
  * @author Roman Voloshyn (Created on 25.06.2024)
@@ -51,7 +52,7 @@ fun Modifier.gradient(colors: List<Color>, shape: RoundedCornerShape = RoundedCo
     return this.background(brush = Brush.horizontalGradient(colors = colors), shape = shape)
 }
 
-fun Modifier.gradientStroke(colors: List<Color>, width: Dp = 2.dp, shape: RoundedCornerShape = RoundedCornerShape(25.dp)): Modifier {
+fun Modifier.gradientStroke(colors: List<Color> = GradientButtonColors, width: Dp = 2.dp, shape: RoundedCornerShape = RoundedCornerShape(25.dp)): Modifier {
     return this.border(width, brush = Brush.horizontalGradient(colors = colors), shape = shape)
 }
 
@@ -186,6 +187,18 @@ fun AnimatedScene(
         content()
     }
 }
+
+fun Float.toPercentageUI(): String =
+    "${this * 100}"
+        .take(
+            when {
+                this == 1f -> 3
+                this == 0f -> 1
+                this < 0.1f -> 1
+                else -> 2
+            })
+        .plus("%")
+
 
 fun fillWeeklyDays(weeklyDayLabels: List<String>, selectedDays: List<Int>? = null): Days {
     val useSelectedDays = selectedDays != null

@@ -41,6 +41,13 @@
     <string name="label_monthly_brackets">(Monthly)</string>
     <string name="toolbar_today_habits">Today habits</string>
     <string name="toolbar_statistics">Statistics</string>
+    <string name="label_done_in_a_week">Done in a week</string>
+    <string name="no_results_yet">No results yet</string>
+    <string name="label_progress">Progress</string>
+    <string name="label_this_week">This week</string>
+    <string name="label_no_results_yet">No results yet</string>
+    <string name="label_weekly_statistics">Weekly statistics</string>
+    <string name="label_detailed_statistics">Detailed statistics</string>
 
     <string-array name="categories">
         <item>Sport</item>

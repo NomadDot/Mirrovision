@@ -61,6 +61,7 @@ import com.drowsynomad.mirrovision.presentation.utils.ExpandableContainer
 import com.drowsynomad.mirrovision.presentation.utils.VisibilityContainer
 import com.drowsynomad.mirrovision.presentation.utils.defaultTween
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
+import com.drowsynomad.mirrovision.presentation.utils.toPercentageUI
 
 /**
  * @author Roman Voloshyn (Created on 01.07.2024)
@@ -120,7 +121,10 @@ private fun TransitionHabitCategory(
                         contentDescription = emptyString(),
                         tint = category.backgroundColor.accent.pureColor)
                 }
-                BigTitle(text = category.name, color = category.backgroundColor.accent.pureColor)
+                BigTitle(
+                    text = category.name,
+                    color = category.backgroundColor.accent.pureColor
+                )
             }
             Box(modifier = Modifier.fillMaxWidth()) {
                 VisibilityContainer(visible = !isCategoryExpanded.value) {
@@ -337,12 +341,8 @@ fun CategoryPercentage(
 
             LaunchedEffect(key1 = Unit) { showed.value = true }
 
-            val categoryPercentage = remember { percentage * 100 }
-
             Text(
-                text = "$categoryPercentage"
-                    .take(if(categoryPercentage < 100) 2 else 3)
-                    .plus("%"),
+                text = percentage.toPercentageUI(),
                 style = MaterialTheme.typography.bodyMedium,
                 color = color,
                 fontSize = 18.sp,

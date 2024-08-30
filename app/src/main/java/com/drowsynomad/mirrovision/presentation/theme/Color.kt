@@ -31,28 +31,30 @@ val ProgressBackground = Color(0xFFF5EDFF)
 // Category colors
 val BlueCategory = Color(0xFFCDDAFD)
 val GreenCategory = Color(0xFFCADBBB)
-val YellowCategory = Color(0xFFFBF8CB)
+val OceanBlueCategory = Color(0xFFC3ECFF)
 val PinkCategory = Color(0xFFFBD2E2)
 val PurpleCategory = Color(0xFFE7D5FE)
-val OrangeCategory = Color(0xFFFFD8B9)
-val RedCategory = Color(0xFFFFB4B9)
+//val OrangeCategory = Color(0xFFFFD8B9)
+val OrangeCategory = Color(0xFFFFE1C9)
+//val RedCategory = Color(0xFFFFB4B9)
+val RedCategory = Color(0xFFFFCDD0)
 val BrownCategory = Color(0xFFC7A78E)
 
 val DefaultCategoryColor = PurpleCategory
 
-val BlueCategoryAccent = Color(0xFF001F74)
-val GreenCategoryAccent = Color(0xFF686D00)
-val YellowCategoryAccent = Color(0xFFA07300)
-val PinkCategoryAccent = Color(0xFF9B003D)
+val BlueCategoryAccent = Color(0xFF314783)
+val GreenCategoryAccent = Color(0xFF73763C)
+val OceanCategoryAccent = Color(0xFF4A6B79)
+val PinkCategoryAccent = Color(0xFF983A5F)
 val PurpleCategoryAccent = Color(0xFF68509A)
-val OrangeCategoryAccent = Color(0xFFAB4C00)
-val RedCategoryAccent = Color(0xFF8F0009)
-val BrownCategoryAccent = Color(0xFF78431A)
+val OrangeCategoryAccent = Color(0xFF9C774F)
+val RedCategoryAccent = Color(0xFF984449)
+val BrownCategoryAccent = Color(0xFF866240)
 
 @Serializable
 @Parcelize
 enum class CategoryMainColor: Parcelable {
-    Blue, Green, Yellow, Pink, Purple, Orange, Red, Brown;
+    Blue, Green, Ocean, Pink, Purple, Orange, Red, Brown;
     @IgnoredOnParcel
     val pureColor  by lazy { CategoryMainColorsMap[this] ?: BlueCategory }
     @IgnoredOnParcel
@@ -71,7 +73,7 @@ enum class CategoryMainColor: Parcelable {
 
 @Serializable
 enum class CategoryAccentColor {
-    BlueAccent, GreenAccent, YellowAccent, PinkAccent, PurpleAccent, OrangeAccent, RedAccent, BrownAccent;
+    BlueAccent, GreenAccent, OceanAccent, PinkAccent, PurpleAccent, OrangeAccent, RedAccent, BrownAccent;
     val pureColor by lazy { CategoryAccentColorsMap[this] ?: BlueCategoryAccent }
 }
 
@@ -81,7 +83,7 @@ val CategoryMainColorsMap by lazy {
     mapOf(
         Blue to BlueCategory,
         Green to GreenCategory,
-        Yellow to YellowCategory,
+        Ocean to OceanBlueCategory,
         Pink to PinkCategory,
         Purple to PurpleCategory,
         Orange to OrangeCategory,
@@ -95,7 +97,7 @@ val CategoryAccentColorsMap by lazy {
     mapOf(
         CategoryAccentColor.BlueAccent to BlueCategoryAccent,
         CategoryAccentColor.GreenAccent to GreenCategoryAccent,
-        CategoryAccentColor.YellowAccent to YellowCategoryAccent,
+        CategoryAccentColor.OceanAccent to OceanCategoryAccent,
         CategoryAccentColor.PinkAccent to PinkCategoryAccent,
         CategoryAccentColor.PurpleAccent to PurpleCategoryAccent,
         CategoryAccentColor.OrangeAccent to OrangeCategoryAccent,
@@ -109,7 +111,7 @@ val CategoryMainToAccentColors by lazy {
     mapOf(
         Blue to CategoryAccentColor.BlueAccent,
         Green to CategoryAccentColor.GreenAccent,
-        Yellow to CategoryAccentColor.YellowAccent,
+        Ocean to CategoryAccentColor.OceanAccent,
         Pink to CategoryAccentColor.PinkAccent,
         Purple to CategoryAccentColor.PurpleAccent,
         Orange to CategoryAccentColor.OrangeAccent,
@@ -122,7 +124,7 @@ val CategoryAccentPairsColor by lazy {
     mapOf(
         Blue to BlueCategoryAccent,
         Green to GreenCategoryAccent,
-        Yellow to YellowCategoryAccent,
+        Ocean to OceanCategoryAccent,
         Pink to PinkCategoryAccent,
         Purple to PurpleCategoryAccent,
         Orange to OrangeCategoryAccent,

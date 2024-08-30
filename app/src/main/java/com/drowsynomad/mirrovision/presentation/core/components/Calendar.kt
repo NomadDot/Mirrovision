@@ -1,5 +1,7 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
+import android.graphics.Color.*
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.presentation.core.components.models.DayUI
+import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 import com.drowsynomad.mirrovision.presentation.utils.roundBox

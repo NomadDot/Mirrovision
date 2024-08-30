@@ -25,10 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -45,32 +48,11 @@ import kotlin.random.Random
  * @author Roman Voloshyn (Created on 22.08.2024)
  */
 
-private fun getMock(): List<CategoryChartData> =
-    listOf(
-        CategoryChartData(
-            percent = 0.36f,
-            categoryColor = CategoryMainColor.Green,
-            categoryIcon = R.drawable.ic_sport_ball
-        ),
-        CategoryChartData(
-            percent = 0.42f,
-            categoryColor = CategoryMainColor.Purple,
-            categoryIcon = R.drawable.ic_sport_ball
-        ),
-        CategoryChartData(
-            percent = 1f,
-            categoryColor = CategoryMainColor.Blue,
-            categoryIcon = R.drawable.ic_sport_ball
-        ),
-        CategoryChartData(
-            percent = 0.71f,
-            categoryColor = CategoryMainColor.Red,
-            categoryIcon = R.drawable.ic_sport_ball
-        ),
-    )
-
 @Composable
-fun WeeklyChart(modifier: Modifier = Modifier) {
+fun WeeklyChart(
+    modifier: Modifier = Modifier,
+    chartData: List<CategoryChartData> = emptyList()
+) {
     Column(
         modifier = modifier
             .gradient(GradientMain)
@@ -81,13 +63,13 @@ fun WeeklyChart(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Progress",
+                text = stringResource(R.string.label_progress),
                 color = Color.White,
                 style = MaterialTheme.typography.titleSmall,
                 fontSize = 16.sp
             )
             Text(
-                text = "This week",
+                text = stringResource(R.string.label_this_week),
                 color = Color.White,
                 style = MaterialTheme.typography.headlineSmall,
                 fontSize = 12.sp
@@ -108,7 +90,7 @@ fun WeeklyChart(modifier: Modifier = Modifier) {
                 }
             }
             CategoryChart(
-                chartData = getMock(),
+                chartData = chartData,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(start = 36.dp)
@@ -141,6 +123,7 @@ private fun PercentageLine(
 }
 
 data class CategoryChartData(
+    val id: Int = Random.nextInt(),
     val percent: Float,
     val categoryColor: CategoryMainColor,
     @DrawableRes val categoryIcon: Int
@@ -158,7 +141,7 @@ private fun CategoryChart(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.Bottom
     ) {
-        items(chartData, key = { Random.nextLong() }) {
+        items(chartData, key = { it.id }) {
             IconLine(it, maxLineHeight = maxLineHeight)
         }
     }
@@ -169,7 +152,7 @@ private fun IconLine(
     chartData: CategoryChartData,
     maxLineHeight: Dp
 ) {
-    val showed = remember { mutableStateOf(false) }
+    val showed = rememberSaveable { mutableStateOf(false) }
 
     val percent = animateFloatAsState(
         targetValue = if(showed.value) chartData.percent else 0f,
@@ -188,8 +171,9 @@ private fun IconLine(
                 .height(maxLineHeight * percent.value)
                 .width(14.dp)
                 .background(
-                    color = chartData.categoryColor.accent.pureColor,
-                    RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
+                    color = chartData.categoryColor.pureColor,
+                    RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
+                )
         )
         Icon(
             painter = painterResource(id = chartData.categoryIcon),

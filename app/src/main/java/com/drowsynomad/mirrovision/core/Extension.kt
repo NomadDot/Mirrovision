@@ -1,9 +1,21 @@
 package com.drowsynomad.mirrovision.core
 
 import android.annotation.SuppressLint
+import android.graphics.Color
+import android.util.Log
+import androidx.core.util.rangeTo
+import com.drowsynomad.mirrovision.presentation.core.components.Cell
+import com.drowsynomad.mirrovision.presentation.core.components.CellProgress
 import org.joda.time.DateTime
+import org.joda.time.DateTimeConstants
+import org.joda.time.LocalDate
 import java.text.SimpleDateFormat
 import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.random.Random
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.DurationUnit
 
 /**
  * @author Roman Voloshyn (Created on 23.06.2024)
@@ -23,4 +35,91 @@ fun generateDayId(): Long {
     return DateTime(currentDate).millis.removeTimePart()
 }
 
+@SuppressLint("SimpleDateFormat")
+fun generateStartOfAWeekId(): Long {
+    val today = LocalDate()
+    return today.withDayOfWeek(DateTimeConstants.MONDAY)
+        .toDate().time.milliseconds
+        .toLong(DurationUnit.MILLISECONDS)
+        .removeTimePart()
+}
+
+@SuppressLint("SimpleDateFormat")
+fun generateHabitPeriodId(): Long {
+    val today = LocalDate()
+    return today.minusDays(CELL_AMOUNT_WITH_CURRENT_WEEK)
+        .toDate().time.milliseconds
+        .toLong(DurationUnit.MILLISECONDS)
+        .removeTimePart()
+}
+
+
 private fun Long.removeTimePart(): Long = this.toString().dropLast(5).toLong()
+private val currentDay by lazy {
+    val dateFormat = SimpleDateFormat(datePattern)
+    val currentDate = dateFormat.format(Date())
+    DateTime(currentDate)
+}
+
+private const val CELL_AMOUNT_WITH_CURRENT_WEEK = 154
+
+@SuppressLint("SimpleDateFormat")
+fun createCells(
+    selectedDaysId: HashMap<Long, CellProgress>
+): List<Cell> {
+    val outputData = mutableListOf<Cell>()
+
+    val dayInWeekPosition = (7 - currentDay.dayOfWeek)
+    val currentDayPosition = CELL_AMOUNT_WITH_CURRENT_WEEK - dayInWeekPosition
+
+    val firstDay = currentDay.minusDays(currentDayPosition)
+
+    for (dayPosition in  1 ..CELL_AMOUNT_WITH_CURRENT_WEEK) {
+        var progress = CellProgress.NO_ACTIVITY
+        val dayId = firstDay.plusDays(dayPosition).millis.removeTimePart()
+
+         selectedDaysId[dayId]?.let { progress = it }
+
+        outputData.add(
+            Cell(
+                dayId = dayId,
+                progress = progress,
+                isCurrentDay = dayPosition == currentDayPosition
+            )
+        )
+    }
+
+    return outputData
+}
+
+@SuppressLint("SimpleDateFormat")
+fun createMockCells(
+): List<Cell> {
+    val outputData = mutableListOf<Cell>()
+
+    for (dayPosition in 154 downTo 1) {
+        outputData.add(
+            Cell(
+                dayId = Random.nextLong(),
+                progress = CellProgress.entries.random()
+            )
+        )
+    }
+
+    return outputData
+}
+
+fun lighterColor(color: Int, fraction: Double): Int {
+    var red = Color.red(color)
+    var green = Color.green(color)
+    var blue = Color.blue(color)
+    red = lightenColor(red, fraction)
+    green = lightenColor(green, fraction)
+    blue = lightenColor(blue, fraction)
+    val alpha = Color.alpha(color)
+    return Color.argb(alpha, red, green, blue)
+}
+
+private fun lightenColor(color: Int, fraction: Double): Int {
+    return min(color + (color * fraction), 255.0).toInt()
+}

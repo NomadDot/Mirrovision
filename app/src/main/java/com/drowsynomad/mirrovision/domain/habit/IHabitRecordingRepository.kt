@@ -1,13 +1,13 @@
 package com.drowsynomad.mirrovision.domain.habit
 
-import android.util.Log
 import com.drowsynomad.mirrovision.core.generateDayId
 import com.drowsynomad.mirrovision.data.database.MirrovisionDatabase
 import com.drowsynomad.mirrovision.data.database.entities.HabitEntity
 import com.drowsynomad.mirrovision.data.database.entities.HabitRecord
-import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRecordings
 import com.drowsynomad.mirrovision.domain.models.Habit
 import com.drowsynomad.mirrovision.domain.models.RegularityType
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitWithRecordingUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.RecordingUI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -36,7 +36,7 @@ interface IHabitRecordingRepository {
         habitId: Long
     )
 
-    suspend fun loadDailyRecordings(): List<HabitWithRecordings>
+    suspend fun loadPeriodRecordings(startOfAWeek: Long): List<HabitWithRecordingUI>
     suspend fun getTodayRecording(dayId: Long, habitId: Long): HabitRecord?
 }
 
@@ -63,8 +63,7 @@ class HabitRecordingRepository(
 
             regularities.forEach { dataRegularity ->
                 val regularity = dataRegularity.toDomain()
-                if(
-                    regularity.selectedDays.find {
+                if(regularity.selectedDays.find {
                         it.dayPosition ==
                             if(regularity.type is RegularityType.MonthlyType) currentDayInMonth
                             else currentDayInWeek } != null
@@ -92,7 +91,6 @@ class HabitRecordingRepository(
         filledCellAmount: Int
     ) {
         val count = habitDao.getRecordCount(dayId, habitId)
-        Log.i("RECORD", count.toString())
         if(count < 1) {
             habitDao.insertHabitRecord(
                 HabitRecord(
@@ -117,8 +115,23 @@ class HabitRecordingRepository(
         }
     }
 
-    override suspend fun loadDailyRecordings(): List<HabitWithRecordings> {
-        TODO("Not yet implemented")
+    override suspend fun loadPeriodRecordings(startOfAWeek: Long): List<HabitWithRecordingUI> {
+        val habitWithRecordsTuple = database.habitDao().getRecordingsWithHabitOnPeriod(startOfAWeek)
+        return habitWithRecordsTuple.keys.map { habit ->
+            val records = habitWithRecordsTuple[habit]
+                ?.map { record ->
+                    with(record) {
+                        RecordingUI(
+                            id = id,
+                            habitId = habitId,
+                            cells = amount.cellAmount,
+                            filledCells = amount.prefilledCellAmount,
+                            dayId = date
+                        )
+                    }
+                } ?: listOf()
+            HabitWithRecordingUI(habit.toUI(), records)
+        }
     }
 
     override suspend fun getTodayRecording(dayId: Long, habitId: Long): HabitRecord? =
