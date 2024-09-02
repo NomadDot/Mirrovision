@@ -12,6 +12,7 @@ import com.drowsynomad.mirrovision.data.database.entities.HabitRecord
 import com.drowsynomad.mirrovision.data.database.entities.HabitRegularity
 import com.drowsynomad.mirrovision.data.database.entities.tuples.FullInfoHabit
 import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRecordings
+import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRecordingsTuple
 import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRegularity
 import com.drowsynomad.mirrovision.data.database.entities.tuples.RecordingWithHabit
 import kotlinx.coroutines.flow.Flow
@@ -46,7 +47,13 @@ interface HabitDao {
 
     @Transaction
     @Query("SELECT * FROM habits")
-    fun getHabitWithRecordings(): Flow<List<HabitWithRecordings?>>
+    fun getHabitWithRecordings(): List<HabitWithRecordings?>
+
+    @Transaction
+    @Query("SELECT * FROM habits AS habit " +
+            "JOIN habit_record AS record ON habit.id = record.habit_id " +
+            "AND record.day_date >= :start")
+    fun getRecordingsWithHabitOnPeriod(start: Long): Map<HabitEntity, List<HabitRecord>>
 
     @Query("SELECT * FROM habit_record WHERE day_date = :dayId AND habit_id = :habitId")
     fun getRecord(dayId: Long, habitId: Long): HabitRecord?

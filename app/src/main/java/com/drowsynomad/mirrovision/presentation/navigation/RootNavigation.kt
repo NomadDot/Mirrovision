@@ -19,6 +19,7 @@ import com.drowsynomad.mirrovision.presentation.screens.habitCreating.CreateHabi
 import com.drowsynomad.mirrovision.presentation.screens.introCategories.IntroCategoriesScreen
 import com.drowsynomad.mirrovision.presentation.screens.introHabitPreset.PresetHabitScreen
 import com.drowsynomad.mirrovision.presentation.screens.splashLoading.SplashLoadingScreen
+import com.drowsynomad.mirrovision.presentation.screens.statistic.StatisticsScreen
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.composableOf
 import com.drowsynomad.mirrovision.presentation.utils.fromJson

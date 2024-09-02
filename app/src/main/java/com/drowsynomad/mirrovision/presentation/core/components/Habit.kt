@@ -1,5 +1,7 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
+import android.graphics.Color.rgb
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -9,15 +11,22 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -25,11 +34,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.R
+import com.drowsynomad.mirrovision.core.createMockCells
 import com.drowsynomad.mirrovision.core.isNegative
 import com.drowsynomad.mirrovision.core.isZero
 import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
@@ -39,6 +51,7 @@ import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.theme.LightPrimary
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
+import com.drowsynomad.mirrovision.presentation.utils.roundBox
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -216,12 +229,162 @@ fun AmountHabit(
             modifier = Modifier
                 .size(iconSize)
                 .align(Alignment.Center),
-//            iconSpec = iconSize,
             outerRadius = 0.dp,
             accentColor = habitUI.backgroundColor.pureColor,
             iconTint = habitUI.accentColor.pureColor,
             icon = habitUI.icon,
             onIconClick = onClick
+        )
+    }
+}
+
+@Composable
+fun StatisticHabit(
+    modifier: Modifier = Modifier,
+    strokeSize: Dp = 60.dp,
+    strWidth: StrokeWidth = StrokeWidth.Custom(16f),
+    habitStat: HabitStatistic
+) {
+    val color = remember { habitStat.color.pureColor }
+    val percentage = remember { habitStat.percentage * 100 }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = modifier
+        ) {
+            Icon(
+                painter = painterResource(id = habitStat.icon),
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(35.dp)
+            )
+            Canvas(
+                modifier = Modifier
+                    .size(strokeSize, strokeSize)
+                    .align(Alignment.Center)
+            ) {
+                drawIntoCanvas {
+                    val width = size.width
+                    val strokeWidth = strWidth.width
+                    val angle = 270f
+
+                    val arcSize = Size(width - strokeWidth, width - strokeWidth)
+                    val arcOffset = Offset(strokeWidth / 2, strokeWidth / 2)
+                    val arcStroke = Stroke(strokeWidth, cap = StrokeCap.Round)
+
+                    val sweepAngle = 360f
+
+                    val defaultGap = 25f
+                    val gapByAmount = (defaultGap - 1)
+                    val gap = gapByAmount / 2f
+                    val doubledGap = gap * 2
+
+                    val calculatedSweepAngle = (sweepAngle - doubledGap)
+
+                    drawArc(
+                        color = Color.White,
+                        startAngle = angle + gap, sweepAngle = calculatedSweepAngle,
+                        useCenter = false, topLeft = arcOffset,
+                        size = arcSize, style = arcStroke
+                    )
+
+                    drawArc(
+                        color = color,
+                        startAngle = angle + gap,
+                        sweepAngle = calculatedSweepAngle * habitStat.percentage,
+                        useCenter = false, topLeft = arcOffset,
+                        size = arcSize, style = arcStroke
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(5.dp))
+        Text(
+            text = "$percentage".take(
+                when {
+                    percentage < 10 -> 1
+                    percentage < 100 -> 2
+                    else -> 3
+                }).plus("%"),
+            style = MaterialTheme.typography.bodyMedium,
+            color = color,
+            fontSize = 14.sp
+        )
+    }
+}
+
+data class Filling(
+    val color: CategoryMainColor,
+    val cells: List<Cell>
+) {
+    val pureAccent by lazy {
+        val accent = color.accent.pureColor
+        rgb(accent.red, accent.green, accent.blue)
+    }
+}
+
+data class HabitProgressUI(
+    val habitId: Long,
+    val name: String,
+    val description: String,
+    @DrawableRes val icon: Int,
+    val color: CategoryMainColor,
+    val filling: Filling
+)
+
+@Composable
+fun ProgressHabit(
+    modifier: Modifier = Modifier,
+    habitProgressUI: HabitProgressUI,
+    onClick: ((Long) -> Unit)? = null
+) {
+    Box(modifier = modifier
+        .bounceClick { onClick?.invoke(habitProgressUI.habitId) }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 23.dp, end = 23.dp, top = 10.dp)
+                .roundBox(color = habitProgressUI.color.pureColor)
+        ) {
+            Text(
+                text = habitProgressUI.name,
+                style = MaterialTheme.typography.titleSmall,
+                fontSize = 16.sp,
+                color = habitProgressUI.color.accent.pureColor,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 30.dp)
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(
+                text = habitProgressUI.description,
+                style = MaterialTheme.typography.headlineSmall,
+                color = habitProgressUI.color.accent.pureColor,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 30.dp)
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+            Box(modifier = Modifier.fillMaxWidth().roundBox(Color.White)) {
+                HabitProgress(
+                    modifier = Modifier
+                        .align(Alignment.Center),
+                    filling = habitProgressUI.filling
+                )
+            }
+        }
+        CategoryIcon(
+            color = habitProgressUI.color,
+            icon = habitProgressUI.icon,
+            modifier = Modifier
+                .align(TopEnd)
+                .padding(end = 14.dp)
+                .width(50.dp)
+                .height(50.dp)
         )
     }
 }
@@ -252,5 +415,28 @@ private fun Preview() {
                 )
             )
         )
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .roundBox(color = CategoryMainColor.Purple.pureColor)
+        ) {
+            StatisticHabit(
+                habitStat = HabitStatistic(
+                    color = CategoryAccentColor.PurpleAccent,
+                    icon = R.drawable.ic_sport_ball,
+                    percentage = 0.04f
+                )
+            )
+        }
+
+        ProgressHabit(
+            habitProgressUI = HabitProgressUI(
+                habitId = 8210,
+                name = "Judy Horn",
+                description = "deserunt",
+                icon = R.drawable.ic_sport_ball,
+                color = CategoryMainColor.Green,
+                filling = Filling(cells = listOf(), color = CategoryMainColor.Purple)
+            ),
+            modifier = Modifier.fillMaxWidth())
     }
 }

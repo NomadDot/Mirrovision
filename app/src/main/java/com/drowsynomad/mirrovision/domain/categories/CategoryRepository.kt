@@ -3,6 +3,7 @@ package com.drowsynomad.mirrovision.domain.categories
 import com.drowsynomad.mirrovision.data.assets.IAssetStore
 import com.drowsynomad.mirrovision.data.database.MirrovisionDatabase
 import com.drowsynomad.mirrovision.data.database.entities.CategoryAndHabits
+import com.drowsynomad.mirrovision.data.database.entities.CategoryEntity
 import com.drowsynomad.mirrovision.domain.models.Category
 import com.drowsynomad.mirrovision.domain.models.Habit
 import com.drowsynomad.mirrovision.domain.models.HabitRegularities
@@ -25,6 +26,7 @@ interface ICategoryRepository {
         habits: List<Habit>,
         habitRegularities: List<HabitRegularities>
     )
+    suspend fun loadCategories(): List<Category>
     fun loadLocalCategoriesWithHabits(): Flow<List<CategoryAndHabits>>
     suspend fun loadCategoriesForDay(dayId: Long): List<CategoryUI>
 }
@@ -55,6 +57,10 @@ class CategoryRepository(
             val habitRecords = habitRegularities[index].regularities.map { it.toData() }
             habitDao.insertHabitRegularity(habitRecords)
         }
+    }
+
+    override suspend fun loadCategories(): List<Category> {
+        return database.categoryDao().getAllCategories().map { it.toDomain() }
     }
 
     override fun loadLocalCategoriesWithHabits(): Flow<List<CategoryAndHabits>> =

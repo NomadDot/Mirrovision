@@ -40,6 +40,15 @@
     <string name="label_days">Дні</string>
     <string name="label_weekly_brackets">(Тиждень)</string>
     <string name="label_monthly_brackets">(Місяць)</string>
+    <string name="label_done_in_a_week">Виконано за тиждень</string>
+    <string name="no_results_yet">Поик що нема результатів</string>
+    <string name="label_progress">Прогрес</string>
+    <string name="label_no_results_yet">Результати відсутні</string>
+    <string name="toolbar_today_habits">Звички на сьогодні</string>
+    <string name="toolbar_statistics">Статистика</string>
+    <string name="label_this_week">Поточний тиждень</string>
+    <string name="label_weekly_statistics">Тижнева стат.</string>
+    <string name="label_detailed_statistics">Детальна стат.</string>
 
     <string-array name="categories">
         <item>Спорт</item>

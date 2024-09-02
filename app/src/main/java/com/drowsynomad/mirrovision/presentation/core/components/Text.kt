@@ -3,6 +3,8 @@ package com.drowsynomad.mirrovision.presentation.core.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.presentation.theme.LightPrimary
@@ -22,7 +25,8 @@ import com.drowsynomad.mirrovision.presentation.theme.PinkCategoryAccent
 
 @Composable
 fun BigTitle(text: String, modifier: Modifier = Modifier) {
-    Text(text = text,
+    Text(
+        text = text,
         modifier = modifier,
         style = MaterialTheme.typography.titleMedium,
     )
@@ -99,6 +103,35 @@ fun ExplainTitle(
     }
 }
 
+@Composable
+fun TextSeparator(
+    modifier: Modifier = Modifier,
+    text: String
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.primary,
+            thickness = 2.dp
+        )
+        Text(
+            text = text,
+            modifier = modifier,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleSmall,
+        )
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            color = MaterialTheme.colorScheme.primary,
+            thickness = 2.dp
+        )
+    }
+}
+
 @Preview(showSystemUi = true)
 @Composable
 private fun TextPreviews() {
@@ -107,5 +140,9 @@ private fun TextPreviews() {
         CategoryTitle(text = "Title", color = PinkCategoryAccent)
         CounterText("12", color = LightPrimary)
         ExplainTitle(title = "Кількість", explain = "(разів на день)", titleColor = LightPrimary)
+        TextSeparator(
+            modifier = Modifier,
+            text = "Done in a week"
+        )
     }
 }

@@ -23,7 +23,7 @@ data class HabitWithRecordings(
     @Embedded val habit: HabitEntity,
     @Relation(
         parentColumn = "id",
-        entityColumn = "habit_id",
+        entityColumn = "habit_id"
     )
     val habitRecordings: List<HabitRecord>
 )
@@ -38,6 +38,13 @@ data class RecordingWithHabit(
     val habit: HabitEntity,
 )
 
+data class HabitWithRecordingsTuple(
+    @Embedded val habit: HabitEntity,
+)
+
+data class Records(
+    val habitRecordings: List<HabitRecord>
+)
 data class FullInfoHabit(
     @Embedded val habit: HabitEntity,
 

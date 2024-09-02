@@ -1,6 +1,7 @@
 package com.drowsynomad.mirrovision.data.database
 
 import androidx.room.TypeConverter
+import com.drowsynomad.mirrovision.data.database.entities.HabitRecord
 import com.drowsynomad.mirrovision.data.database.entities.RegularityDay
 import com.google.gson.Gson
 
@@ -20,4 +21,10 @@ class TypeConverter {
 
     @TypeConverter
     fun toDaysList(json: String): List<RegularityDay> = Gson().fromJson(json, Array<RegularityDay>::class.java).toList()
+
+    @TypeConverter
+    fun fromRecordingList(list: List<HabitRecord>): String = Gson().toJson(list)
+
+    @TypeConverter
+    fun toRecordingList(json: String): List<HabitRecord> = Gson().fromJson(json, Array<HabitRecord>::class.java).toList()
 }
