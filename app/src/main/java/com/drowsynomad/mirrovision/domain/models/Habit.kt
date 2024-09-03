@@ -3,6 +3,7 @@ package com.drowsynomad.mirrovision.domain.models
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.data.database.entities.HabitEntity
 import com.drowsynomad.mirrovision.data.database.entities.HabitRegularity
+import com.drowsynomad.mirrovision.data.database.entities.HabitUpdate
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 
 /**
@@ -28,6 +29,16 @@ data class Habit(
             icon = icon,
             bgColor = backgroundColor.toString(),
             amount = HabitEntity.Amount(cellAmount, filledCellAmount)
+        )
+    }
+
+    fun toUpdateModel(): HabitUpdate = let {
+        return HabitUpdate(
+            id = id,
+            name = name,
+            description = description,
+            cellAmount = cellAmount,
+            filledCellAmount = filledCellAmount
         )
     }
 }

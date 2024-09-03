@@ -1,5 +1,6 @@
 package com.drowsynomad.mirrovision.domain.habit
 
+import android.util.Log
 import com.drowsynomad.mirrovision.core.generateDayId
 import com.drowsynomad.mirrovision.data.database.MirrovisionDatabase
 import com.drowsynomad.mirrovision.data.database.entities.HabitEntity

@@ -28,9 +28,10 @@ class HabitRepository(
     }
 
     override suspend fun createNewOrUpdateHabit(habit: Habit) {
-        database
-            .habitDao()
-            .insertHabit(habit.toData())
+        if(database.habitDao().getHabitCount(habit.id) < 1)
+            database.habitDao().insertHabit(habit.toData())
+        else
+            database.habitDao().updateHabitEntity(habit.toUpdateModel())
     }
 
     override suspend fun loadHabitWithRegularity(habitId: Long): HabitWithRegularity {
