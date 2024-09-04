@@ -24,3 +24,10 @@ data class CategoryEntity(
             id = id, name = name, icon = icon, bgColor = CategoryMainColor.parse(bgColor)
         )
 }
+
+data class CategoryUpdateEntity(
+    val id: Int = 0,
+    val name: String? = null,
+    val icon: Int? = null,
+    val bgColor: String? = null
+)

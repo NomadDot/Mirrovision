@@ -9,8 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
-import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.HabitCategory
+import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColoredCategory
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.screens.home.model.HomeEvent
 import com.drowsynomad.mirrovision.presentation.screens.home.model.HomeState
 
@@ -30,6 +31,7 @@ fun HomeScreen(
         HomeContent(
             state = it,
             onEditHabitClick = onEditHabitClick,
+            onEditCategory = { viewModel.handleUiEvent(HomeEvent.UpdateCategory(it)) },
             onHabitClick = { viewModel.handleUiEvent(HomeEvent.FillHabitCell(it)) },
             onLongHabitClick = { viewModel.handleUiEvent(HomeEvent.RemoveHabitCell(it)) }
         )
@@ -39,6 +41,7 @@ fun HomeScreen(
 @Composable
 private fun HomeContent(
     state: HomeState,
+    onEditCategory: (ColoredCategory) -> Unit,
     onEditHabitClick: (HabitUI) -> Unit,
     onHabitClick: (HabitUI) -> Unit,
     onLongHabitClick: (HabitUI) -> Unit,
@@ -51,6 +54,7 @@ private fun HomeContent(
         items(state.categoriesWithHabits, key = { category -> category.id }) {
             HabitCategory(
                 category = it,
+                onEditCategory = onEditCategory,
                 onEditHabit = onEditHabitClick,
                 onHabitClick = onHabitClick,
                 onLongHabitClick = onLongHabitClick)

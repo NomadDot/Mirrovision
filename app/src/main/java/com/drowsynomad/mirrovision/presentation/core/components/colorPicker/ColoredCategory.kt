@@ -13,12 +13,12 @@ import kotlin.random.Random
  */
 
 data class ColoredCategory(
+    val id: Int = Random.nextInt(),
     val color: ColorShades = ColorShades(),
     val name: String = emptyString(),
     @DrawableRes val icon: Int = 0,
     val initialSelection: Boolean = false,
 ) {
-    val id: Int = Random.nextInt()
     var selected by mutableStateOf(initialSelection)
 
     fun toIntroCategory(initialSelection: Boolean = false): IntroCategoryUI {
