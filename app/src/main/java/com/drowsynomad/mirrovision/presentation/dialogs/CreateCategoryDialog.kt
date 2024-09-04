@@ -1,6 +1,5 @@
 package com.drowsynomad.mirrovision.presentation.dialogs
 
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,8 +39,6 @@ import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.Colo
 import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColorShades
 import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColoredCategory
 import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
-import com.drowsynomad.mirrovision.presentation.theme.CategoryColors
-import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.theme.convertToAccentCategoryColor
 import com.drowsynomad.mirrovision.presentation.theme.convertToMainCategoryColor
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
@@ -89,8 +85,8 @@ fun CreateCategoryDialog(
 
     fun checkIfButtonEnabled() {
         isButtonActive.value = categoryName.value.isNotEmpty() &&
-                currentBackgroundColor.value != defaultBgColor
-                && categoryIcon.intValue != R.drawable.ic_add
+                currentBackgroundColor.value != defaultBgColor &&
+                categoryIcon.intValue != R.drawable.ic_add
     }
 
     val accentColor = animateColorAsState(
@@ -170,6 +166,7 @@ fun CreateCategoryDialog(
                         selectCategory(it)
                         selectedBgColor.value = it.main.pureColor
                         selectedAccentColor.value = it.accent.pureColor
+                        isButtonActive.value = false
                     }
                 )
                 Row(
