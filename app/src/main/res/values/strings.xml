@@ -46,8 +46,8 @@
     <string name="label_progress">Progress</string>
     <string name="label_this_week">This week</string>
     <string name="label_no_results_yet">No results yet</string>
-    <string name="label_weekly_statistics">Weekly statistics</string>
-    <string name="label_detailed_statistics">Detailed statistics</string>
+    <string name="label_weekly_statistics">Weekly</string>
+    <string name="label_detailed_statistics">Detailed</string>
 
     <string-array name="categories">
         <item>Sport</item>

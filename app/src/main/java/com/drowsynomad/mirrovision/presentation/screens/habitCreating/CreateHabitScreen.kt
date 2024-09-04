@@ -142,8 +142,7 @@ fun CreateHabitContent(
 
         fun checkIfSavingButtonEnabled() {
             isSavingEnabled.value = icon.intValue != R.drawable.ic_add &&
-                    habitName.value.isNotEmpty() && habitDescription.value.isNotEmpty() &&
-                    habitUI.regularityState.fastAll { it.isFilled }
+                habitName.value.isNotEmpty() && habitUI.regularityState.fastAll { it.isFilled }
         }
 
         checkIfSavingButtonEnabled()
