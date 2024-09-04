@@ -60,10 +60,12 @@ class HomeVM @Inject constructor(
     }
 
     private fun updateCategory(coloredCategory: ColoredCategory) {
-        launch() {
+        launch {
             categoryRepository.updateCategory(
-                coloredCategory.id, coloredCategory.color.main, coloredCategory.icon, coloredCategory.name
+                coloredCategory.id, coloredCategory.color.main,
+                coloredCategory.icon, coloredCategory.name
             )
+            habitRepository.updateHabitsColor(coloredCategory.id, coloredCategory.color.main)
             handleUiEvent(HomeEvent.LoadTodayCategories)
         }
     }

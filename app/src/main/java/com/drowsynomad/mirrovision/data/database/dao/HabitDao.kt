@@ -118,4 +118,7 @@ interface HabitDao {
 
     @Query("DELETE FROM habit_record WHERE day_date = :dayId AND habit_id = :habitId")
     suspend fun deleteRecording(dayId: Long, habitId: Long)
+
+    @Query("UPDATE habits SET bg_color = :newColor WHERE category_id = :categoryId")
+    fun updateHabitsColor(categoryId: Int, newColor: String)
 }

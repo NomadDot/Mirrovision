@@ -114,7 +114,7 @@ class CategoryRepository(
     ) {
         database.categoryDao()
             .updateCategory(
-                CategoryUpdateEntity(categoryId,newName, newIcon, newColor.toString())
+                CategoryUpdateEntity(categoryId, newName, newIcon, newColor.toString())
             )
     }
 }
