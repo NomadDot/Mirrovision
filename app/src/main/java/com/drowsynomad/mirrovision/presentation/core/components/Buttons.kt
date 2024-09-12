@@ -31,7 +31,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -86,7 +85,7 @@ import com.drowsynomad.mirrovision.presentation.utils.roundBox
 @Composable
 fun PrimaryButton(
     text: String = emptyString(),
-    modifier: Modifier = Modifier,
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
     isEnabled: Boolean = true,
     @DrawableRes icon: Int? = null,
     containerColor: Color = LightPrimary,
@@ -480,7 +479,7 @@ fun DoubleSelector(
         val primaryColor = MaterialTheme.colorScheme.primary
 
         val defaultModifier = remember {
-            Modifier.bounceClick().weight(1f).height(40.dp)
+            Modifier.bounceClick().weight(1f)
         }
 
         val unselectedModifier = remember {
@@ -489,6 +488,7 @@ fun DoubleSelector(
                     width = 2.dp,
                     color = primaryColor,
                     shape = RoundedCornerShape(25.dp))
+                .height(40.dp)
         }
 
         val activeModifier = remember {
@@ -496,6 +496,7 @@ fun DoubleSelector(
                 .background(
                     brush = Brush.horizontalGradient(GradientMain),
                     shape = RoundedCornerShape(25.dp))
+                .height(40.dp)
         }
 
         Button(
@@ -506,8 +507,8 @@ fun DoubleSelector(
             },
             modifier = if(firstButtonSelected.value) activeModifier else unselectedModifier,
             colors = ButtonColors(containerColor = Color.Transparent, contentColor = MaterialTheme.colorScheme.primary,
-                disabledContentColor = Color.Transparent, disabledContainerColor = Color.Transparent),
-
+                disabledContentColor = Color.Transparent, disabledContainerColor = Color.Transparent
+            ),
         ) {
             Text(
                 text = leftButtonLabel,

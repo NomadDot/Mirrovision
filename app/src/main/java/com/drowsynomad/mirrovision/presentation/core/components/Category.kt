@@ -135,9 +135,11 @@ private fun TransitionHabitCategory(
                         contentDescription = emptyString(),
                         tint = category.backgroundColor.accent.pureColor)
                 }
-                BigTitle(
+                Text(
                     text = category.name,
-                    color = category.backgroundColor.accent.pureColor
+                    color = category.backgroundColor.accent.pureColor,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontSize = 18.sp
                 )
             }
             Box(modifier = Modifier.fillMaxWidth()) {

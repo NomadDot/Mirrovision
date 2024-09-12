@@ -146,7 +146,7 @@ fun CreateCategoryDialog(
                     prefilledValue = categoryUI?.name ?: emptyString(),
                     color = accentColor.value,
                     hint = stringResource(R.string.label_enter_category_name),
-                    maxLimit = 30
+                    maxLimit = 25
                 ) {
                     categoryName.value = it
                     checkIfButtonEnabled()
