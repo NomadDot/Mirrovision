@@ -1,12 +1,10 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
-import android.health.connect.datatypes.units.Percentage
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.repeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
@@ -17,7 +15,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -52,10 +49,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
+import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColorShades
+import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColoredCategory
 import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeWidth
+import com.drowsynomad.mirrovision.presentation.dialogs.CreateCategoryDialog
 import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
+import com.drowsynomad.mirrovision.presentation.theme.CategoryColors
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.ExpandableContainer
 import com.drowsynomad.mirrovision.presentation.utils.VisibilityContainer
@@ -71,17 +72,19 @@ import com.drowsynomad.mirrovision.presentation.utils.toPercentageUI
 fun HabitCategory(
     modifier: Modifier = Modifier,
     category: CategoryUI = CategoryUI(),
+    onEditCategory: ((ColoredCategory) -> Unit)? = null,
     onEditHabit: ((HabitUI) -> Unit)? = null,
     onLongHabitClick:((HabitUI) -> Unit)? = null,
     onHabitClick: ((HabitUI) -> Unit)? = null
 ) {
-    TransitionHabitCategory(modifier, category, onEditHabit, onLongHabitClick, onHabitClick)
+    TransitionHabitCategory(modifier, category, onEditCategory, onEditHabit, onLongHabitClick, onHabitClick)
 }
 
 @Composable
 private fun TransitionHabitCategory(
     modifier: Modifier = Modifier,
     category: CategoryUI = CategoryUI(),
+    onEditCategory: ((ColoredCategory) -> Unit)? = null,
     onEditHabit: ((HabitUI) -> Unit)? = null,
     onLongHabitClick:((HabitUI) -> Unit)? = null,
     onHabitClick: ((HabitUI) -> Unit)? = null
@@ -89,6 +92,17 @@ private fun TransitionHabitCategory(
     val isCategoryExpanded = rememberSaveable { mutableStateOf(false) }
 
     val accent = category.backgroundColor.accent.pureColor
+
+    val showEditCategoryDialog = remember { mutableStateOf(false) }
+
+    if(showEditCategoryDialog.value)
+        CreateCategoryDialog(
+            enabledColors = CategoryColors.map { color -> ColorShades(color, color.accent) },
+            isDialogVisible = { showEditCategoryDialog.value = it },
+            categoryUI = category
+        ) {
+            onEditCategory?.invoke(it)
+        }
 
     Box(modifier = modifier
         .fillMaxWidth()
@@ -121,9 +135,11 @@ private fun TransitionHabitCategory(
                         contentDescription = emptyString(),
                         tint = category.backgroundColor.accent.pureColor)
                 }
-                BigTitle(
+                Text(
                     text = category.name,
-                    color = category.backgroundColor.accent.pureColor
+                    color = category.backgroundColor.accent.pureColor,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontSize = 18.sp
                 )
             }
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -136,7 +152,7 @@ private fun TransitionHabitCategory(
                              modifier = Modifier.fillMaxWidth(),
                              icon = R.drawable.ic_settings, containerColor = accent,
                              text = stringResource(R.string.label_edit_category)
-                         )
+                         ) { showEditCategoryDialog.value = true }
                          ConfigurationButton(
                              modifier = Modifier
                                  .fillMaxWidth()

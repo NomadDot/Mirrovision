@@ -86,7 +86,7 @@ private fun ComponentsPreview(
         }
 
         val colors = CategoryColors.map { color ->
-            ColoredCategory(ColorShades(color, color.accent))
+            ColoredCategory(color = ColorShades(color, color.accent))
         }.dropLast(5).toMutableStateList()
 
         fun selectCategory(selectedOption: ColoredCategory) {

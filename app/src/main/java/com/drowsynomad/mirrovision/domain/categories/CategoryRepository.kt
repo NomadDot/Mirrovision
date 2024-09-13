@@ -3,13 +3,14 @@ package com.drowsynomad.mirrovision.domain.categories
 import com.drowsynomad.mirrovision.data.assets.IAssetStore
 import com.drowsynomad.mirrovision.data.database.MirrovisionDatabase
 import com.drowsynomad.mirrovision.data.database.entities.CategoryAndHabits
-import com.drowsynomad.mirrovision.data.database.entities.CategoryEntity
+import com.drowsynomad.mirrovision.data.database.entities.CategoryUpdateEntity
 import com.drowsynomad.mirrovision.domain.models.Category
 import com.drowsynomad.mirrovision.domain.models.Habit
 import com.drowsynomad.mirrovision.domain.models.HabitRegularities
 import com.drowsynomad.mirrovision.domain.models.StringId
 import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeAmountState
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -29,6 +30,13 @@ interface ICategoryRepository {
     suspend fun loadCategories(): List<Category>
     fun loadLocalCategoriesWithHabits(): Flow<List<CategoryAndHabits>>
     suspend fun loadCategoriesForDay(dayId: Long): List<CategoryUI>
+
+    suspend fun updateCategory(
+        categoryId: Int,
+        newColor: CategoryMainColor,
+        newIcon: Int,
+        newName: String
+    )
 }
 
 class CategoryRepository(
@@ -96,5 +104,17 @@ class CategoryRepository(
 
                 categoryDomain.toCategoryUI(habits.filterNotNull())
             }.sortedBy { it.habits.isEmpty() }
+    }
+
+    override suspend fun updateCategory(
+        categoryId: Int,
+        newColor: CategoryMainColor,
+        newIcon: Int,
+        newName: String
+    ) {
+        database.categoryDao()
+            .updateCategory(
+                CategoryUpdateEntity(categoryId, newName, newIcon, newColor.toString())
+            )
     }
 }

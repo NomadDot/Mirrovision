@@ -96,4 +96,17 @@ data class HabitActivityRecordUpdate(
     val newFilledCellAmount: Int,
     @ColumnInfo(name = "amount_cell")
     val newCellAmount: Int,
-    )
+)
+
+data class HabitUpdate(
+    @ColumnInfo(name = "id")
+    val id: Long = 0,
+    @ColumnInfo(name = "name")
+    val name: String = emptyString(),
+    @ColumnInfo(name = "description")
+    val description: String = emptyString(),
+    @ColumnInfo(name = "amount_cell")
+    val cellAmount: Int,
+    @ColumnInfo(name = "amount_filled_cell")
+    val filledCellAmount: Int
+)

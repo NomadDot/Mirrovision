@@ -47,8 +47,8 @@
     <string name="toolbar_today_habits">Звички на сьогодні</string>
     <string name="toolbar_statistics">Статистика</string>
     <string name="label_this_week">Поточний тиждень</string>
-    <string name="label_weekly_statistics">Тижнева стат.</string>
-    <string name="label_detailed_statistics">Детальна стат.</string>
+    <string name="label_weekly_statistics">Тижнева</string>
+    <string name="label_detailed_statistics">Детальна</string>
 
     <string-array name="categories">
         <item>Спорт</item>

@@ -9,6 +9,7 @@ import com.drowsynomad.mirrovision.domain.habit.IHabitRecordingRepository
 import com.drowsynomad.mirrovision.domain.habit.IHabitRepository
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
 import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
+import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColoredCategory
 import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeAmountState
 import com.drowsynomad.mirrovision.presentation.screens.home.model.HomeEvent
@@ -36,6 +37,7 @@ class HomeVM @Inject constructor(
             is HomeEvent.FillHabitCell -> fillHabitCell(uiEvent.habitUI)
             HomeEvent.LoadTodayCategories -> loadTodayCategories()
             is HomeEvent.RemoveHabitCell -> removeHabitCell(uiEvent.habitUI)
+            is HomeEvent.UpdateCategory -> updateCategory(uiEvent.category)
         }
     }
 
@@ -54,6 +56,17 @@ class HomeVM @Inject constructor(
 
             val categories = categoryRepository.loadCategoriesForDay(dayId)
             updateState { it.copy(categoriesWithHabits = categories, isLoading = false) }
+        }
+    }
+
+    private fun updateCategory(coloredCategory: ColoredCategory) {
+        launch {
+            categoryRepository.updateCategory(
+                coloredCategory.id, coloredCategory.color.main,
+                coloredCategory.icon, coloredCategory.name
+            )
+            habitRepository.updateHabitsColor(coloredCategory.id, coloredCategory.color.main)
+            handleUiEvent(HomeEvent.LoadTodayCategories)
         }
     }
 

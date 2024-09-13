@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -41,7 +42,7 @@ fun StatisticsScreen(viewModel: StatisticsViewModel) {
         viewModel = viewModel,
         launchedEffect = { viewModel.handleUiEvent(StatisticsEvent.CreateStatistics) }
     ) { state ->
-        Column {
+        Column(verticalArrangement = Arrangement.Top) {
             val isWeekly = rememberSaveable { mutableStateOf(true) }
 
             if(state.isLoading)
@@ -49,8 +50,9 @@ fun StatisticsScreen(viewModel: StatisticsViewModel) {
             else {
                 DoubleSelector(
                     modifier = Modifier
+                        .offset(y = (-15).dp)
                         .padding(horizontal = 24.dp)
-                        .padding(bottom = 20.dp),
+                        .padding(bottom = 5.dp),
                     leftButtonLabel = stringResource(R.string.label_weekly_statistics),
                     rightButtonLabel = stringResource(R.string.label_detailed_statistics),
                     onLeftButtonClick = { isWeekly.value = true },

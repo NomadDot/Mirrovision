@@ -10,6 +10,7 @@ import com.drowsynomad.mirrovision.data.database.entities.HabitActivityUpdate
 import com.drowsynomad.mirrovision.data.database.entities.HabitEntity
 import com.drowsynomad.mirrovision.data.database.entities.HabitRecord
 import com.drowsynomad.mirrovision.data.database.entities.HabitRegularity
+import com.drowsynomad.mirrovision.data.database.entities.HabitUpdate
 import com.drowsynomad.mirrovision.data.database.entities.tuples.FullInfoHabit
 import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRecordings
 import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRecordingsTuple
@@ -32,8 +33,11 @@ interface HabitDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE, entity = HabitRecord::class)
     suspend fun insertHabitRecords(habits: List<HabitRecord>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = HabitRecord::class)
+    @Insert(onConflict = OnConflictStrategy.ABORT, entity = HabitRecord::class)
     fun insertHabitRecord(habits: HabitRecord)
+
+    @Query("SELECT COUNT(*) FROM habits WHERE id = :habitId")
+    fun getHabitCount(habitId: Long): Int
 
     @Query("SELECT * FROM habits")
     fun getAllHabits(): Flow<List<HabitEntity?>>
@@ -88,7 +92,7 @@ interface HabitDao {
     suspend fun getRecords(dayId: Long): List<HabitRecord>
 
     @Update(entity = HabitEntity::class)
-    fun updateEntity(habit: HabitEntity)
+    fun updateHabitEntity(habit: HabitUpdate)
 
     @Update(entity = HabitEntity::class)
     fun updateHabitActivity(updateEntity: HabitActivityUpdate)
@@ -114,4 +118,7 @@ interface HabitDao {
 
     @Query("DELETE FROM habit_record WHERE day_date = :dayId AND habit_id = :habitId")
     suspend fun deleteRecording(dayId: Long, habitId: Long)
+
+    @Query("UPDATE habits SET bg_color = :newColor WHERE category_id = :categoryId")
+    fun updateHabitsColor(categoryId: Int, newColor: String)
 }

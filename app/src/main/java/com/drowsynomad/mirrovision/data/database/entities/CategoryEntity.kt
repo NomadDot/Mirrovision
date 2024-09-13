@@ -1,5 +1,6 @@
 package com.drowsynomad.mirrovision.data.database.entities
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.drowsynomad.mirrovision.core.emptyString
@@ -17,6 +18,7 @@ data class CategoryEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String = emptyString(),
     val icon: Int = 0,
+    @ColumnInfo(name = "bg_color")
     val bgColor: String = emptyString()
 ) {
     fun toDomain(): Category =
@@ -24,3 +26,11 @@ data class CategoryEntity(
             id = id, name = name, icon = icon, bgColor = CategoryMainColor.parse(bgColor)
         )
 }
+
+data class CategoryUpdateEntity(
+    val id: Int = 0,
+    val name: String? = null,
+    val icon: Int? = null,
+    @ColumnInfo(name = "bg_color")
+    val bgColor: String? = null
+)

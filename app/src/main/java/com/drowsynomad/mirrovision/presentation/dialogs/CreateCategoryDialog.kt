@@ -1,6 +1,5 @@
 package com.drowsynomad.mirrovision.presentation.dialogs
 
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,9 +38,11 @@ import com.drowsynomad.mirrovision.presentation.core.components.SecondaryButton
 import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColorPicker
 import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColorShades
 import com.drowsynomad.mirrovision.presentation.core.components.colorPicker.ColoredCategory
+import com.drowsynomad.mirrovision.presentation.core.components.models.CategoryUI
 import com.drowsynomad.mirrovision.presentation.theme.convertToAccentCategoryColor
 import com.drowsynomad.mirrovision.presentation.theme.convertToMainCategoryColor
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
+import kotlin.random.Random
 
 /**
  * @author Roman Voloshyn (Created on 28.06.2024)
@@ -49,7 +51,7 @@ import com.drowsynomad.mirrovision.presentation.utils.roundBox
 @Composable
 fun CreateCategoryDialog(
     enabledColors: List<ColorShades> = emptyList(),
-    @DrawableRes prefilledIcon: Int = R.drawable.ic_diet_pizza,
+    categoryUI: CategoryUI? = null,
     isDialogVisible: (Boolean) -> Unit,
     onSave: (ColoredCategory) -> Unit
 ) {
@@ -58,10 +60,11 @@ fun CreateCategoryDialog(
     }
 
     val categoryName = remember {
-        mutableStateOf("")
+        mutableStateOf(categoryUI?.name ?: emptyString())
     }
+
     val categoryIcon = remember {
-        mutableIntStateOf(prefilledIcon)
+        mutableIntStateOf(categoryUI?.iconRes ?: R.drawable.ic_add)
     }
 
     val defaultBgColor = MaterialTheme.colorScheme.surfaceContainer
@@ -82,8 +85,8 @@ fun CreateCategoryDialog(
 
     fun checkIfButtonEnabled() {
         isButtonActive.value = categoryName.value.isNotEmpty() &&
-                currentBackgroundColor.value != defaultBgColor
-                && categoryIcon.intValue == R.drawable.ic_diet_pizza
+                currentBackgroundColor.value != defaultBgColor &&
+                categoryIcon.intValue != R.drawable.ic_add
     }
 
     val accentColor = animateColorAsState(
@@ -100,6 +103,19 @@ fun CreateCategoryDialog(
         colors.forEach { it.selected = false }
         val selectedShade = colors.find { it.main == colorShade.main }
         selectedShade?.selected = true
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        categoryUI?.backgroundColor?.let {
+            selectCategory(
+                ColorShades(
+                    convertToMainCategoryColor(it.pureColor),
+                    convertToAccentCategoryColor(it.accent.pureColor)
+                ),
+            )
+            selectedBgColor.value = it.pureColor
+            selectedAccentColor.value = it.accent.pureColor
+        }
     }
 
     Dialog(
@@ -127,9 +143,10 @@ fun CreateCategoryDialog(
                         .padding(top = 15.dp)
                         .fillMaxWidth(),
                     isSingleLine = true,
+                    prefilledValue = categoryUI?.name ?: emptyString(),
                     color = accentColor.value,
                     hint = stringResource(R.string.label_enter_category_name),
-                    maxLimit = 30
+                    maxLimit = 25
                 ) {
                     categoryName.value = it
                     checkIfButtonEnabled()
@@ -149,6 +166,7 @@ fun CreateCategoryDialog(
                         selectCategory(it)
                         selectedBgColor.value = it.main.pureColor
                         selectedAccentColor.value = it.accent.pureColor
+                        isButtonActive.value = false
                     }
                 )
                 Row(
@@ -177,11 +195,12 @@ fun CreateCategoryDialog(
                     ) {
                         onSave.invoke(
                             ColoredCategory(
+                                id = categoryUI?.id ?: Random.nextInt(),
                                 color = ColorShades(
                                     convertToMainCategoryColor(currentBackgroundColor.value),
                                     convertToAccentCategoryColor(accentColor.value)),
                                 name = categoryName.value,
-                                icon = prefilledIcon
+                                icon = categoryIcon.intValue
                             )
                         )
                         isDialogVisible.invoke(false)
@@ -197,7 +216,7 @@ fun CreateCategoryDialog(
                         bottom.linkTo(content.top)
                         end.linkTo(content.end, margin = 12.dp)
                     },
-                icon = R.drawable.ic_add,
+                icon = categoryIcon.intValue,
                 iconSpec = 40.dp,
                 backgroundColor = accentColor.value,
                 accentColor = currentBackgroundColor.value,

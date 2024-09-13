@@ -49,7 +49,6 @@ class StatisticsViewModel @Inject constructor(
                 .loadPeriodRecordings(startOfWeekId)
 
             val categories = categoryRepository.loadCategories()
-
             val detailedHabits = configureDetailedData().await()
 
             updateState {
