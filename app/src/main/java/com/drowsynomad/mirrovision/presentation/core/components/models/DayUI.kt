@@ -37,6 +37,15 @@ data class DayUI(
     }
 }
 
+data class StatisticDayUI(
+    val dayPosition: Int,
+    val dayName: String,
+    val initialSelection: Boolean = false
+) {
+    @IgnoredOnParcel
+    val isSelected = mutableStateOf(initialSelection)
+}
+
 @Serializable
 @Parcelize
 data class NavigationDays(

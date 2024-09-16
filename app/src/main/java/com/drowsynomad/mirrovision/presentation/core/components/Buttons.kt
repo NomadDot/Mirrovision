@@ -68,6 +68,7 @@ import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.presentation.core.components.models.ExpandableButtonContent
+import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.theme.GradientButtonColors
 import com.drowsynomad.mirrovision.presentation.theme.GradientMain
 import com.drowsynomad.mirrovision.presentation.theme.LightPrimary
@@ -130,6 +131,21 @@ fun SecondaryButton(
             color = if(isCustomContainerColor) containerColor else MaterialTheme.colorScheme.primary
         )
     }
+}
+
+@Composable
+fun IconButton(
+    modifier: Modifier = Modifier,
+    @DrawableRes icon: Int,
+    tint: Color? = null,
+    onClick: (() -> Unit)? = null
+) {
+    Icon(
+        painter = painterResource(id = icon),
+        contentDescription = emptyString(),
+        tint = tint ?: Color.Unspecified,
+        modifier = Modifier.size(24.dp).bounceClick(onClick = onClick)
+    )
 }
 
 @Composable
@@ -461,6 +477,32 @@ fun CancelableAndSaveableButton(
 }
 
 @Composable
+fun DefaultButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    isButtonSelected: Boolean,
+    color: CategoryMainColor? = null,
+    onClick: (() -> Unit)
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        colors = ButtonColors(containerColor = Color.Transparent,
+            contentColor = color?.accent?.pureColor ?: MaterialTheme.colorScheme.primary,
+            disabledContentColor = Color.Transparent, disabledContainerColor = Color.Transparent
+        ),
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            fontSize = 14.sp,
+            color = if(isButtonSelected) Color.White
+                else color?.accent?.pureColor ?: MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
 fun DoubleSelector(
     modifier: Modifier = Modifier,
     leftButtonLabel: String = emptyString(),
@@ -479,7 +521,9 @@ fun DoubleSelector(
         val primaryColor = MaterialTheme.colorScheme.primary
 
         val defaultModifier = remember {
-            Modifier.bounceClick().weight(1f)
+            Modifier
+                .bounceClick()
+                .weight(1f)
         }
 
         val unselectedModifier = remember {
@@ -487,7 +531,8 @@ fun DoubleSelector(
                 .border(
                     width = 2.dp,
                     color = primaryColor,
-                    shape = RoundedCornerShape(25.dp))
+                    shape = RoundedCornerShape(25.dp)
+                )
                 .height(40.dp)
         }
 
@@ -495,43 +540,27 @@ fun DoubleSelector(
             defaultModifier
                 .background(
                     brush = Brush.horizontalGradient(GradientMain),
-                    shape = RoundedCornerShape(25.dp))
+                    shape = RoundedCornerShape(25.dp)
+                )
                 .height(40.dp)
         }
 
-        Button(
-            onClick = {
-                if(!firstButtonSelected.value)
-                    firstButtonSelected.value = true
-                onLeftButtonClick?.invoke()
-            },
+        DefaultButton(
+            text = leftButtonLabel,
             modifier = if(firstButtonSelected.value) activeModifier else unselectedModifier,
-            colors = ButtonColors(containerColor = Color.Transparent, contentColor = MaterialTheme.colorScheme.primary,
-                disabledContentColor = Color.Transparent, disabledContainerColor = Color.Transparent
-            ),
+            isButtonSelected = firstButtonSelected.value
         ) {
-            Text(
-                text = leftButtonLabel,
-                style = MaterialTheme.typography.bodyMedium,
-                fontSize = 14.sp,
-                color = if(firstButtonSelected.value) Color.White else MaterialTheme.colorScheme.primary
-            )
+            if(!firstButtonSelected.value)
+                firstButtonSelected.value = true
+            onLeftButtonClick?.invoke()
         }
-        Button(
-            onClick = {
-                firstButtonSelected.value = false
-                onRightButtonClick?.invoke()
-            },
+        DefaultButton(
+            text = rightButtonLabel,
             modifier = if(!firstButtonSelected.value) activeModifier else unselectedModifier,
-            colors = ButtonColors(containerColor = Color.Transparent, contentColor = MaterialTheme.colorScheme.primary,
-                disabledContentColor = Color.Transparent, disabledContainerColor = Color.Transparent)
+            isButtonSelected = !firstButtonSelected.value
         ) {
-            Text(
-                text = rightButtonLabel,
-                fontSize = 14.sp,
-                style = MaterialTheme.typography.bodyMedium,
-                color = if(!firstButtonSelected.value) Color.White else MaterialTheme.colorScheme.primary
-            )
+            firstButtonSelected.value = false
+            onRightButtonClick?.invoke()
         }
     }
 }

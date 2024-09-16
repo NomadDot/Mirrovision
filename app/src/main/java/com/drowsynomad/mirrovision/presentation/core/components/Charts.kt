@@ -3,6 +3,7 @@ package com.drowsynomad.mirrovision.presentation.core.components
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,8 +37,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.R
+import com.drowsynomad.mirrovision.core.getMonthSegmentTitle
+import com.drowsynomad.mirrovision.core.getWeekSegmentTitle
+import com.drowsynomad.mirrovision.core.getYearSegmentTitle
+import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode.Monthly
+import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode.Weekly
+import com.drowsynomad.mirrovision.presentation.core.components.models.ChartSegment
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.theme.GradientMain
+import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 import com.drowsynomad.mirrovision.presentation.utils.defaultTween
 import com.drowsynomad.mirrovision.presentation.utils.gradient
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
@@ -184,6 +191,118 @@ private fun IconLine(
     }
 }
 
+
+@Composable
+fun ChartSelector(
+    modifier: Modifier = Modifier,
+    color: CategoryMainColor,
+    onSegmentChanged: (ChartSegment) -> Unit
+) {
+    val (getSegment, setSegment) = remember {
+        mutableStateOf(ChartSegment.MONTH)
+    }
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(15.dp)
+    ) {
+        val defaultModifier = remember {
+            Modifier
+                .bounceClick()
+                .weight(1f)
+        }
+
+        val unselectedModifier = remember {
+            defaultModifier
+                .border(
+                    width = 2.dp,
+                    color = color.accent.pureColor,
+                    shape = RoundedCornerShape(25.dp)
+                )
+                .height(40.dp)
+        }
+
+        val activeModifier = remember {
+            defaultModifier
+                .background(
+                    color = color.accent.pureColor,
+                    shape = RoundedCornerShape(25.dp)
+                )
+                .height(40.dp)
+        }
+
+        ChartSegment.entries.forEach {
+            DefaultButton(
+                text = stringResource(it.stringResource),
+                isButtonSelected = getSegment == it,
+                color = color,
+                modifier = if(getSegment == it) activeModifier else unselectedModifier
+            ) {
+                if(getSegment != it) {
+                    setSegment.invoke(it)
+                    onSegmentChanged.invoke(it)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun StatisticSegmentChart(
+    modifier: Modifier = Modifier,
+    segment: ChartSegment,
+    weeklyData: Weekly,
+    monthlyData: Monthly,
+    color: CategoryMainColor
+) {
+    val weeklyDaysSegment = remember { getWeekSegmentTitle() }
+    val monthlySegment = remember { getMonthSegmentTitle() }
+    val yearlySegment = remember { getYearSegmentTitle() }
+
+    IconColumn(
+        icon = R.drawable.ic_calendar,
+        color = color
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 34.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                icon = R.drawable.ic_back_arrow,
+                tint = color.accent.pureColor
+            ) {
+
+            }
+            CategoryTitle(
+                text = when(segment) {
+                    ChartSegment.WEEK -> weeklyDaysSegment
+                    ChartSegment.MONTH -> monthlySegment
+                    ChartSegment.YEAR -> yearlySegment
+                },
+                color = color.accent.pureColor
+            )
+            IconButton(
+                icon = R.drawable.ic_arrow_next,
+                tint = color.accent.pureColor
+            ) {
+
+            }
+        }
+        Box(modifier = Modifier
+            .padding(top = 16.dp)
+            .roundBox(color = Color.White)
+        ) {
+            StatisticCalendar(
+                mode = if(segment == ChartSegment.WEEK) weeklyData else monthlyData,
+                color = color
+            )
+        }
+    }
+}
+
 @Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
@@ -191,5 +310,7 @@ private fun Preview() {
         verticalArrangement = Arrangement.spacedBy(25.dp)
     ){
         WeeklyChart(modifier = Modifier.fillMaxWidth())
+        ChartSelector(color = CategoryMainColor.Green) {}
+//        StatisticSegmentChart(segment = ChartSegment.WEEK, color = CategoryMainColor.Green)
     }
 }

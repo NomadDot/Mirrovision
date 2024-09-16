@@ -16,6 +16,11 @@ import kotlinx.serialization.Serializable
 data class StringParcel(val string: String) : Parcelable
 
 @Serializable
+@Parcelize
+data class LongParcel(val long: Long) : Parcelable
+
+
+@Serializable
 sealed class Routes {
     val name = this.toString().substringAfterLast(".")
 
@@ -61,6 +66,11 @@ sealed class Routes {
     data object GuideScreen: Routes()
     @Serializable
     data object StatisticScreen: Routes()
+
+    @Serializable
+    data class DetailedStatisticScreen(
+        val habitInt: LongParcel
+    ): Routes()
 }
 
 @Parcelize

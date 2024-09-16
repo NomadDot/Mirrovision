@@ -50,6 +50,11 @@
     <string name="label_weekly_statistics">Тижнева</string>
     <string name="label_detailed_statistics">Детальна</string>
 
+    <string name="chart_segment_week">Тиждень</string>
+    <string name="chart_segment_month">Місяць</string>
+    <string name="chart_segment_year">Рік</string>
+
+
     <string-array name="categories">
         <item>Спорт</item>
         <item>Харчування</item>

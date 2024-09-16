@@ -7,6 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.navigation.Routes.DetailedStatisticScreen
+import com.drowsynomad.mirrovision.presentation.screens.detailedStatitstic.DetailedStatisticScreen
 import com.drowsynomad.mirrovision.presentation.screens.home.HomeScreen
 import com.drowsynomad.mirrovision.presentation.screens.statistic.StatisticsScreen
 import com.drowsynomad.mirrovision.presentation.utils.composableOf
@@ -34,7 +36,17 @@ fun DashboardNavigation(
         }
 
         composable<Routes.StatisticScreen> {
-            StatisticsScreen(viewModel = hiltViewModel())
+            StatisticsScreen(
+                viewModel = hiltViewModel(),
+                onDetailedStatisticNavigation = navController::navigateToDetailedStatistic
+            )
+        }
+
+        composableOf<DetailedStatisticScreen, LongParcel> { args, _ ->
+            DetailedStatisticScreen(
+                viewModel = hiltViewModel(),
+                habitId = args.habitInt.long
+            )
         }
     }
 }

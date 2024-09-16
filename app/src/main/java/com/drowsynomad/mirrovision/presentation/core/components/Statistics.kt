@@ -1,28 +1,35 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.createMockCells
-import com.drowsynomad.mirrovision.core.lighterColor
+import com.drowsynomad.mirrovision.presentation.core.components.models.Cell
+import com.drowsynomad.mirrovision.presentation.core.components.models.ShadeCell
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.gradientStroke
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
@@ -43,7 +50,7 @@ fun HabitProgress(
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         items(filling.cells, key = { it.dayId }) {
-            ProgressCircle(cell = it, color = filling.color, pureAccent = filling.pureAccent)
+            ProgressCircle(cell = it, color = filling.color)
         }
     }
 }
@@ -52,7 +59,6 @@ fun HabitProgress(
 fun ProgressCircle(
     modifier: Modifier = Modifier,
     color: CategoryMainColor,
-    pureAccent: Int,
     cell: Cell
 ) {
     val customModifier =
@@ -60,11 +66,11 @@ fun ProgressCircle(
             modifier
                 .size(10.5.dp)
                 .gradientStroke(width = 1.dp)
-                .background(color = cell.calculateShade(color, pureAccent), CircleShape)
+                .background(color = cell.calculateShade(color), CircleShape)
         else
             modifier
                 .size(10.5.dp)
-                .background(color = cell.calculateShade(color, pureAccent), CircleShape)
+                .background(color = cell.calculateShade(color), CircleShape)
 
     Spacer(
         modifier = customModifier
@@ -86,23 +92,32 @@ enum class CellProgress {
     }
 }
 
-data class Cell(
-    val dayId: Long,
-    val progress: CellProgress,
-    val isCurrentDay: Boolean = false
+@Composable
+fun IconColumn(
+    @DrawableRes icon: Int,
+    color: CategoryMainColor,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
 ) {
-    companion object {
-        private const val SHADE_FRACTION: Double = 0.6
-    }
-
-    fun calculateShade(color: CategoryMainColor, pureAccent: Int): Color {
-        val lighterColor = lighterColor(pureAccent, SHADE_FRACTION)
-
-        return when (progress) {
-            CellProgress.NO_ACTIVITY -> color.pureColor
-            CellProgress.NOT_FINISHED -> Color(lighterColor)
-            CellProgress.FINISHED -> color.accent.pureColor
+    Box(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 23.dp, end = 23.dp, top = 10.dp)
+                .roundBox(color = color.pureColor)
+        ) {
+            content()
         }
+
+        CategoryIcon(
+            color = color,
+            icon = icon,
+            modifier = Modifier
+                .align(TopEnd)
+                .padding(end = 14.dp)
+                .width(50.dp)
+                .height(50.dp)
+        )
     }
 }
 
@@ -115,6 +130,9 @@ private fun Preview() {
             .padding(top = 20.dp)
             .verticalScroll(rememberScrollState())
     ) {
+        IconColumn(icon = R.drawable.ic_add, color = CategoryMainColor.Pink) {
+            Text(text = "Hello")
+        }
         Box(
             modifier = Modifier
                 .padding(horizontal = 24.dp)

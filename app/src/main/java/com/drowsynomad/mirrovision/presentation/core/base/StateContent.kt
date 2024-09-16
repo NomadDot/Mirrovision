@@ -27,8 +27,6 @@ import com.voloshynroman.zirkon.presentation.core.common.UiEvent
  * @author Roman Voloshyn (Created on 15.05.2024)
  */
 
-typealias OnHandleEvent<T> = (T) -> Unit
-
 @Composable
 fun <S: UiState, E: UiEvent, SE: SideEffect> StateContent(
     viewModel: StateViewModel<S, E, SE>,

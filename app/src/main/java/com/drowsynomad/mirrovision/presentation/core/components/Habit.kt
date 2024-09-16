@@ -1,6 +1,5 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
-import android.graphics.Color.rgb
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -41,9 +40,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.R
-import com.drowsynomad.mirrovision.core.createMockCells
 import com.drowsynomad.mirrovision.core.isNegative
 import com.drowsynomad.mirrovision.core.isZero
+import com.drowsynomad.mirrovision.presentation.core.components.models.Cell
 import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeAmountState
 import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeWidth
@@ -319,12 +318,7 @@ fun StatisticHabit(
 data class Filling(
     val color: CategoryMainColor,
     val cells: List<Cell>
-) {
-    val pureAccent by lazy {
-        val accent = color.accent.pureColor
-        rgb(accent.red, accent.green, accent.blue)
-    }
-}
+)
 
 data class HabitProgressUI(
     val habitId: Long,

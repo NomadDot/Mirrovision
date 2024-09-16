@@ -1,5 +1,6 @@
 package com.drowsynomad.mirrovision.presentation.theme
 
+import android.graphics.Color.rgb
 import android.os.Parcelable
 import androidx.compose.ui.graphics.Color
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor.*
@@ -75,6 +76,7 @@ enum class CategoryMainColor: Parcelable {
 enum class CategoryAccentColor {
     BlueAccent, GreenAccent, OceanAccent, PinkAccent, PurpleAccent, OrangeAccent, RedAccent, BrownAccent;
     val pureColor by lazy { CategoryAccentColorsMap[this] ?: BlueCategoryAccent }
+    val asRgb by lazy { rgb(pureColor.red, pureColor.green, pureColor.blue) }
 }
 
 val CategoryColors by lazy { CategoryMainColor.entries.toTypedArray() }

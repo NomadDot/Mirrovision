@@ -37,7 +37,10 @@ import com.drowsynomad.mirrovision.presentation.screens.statistic.model.Statisti
  */
 
 @Composable
-fun StatisticsScreen(viewModel: StatisticsViewModel) {
+fun StatisticsScreen(
+    viewModel: StatisticsViewModel,
+    onDetailedStatisticNavigation: (Long) -> Unit
+) {
     StateContent(
         viewModel = viewModel,
         launchedEffect = { viewModel.handleUiEvent(StatisticsEvent.CreateStatistics) }
@@ -61,7 +64,10 @@ fun StatisticsScreen(viewModel: StatisticsViewModel) {
                 if (isWeekly.value)
                     WeeklyStatisticContent(state)
                 else
-                    DetailedStatisticContent(state.detailedHabits)
+                    DetailedStatisticContent(
+                        state.detailedHabits,
+                        onDetailedStatisticNavigation
+                    )
             }
         }
     }
@@ -84,10 +90,11 @@ private fun WeeklyStatisticContent(
 
             Spacer(modifier = Modifier.height(15.dp))
             WeeklyProgress(percent = state.weeklyProgress)
+
             Spacer(modifier = Modifier.height(20.dp))
             WeeklyChart(modifier = Modifier, chartData = state.chartData)
-            Spacer(modifier = Modifier.height(20.dp))
 
+            Spacer(modifier = Modifier.height(20.dp))
             state.categoryStatistic.forEach {
                 StatisticCategory(stat = it)
                 Spacer(modifier = Modifier.height(15.dp))
@@ -99,14 +106,17 @@ private fun WeeklyStatisticContent(
 
 @Composable
 private fun DetailedStatisticContent(
-    habits: List<HabitProgressUI>
+    habits: List<HabitProgressUI>,
+    onDetailedStatisticNavigation: (Long) -> Unit
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(10.dp),
         contentPadding = PaddingValues(bottom = 100.dp)
     ) {
         items(habits, key = { it.habitId }) {
-            ProgressHabit(habitProgressUI = it)
+            ProgressHabit(habitProgressUI = it) {
+                onDetailedStatisticNavigation.invoke(it)
+            }
         }
     }
 }

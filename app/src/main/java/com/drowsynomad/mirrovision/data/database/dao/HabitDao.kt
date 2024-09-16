@@ -13,7 +13,6 @@ import com.drowsynomad.mirrovision.data.database.entities.HabitRegularity
 import com.drowsynomad.mirrovision.data.database.entities.HabitUpdate
 import com.drowsynomad.mirrovision.data.database.entities.tuples.FullInfoHabit
 import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRecordings
-import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRecordingsTuple
 import com.drowsynomad.mirrovision.data.database.entities.tuples.HabitWithRegularity
 import com.drowsynomad.mirrovision.data.database.entities.tuples.RecordingWithHabit
 import kotlinx.coroutines.flow.Flow
@@ -51,7 +50,11 @@ interface HabitDao {
 
     @Transaction
     @Query("SELECT * FROM habits")
-    fun getHabitWithRecordings(): List<HabitWithRecordings?>
+    fun getHabitsWithRecordings(): List<HabitWithRecordings?>
+
+    @Transaction
+    @Query("SELECT * FROM habits WHERE id = :habitId")
+    fun getHabitWithRecordings(habitId: Long): HabitWithRecordings?
 
     @Transaction
     @Query("SELECT * FROM habits AS habit " +

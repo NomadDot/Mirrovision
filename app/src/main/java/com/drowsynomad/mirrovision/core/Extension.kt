@@ -2,16 +2,13 @@ package com.drowsynomad.mirrovision.core
 
 import android.annotation.SuppressLint
 import android.graphics.Color
-import android.util.Log
-import androidx.core.util.rangeTo
-import com.drowsynomad.mirrovision.presentation.core.components.Cell
 import com.drowsynomad.mirrovision.presentation.core.components.CellProgress
+import com.drowsynomad.mirrovision.presentation.core.components.models.Cell
 import org.joda.time.DateTime
 import org.joda.time.DateTimeConstants
 import org.joda.time.LocalDate
 import java.text.SimpleDateFormat
 import java.util.Date
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
@@ -22,6 +19,7 @@ import kotlin.time.DurationUnit
  */
 
 private const val datePattern = "yyyy-MM-dd"
+private const val weeklyPattern = "MM.dd"
 
 fun emptyString(): String = ""
 
@@ -51,6 +49,42 @@ fun generateHabitPeriodId(): Long {
         .toDate().time.milliseconds
         .toLong(DurationUnit.MILLISECONDS)
         .removeTimePart()
+}
+
+@SuppressLint("SimpleDateFormat")
+fun getWeekSegmentTitle(): String {
+    val now = LocalDate.now()
+    val dateFormat = SimpleDateFormat(weeklyPattern)
+
+    val firstDayOfWeek = dateFormat.format(
+        now.withDayOfWeek(DateTimeConstants.MONDAY).toDate()
+    )
+    val lastDayOfWeek = dateFormat.format(
+        now.withDayOfWeek(DateTimeConstants.SUNDAY).toDate()
+    )
+
+    return "$firstDayOfWeek - $lastDayOfWeek"
+}
+
+fun getWeekSegmentLabels(): List<Int> {
+    val result = mutableListOf<Int>()
+    val now = LocalDate.now()
+
+    val firstDayOfWeek = now.withDayOfWeek(DateTimeConstants.MONDAY)
+
+    repeat(6) {
+        firstDayOfWeek.plusDays(it)
+        result.add(firstDayOfWeek.dayOfMonth)
+    }
+    return result
+}
+
+fun getMonthSegmentTitle(): String {
+    return LocalDate.now().monthOfYear().asText
+}
+
+fun getYearSegmentTitle(): String {
+    return LocalDate.now().year.toString()
 }
 
 

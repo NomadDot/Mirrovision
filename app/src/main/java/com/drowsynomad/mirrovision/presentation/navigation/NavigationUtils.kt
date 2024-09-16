@@ -53,6 +53,12 @@ fun NavController.navigateToIntro() {
     }
 }
 
+fun NavController.navigateToDetailedStatistic(habitId: Long) {
+    this.navigate(Routes.DetailedStatisticScreen(
+        LongParcel(habitId)
+    ))
+}
+
 fun NavController.navigateToDashboard() {
     this.navigate(Routes.DashboardScreen) {
         popUpTo<Routes.SplashLoadingScreen> { inclusive = true }
