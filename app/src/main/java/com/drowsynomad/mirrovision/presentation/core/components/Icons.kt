@@ -116,6 +116,7 @@ fun CategoryIcon(
     modifier: Modifier = Modifier,
     @DrawableRes icon: Int = R.drawable.ic_sport_ball,
     color: CategoryMainColor = CategoryMainColor.Purple,
+    iconSpec: Dp? = null,
     onIconClick: (() -> Unit)? = null
 ) {
     HabitIcon(
@@ -123,7 +124,7 @@ fun CategoryIcon(
             .width(50.dp)
             .height(50.dp),
         icon = icon,
-        iconSpec = 35.dp,
+        iconSpec = iconSpec ?: 35.dp,
         iconTint = color.accent.pureColor,
         accentColor = color.pureColor,
         backgroundColor = MaterialTheme.colorScheme.surfaceContainer,

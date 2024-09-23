@@ -7,8 +7,6 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.domain.models.Habit
-import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
-import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeAmountState
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 
 /**
@@ -61,23 +59,6 @@ data class HabitEntity(
             cellAmount = amount.cellAmount,
             filledCellAmount = amount.prefilledCellAmount
         )
-
-    fun toUI(): HabitUI { // TODO: insert into domain layer
-        val categoryBgColor = CategoryMainColor.parse(bgColor)
-        return HabitUI(
-            id = id,
-            attachedCategoryId = categoryId,
-            name = name,
-            description = description,
-            icon = icon,
-            backgroundColor = categoryBgColor,
-            stroke = StrokeAmountState(
-                cellAmount = amount.cellAmount,
-                prefilledCellAmount = amount.prefilledCellAmount,
-                filledColor = categoryBgColor.accent
-            )
-        )
-    }
 }
 
 data class HabitActivityUpdate(

@@ -1,6 +1,5 @@
 package com.drowsynomad.mirrovision.domain.habit
 
-import android.util.Log
 import com.drowsynomad.mirrovision.core.generateDayId
 import com.drowsynomad.mirrovision.data.database.MirrovisionDatabase
 import com.drowsynomad.mirrovision.data.database.entities.HabitEntity
@@ -37,7 +36,10 @@ interface IHabitRecordingRepository {
         habitId: Long
     )
 
-    suspend fun loadPeriodRecordings(startOfAWeek: Long): List<HabitWithRecordingUI>
+    suspend fun loadPeriodHabitRecordings(start: Long): List<HabitWithRecordingUI>
+    suspend fun loadPeriodRecordings(
+        start: Long, end: Long, habitId: Long
+    ): List<HabitRecord>
     suspend fun getTodayRecording(dayId: Long, habitId: Long): HabitRecord?
 }
 
@@ -116,8 +118,8 @@ class HabitRecordingRepository(
         }
     }
 
-    override suspend fun loadPeriodRecordings(startOfAWeek: Long): List<HabitWithRecordingUI> {
-        val habitWithRecordsTuple = database.habitDao().getRecordingsWithHabitOnPeriod(startOfAWeek)
+    override suspend fun loadPeriodHabitRecordings(start: Long): List<HabitWithRecordingUI> {
+        val habitWithRecordsTuple = database.habitDao().getRecordingsWithHabitOnPeriod(start)
         return habitWithRecordsTuple.keys.map { habit ->
             val records = habitWithRecordsTuple[habit]
                 ?.map { record ->
@@ -131,8 +133,12 @@ class HabitRecordingRepository(
                         )
                     }
                 } ?: listOf()
-            HabitWithRecordingUI(habit.toUI(), records)
+            HabitWithRecordingUI(habit.toDomain().toUI(), records)
         }
+    }
+
+    override suspend fun loadPeriodRecordings(start: Long, end: Long, habitId: Long): List<HabitRecord> {
+        return database.habitDao().getRecordingsOnPeriod(start, end, habitId)
     }
 
     override suspend fun getTodayRecording(dayId: Long, habitId: Long): HabitRecord? =

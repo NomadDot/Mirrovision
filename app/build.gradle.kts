@@ -114,4 +114,5 @@ dependencies {
     implementation(libs.gson)
 
     implementation(libs.lottie.compose)
+    implementation (libs.compose.charts)
 }

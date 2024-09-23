@@ -62,6 +62,13 @@ interface HabitDao {
             "AND record.day_date >= :start")
     fun getRecordingsWithHabitOnPeriod(start: Long): Map<HabitEntity, List<HabitRecord>>
 
+    @Transaction
+    @Query("SELECT * FROM habit_record AS record" +
+            " WHERE record.day_date >= :start" +
+            " AND record.day_date <= :end" +
+            " AND record.habit_id = :habitId")
+    suspend fun getRecordingsOnPeriod(start: Long, end: Long, habitId: Long): List<HabitRecord>
+
     @Query("SELECT * FROM habit_record WHERE day_date = :dayId AND habit_id = :habitId")
     fun getRecord(dayId: Long, habitId: Long): HabitRecord?
 

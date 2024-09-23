@@ -2,8 +2,8 @@ package com.drowsynomad.mirrovision.presentation.core.components.models
 
 import androidx.compose.ui.graphics.Color
 import com.drowsynomad.mirrovision.core.lighterColor
-import com.drowsynomad.mirrovision.presentation.core.components.CellProgress
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
+import kotlin.random.Random
 
 interface ShadeCell {
     companion object {
@@ -30,7 +30,8 @@ data class Cell(
 ): ShadeCell
 
 data class DayCell(
+    val dayId: Long = Random.nextLong(),
     override val progress: CellProgress,
     val dayPosition: String,
-    val isCurrentMonth: Boolean
+    val isDayInFuture: Boolean
 ) : ShadeCell

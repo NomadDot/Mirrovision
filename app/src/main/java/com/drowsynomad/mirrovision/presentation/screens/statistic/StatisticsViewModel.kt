@@ -3,7 +3,7 @@ package com.drowsynomad.mirrovision.presentation.screens.statistic
 import androidx.lifecycle.viewModelScope
 import com.drowsynomad.mirrovision.core.createCells
 import com.drowsynomad.mirrovision.core.generateHabitPeriodId
-import com.drowsynomad.mirrovision.core.generateStartOfAWeekId
+import com.drowsynomad.mirrovision.core.generateCurrentWeekId
 import com.drowsynomad.mirrovision.domain.categories.ICategoryRepository
 import com.drowsynomad.mirrovision.domain.habit.IHabitRecordingRepository
 import com.drowsynomad.mirrovision.domain.models.Category
@@ -11,11 +11,11 @@ import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
 import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
 import com.drowsynomad.mirrovision.presentation.core.components.CategoryChartData
 import com.drowsynomad.mirrovision.presentation.core.components.CategoryStatistic
-import com.drowsynomad.mirrovision.presentation.core.components.CellProgress
-import com.drowsynomad.mirrovision.presentation.core.components.CellProgress.Companion.calculateProgress
 import com.drowsynomad.mirrovision.presentation.core.components.Filling
 import com.drowsynomad.mirrovision.presentation.core.components.HabitProgressUI
 import com.drowsynomad.mirrovision.presentation.core.components.HabitStatistic
+import com.drowsynomad.mirrovision.presentation.core.components.models.CellProgress
+import com.drowsynomad.mirrovision.presentation.core.components.models.CellProgress.Companion.calculateProgress
 import com.drowsynomad.mirrovision.presentation.core.components.models.HabitWithRecordingUI
 import com.drowsynomad.mirrovision.presentation.screens.statistic.model.StatisticState
 import com.drowsynomad.mirrovision.presentation.screens.statistic.model.StatisticsEvent
@@ -41,12 +41,12 @@ class StatisticsViewModel @Inject constructor(
         }
     }
 
-    private val startOfWeekId by lazy { generateStartOfAWeekId() }
+    private val startOfWeekId by lazy { generateCurrentWeekId() }
 
     private fun configureStatistics() {
         launch {
             val habitsWithRecordings = habitRepository
-                .loadPeriodRecordings(startOfWeekId)
+                .loadPeriodHabitRecordings(startOfWeekId)
 
             val categories = categoryRepository.loadCategories()
             val detailedHabits = configureDetailedData().await()
@@ -55,7 +55,10 @@ class StatisticsViewModel @Inject constructor(
                 it.copy(
                     weeklyProgress = calculateWeeklyProgress(habitsWithRecordings),
                     chartData = calculateWeeklyChartData(categories, habitsWithRecordings),
-                    categoryStatistic = calculateCategoryStatistics(categories, habitsWithRecordings),
+                    categoryStatistic = calculateCategoryStatistics(
+                        categories,
+                        habitsWithRecordings
+                    ),
                     detailedHabits = detailedHabits,
                     isLoading = false
                 )
@@ -120,7 +123,7 @@ class StatisticsViewModel @Inject constructor(
 
     private suspend fun configureDetailedData(): Deferred<List<HabitProgressUI>> {
         return viewModelScope.async {
-            habitRepository.loadPeriodRecordings(generateHabitPeriodId())
+            habitRepository.loadPeriodHabitRecordings(generateHabitPeriodId())
                 .map {
                     val map = HashMap<Long, CellProgress>()
 

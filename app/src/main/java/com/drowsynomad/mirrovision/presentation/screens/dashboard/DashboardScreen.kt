@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -25,15 +26,15 @@ import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
 import com.drowsynomad.mirrovision.presentation.core.components.BottomNavigationActions
-import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.core.components.BottomNavigationBar
 import com.drowsynomad.mirrovision.presentation.core.components.DefaultToolbar
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
 import com.drowsynomad.mirrovision.presentation.dialogs.settings.SettingsDialog
 import com.drowsynomad.mirrovision.presentation.navigation.DashboardNavigation
-import com.drowsynomad.mirrovision.presentation.navigation.navigateToDashboard
 import com.drowsynomad.mirrovision.presentation.navigation.navigateToHome
 import com.drowsynomad.mirrovision.presentation.navigation.navigateToStatistics
 import com.drowsynomad.mirrovision.presentation.screens.dashboard.model.DashboardState
+import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.MenuAccent
 import com.drowsynomad.mirrovision.presentation.utils.LocalFixedInsets
 import com.drowsynomad.mirrovision.presentation.utils.defaultTween
@@ -74,6 +75,7 @@ fun DashboardContent(
     val title = rememberSaveable {
         mutableIntStateOf(R.string.toolbar_today_habits)
     }
+    val appBarColor = remember<MutableState<CategoryAccentColor?>> { mutableStateOf(null) }
     val blurPercentState by animateDpAsState(
         if (settingsVisibility.value) 15.dp else 0.dp,
         label = emptyString(),
@@ -105,11 +107,13 @@ fun DashboardContent(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         topBar = {
             DefaultToolbar(
-                modifier = Modifier.padding(top =
-                    if(settingsVisibility.value) 25.dp + LocalFixedInsets.current.statusBarHeight
-                    else 0.dp
-                ),
-                text = stringResource(id = title.value),
+                modifier = Modifier
+                    .padding(
+                        top = if(settingsVisibility.value) 25.dp + LocalFixedInsets.current.statusBarHeight
+                        else 0.dp
+                    ),
+                customColor = appBarColor.value,
+                text = stringResource(id = title.intValue),
                 onSettingsClick = {
                     settingsVisibility.value = !settingsVisibility.value
                     onUseSystemBar.invoke(!settingsVisibility.value)
@@ -140,7 +144,11 @@ fun DashboardContent(
             .fillMaxSize()
             .padding(top = paddingValues.calculateTopPadding())
         ) {
-            DashboardNavigation(navController, onHabitEditClick = onEditHabitClick)
+            DashboardNavigation(
+                navController,
+                onHabitEditClick = onEditHabitClick,
+                onChangeAppBarColor = { appBarColor.value = it }
+            )
         }
     }
 }

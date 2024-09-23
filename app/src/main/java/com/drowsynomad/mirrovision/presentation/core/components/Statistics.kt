@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -29,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.createMockCells
 import com.drowsynomad.mirrovision.presentation.core.components.models.Cell
-import com.drowsynomad.mirrovision.presentation.core.components.models.ShadeCell
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 import com.drowsynomad.mirrovision.presentation.utils.gradientStroke
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
@@ -77,21 +75,6 @@ fun ProgressCircle(
     )
 }
 
-
-enum class CellProgress {
-    NO_ACTIVITY, NOT_FINISHED, FINISHED;
-
-    companion object {
-        fun calculateProgress(cellAmount: Int, filledCellAmount: Int): CellProgress {
-            return when(filledCellAmount.toFloat() / cellAmount.toFloat()) {
-                0f -> NO_ACTIVITY
-                1f -> FINISHED
-                else -> NOT_FINISHED
-            }
-        }
-    }
-}
-
 @Composable
 fun IconColumn(
     @DrawableRes icon: Int,
@@ -112,11 +95,11 @@ fun IconColumn(
         CategoryIcon(
             color = color,
             icon = icon,
+            iconSpec = 24.dp,
             modifier = Modifier
                 .align(TopEnd)
                 .padding(end = 14.dp)
-                .width(50.dp)
-                .height(50.dp)
+                .size(50.dp)
         )
     }
 }
@@ -130,7 +113,10 @@ private fun Preview() {
             .padding(top = 20.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        IconColumn(icon = R.drawable.ic_add, color = CategoryMainColor.Pink) {
+        IconColumn(
+            icon = R.drawable.ic_calendar,
+            color = CategoryMainColor.Pink,
+        ) {
             Text(text = "Hello")
         }
         Box(

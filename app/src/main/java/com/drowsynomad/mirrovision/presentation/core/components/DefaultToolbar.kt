@@ -1,6 +1,8 @@
 package com.drowsynomad.mirrovision.presentation.core.components
 
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
+import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.LightMainBackground
 
 /**
@@ -34,6 +37,12 @@ private fun ToolbarContent(
     onSettingsClick: (() -> Unit)? = null,
     onBackClick: (() -> Unit)? = null
 ) {
+    val contentColor = animateColorAsState(
+        accentColor,
+        animationSpec = tween(500),
+        label = emptyString()
+    )
+
     Box(modifier = modifier
         .fillMaxWidth()
         .height(60.dp)
@@ -49,7 +58,7 @@ private fun ToolbarContent(
         ) {
             BigTitle(
                 text = title,
-                color = accentColor,
+                color = contentColor.value,
                 modifier = Modifier,
             )
             subTitle?.let {
@@ -82,13 +91,14 @@ fun DefaultToolbar(
     modifier: Modifier = Modifier,
     text: String = emptyString(),
     subTitle: String? = null,
+    customColor: CategoryAccentColor? = null,
     onSettingsClick: (() -> Unit)? = null,
     onBackClick: (() -> Unit)? = null
 ) {
     ToolbarContent(
         modifier = modifier,
         title = text,
-        accentColor = MaterialTheme.colorScheme.secondary,
+        accentColor = customColor?.pureColor ?: MaterialTheme.colorScheme.secondary,
         backgroundColor = LightMainBackground,
         subTitle = subTitle,
         onSettingsClick = onSettingsClick,

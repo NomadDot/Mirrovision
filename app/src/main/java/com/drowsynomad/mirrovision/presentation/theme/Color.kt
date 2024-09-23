@@ -52,6 +52,8 @@ val OrangeCategoryAccent = Color(0xFF9C774F)
 val RedCategoryAccent = Color(0xFF984449)
 val BrownCategoryAccent = Color(0xFF866240)
 
+val ChartLineColor = Color(0xFFF0F0F0)
+
 @Serializable
 @Parcelize
 enum class CategoryMainColor: Parcelable {

@@ -80,7 +80,7 @@ CreateHabitVM @Inject constructor(
     private fun loadHabitInfo(habitId: Long) {
         launch {
             val habitWithRegularities = habitRepository.loadHabitWithRegularity(habitId)
-            val savedHabit = habitWithRegularities.habit.toUI()
+            val savedHabit = habitWithRegularities.habit.toDomain().toUI()
             val regularities = habitWithRegularities.habitRegularity
             val todayRecord = habitRecordingRepository.getTodayRecording(dayId, habitId)?.amount
 

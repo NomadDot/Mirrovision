@@ -11,6 +11,7 @@ import com.drowsynomad.mirrovision.presentation.navigation.Routes.DetailedStatis
 import com.drowsynomad.mirrovision.presentation.screens.detailedStatitstic.DetailedStatisticScreen
 import com.drowsynomad.mirrovision.presentation.screens.home.HomeScreen
 import com.drowsynomad.mirrovision.presentation.screens.statistic.StatisticsScreen
+import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.utils.composableOf
 import kotlin.reflect.KClass
 
@@ -20,10 +21,11 @@ import kotlin.reflect.KClass
 
 @Composable
 fun DashboardNavigation(
-    navController: NavHostController = rememberNavController(),
+    navController: NavHostController,
     startDestination: KClass<Routes.HomeScreen> = Routes.HomeScreen::class,
     onHabitEditClick: (HabitUI) -> Unit,
-) {
+    onChangeAppBarColor: (CategoryAccentColor) -> Unit,
+    ) {
     NavHost(
         navController = navController,
         startDestination = startDestination
@@ -45,6 +47,7 @@ fun DashboardNavigation(
         composableOf<DetailedStatisticScreen, LongParcel> { args, _ ->
             DetailedStatisticScreen(
                 viewModel = hiltViewModel(),
+                onChangeAppBarColor = onChangeAppBarColor,
                 habitId = args.habitInt.long
             )
         }

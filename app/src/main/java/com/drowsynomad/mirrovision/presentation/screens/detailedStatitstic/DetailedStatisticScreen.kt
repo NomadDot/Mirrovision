@@ -2,32 +2,51 @@ package com.drowsynomad.mirrovision.presentation.screens.detailedStatitstic
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.presentation.core.base.StateContent
 import com.drowsynomad.mirrovision.presentation.core.components.AdviceText
 import com.drowsynomad.mirrovision.presentation.core.components.CategoryTitle
-import com.drowsynomad.mirrovision.presentation.core.components.CellProgress
 import com.drowsynomad.mirrovision.presentation.core.components.ChartSelector
 import com.drowsynomad.mirrovision.presentation.core.components.DefaultProgress
 import com.drowsynomad.mirrovision.presentation.core.components.IconColumn
-import com.drowsynomad.mirrovision.presentation.core.components.StatisticSegmentChart
+import com.drowsynomad.mirrovision.presentation.core.components.ProgressChart
+import com.drowsynomad.mirrovision.presentation.core.components.StatisticCalendar
 import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode
 import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode.Monthly
-import com.drowsynomad.mirrovision.presentation.core.components.models.ChartSegment
+import com.drowsynomad.mirrovision.presentation.core.components.models.CellProgress
 import com.drowsynomad.mirrovision.presentation.core.components.models.DayCell
+import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment
+import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment.MONTH
+import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment.WEEK
+import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment.YEAR
 import com.drowsynomad.mirrovision.presentation.screens.detailedStatitstic.model.DetailedStatisticEvent
 import com.drowsynomad.mirrovision.presentation.screens.detailedStatitstic.model.DetailedStatisticState
+import com.drowsynomad.mirrovision.presentation.screens.detailedStatitstic.model.StatisticInfo
+import com.drowsynomad.mirrovision.presentation.theme.CategoryAccentColor
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
-import kotlin.random.Random
 
 /**
  * @author Roman Voloshyn (Created on 13.09.2024)
@@ -36,7 +55,8 @@ import kotlin.random.Random
 @Composable
 fun DetailedStatisticScreen(
     viewModel: DetailedStatisticVM,
-    habitId: Long
+    onChangeAppBarColor: (CategoryAccentColor) -> Unit,
+    habitId: Long,
 ) {
     StateContent(
         viewModel = viewModel,
@@ -44,24 +64,50 @@ fun DetailedStatisticScreen(
             viewModel.handleUiEvent(DetailedStatisticEvent.LoadStatistic(habitId))
         }
     ) {
-        if(it.isLoading)
+        if (it.isLoading)
             DefaultProgress()
-        else
-            DetailedStatisticContent(it)
+        else {
+            LaunchedEffect(key1 = Unit) { onChangeAppBarColor.invoke(it.color.accent) }
+            DetailedStatisticContent(
+                state = it,
+                onLoadPreviousCalendarDays = { previousCount, segment ->
+                    viewModel.handleUiEvent(
+                        DetailedStatisticEvent.LoadPreviousCalendarDays(
+                            habitId, previousCount, segment
+                        )
+                    )
+                },
+                onLoadNextCalendarDays = { nextCount, segment ->
+                    viewModel.handleUiEvent(
+                        DetailedStatisticEvent.LoadNextCalendarDays(
+                            habitId, nextCount, segment
+                        )
+                    )
+                }
+            )
+        }
+
+        DisposableEffect(key1 = Unit) {
+            onDispose { onChangeAppBarColor(it.color.accent) }
+        }
     }
 }
 
 @Composable
 private fun DetailedStatisticContent(
-    state: DetailedStatisticState
+    state: DetailedStatisticState,
+    onLoadPreviousCalendarDays: (previousCount: Int, segment: StatisticSegment) -> Unit,
+    onLoadNextCalendarDays: (nextCount: Int, segment: StatisticSegment) -> Unit,
 ) {
     val segment = rememberSaveable {
-        mutableStateOf(ChartSegment.MONTH)
+        mutableStateOf(WEEK)
     }
+    val calendarDaysModifier = rememberSaveable { mutableIntStateOf(0) }
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(15.dp),
-        modifier = Modifier.offset(y = (-15).dp)
+        modifier = Modifier
+            .offset(y = (-15).dp)
+            .verticalScroll(rememberScrollState())
     ) {
         NameStatistic(
             habitName = state.habitName,
@@ -71,32 +117,54 @@ private fun DetailedStatisticContent(
         )
         ChartSelector(
             color = state.color,
-            modifier = Modifier.padding(horizontal = 24.dp)
-        ) { segment.value = it }
-        StatisticSegmentChart(
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .padding(top = 15.dp)
+        ) {
+            segment.value = it
+            calendarDaysModifier.intValue = 0
+        }
+        StatisticCalendar(
+            modifier = Modifier.padding(top = 5.dp),
             segment = segment.value,
-            monthlyData = Monthly(
-                List(42) {
-                    val day = Random.nextInt(31)
-                    DayCell(
-                        dayPosition =
-                        "${if(day < 31) (day + 1) else (day - 30).toLong()}",
-                        progress = CellProgress.entries.random(),
-                        isCurrentMonth = day < 31
-                    )
-                }
-            ),
-            weeklyData = CalendarMode.Weekly(
-                List(7) {
-                    DayCell(
-                        dayPosition = it.toString(),
-                        progress = CellProgress.entries.random(),
-                        isCurrentMonth = true
-                    )
-                }
-            ),
+            weeklyData = state.weeklyCalendar,
+            monthlyData = state.monthlyCalendar,
+            yearlyData = state.yearCalendar,
+            color = state.color,
+            onShowPreviousCalendarDaysClick = {
+                calendarDaysModifier.intValue += 1
+                onLoadPreviousCalendarDays.invoke(calendarDaysModifier.intValue, segment.value)
+            },
+            onShowNextCalendarDaysClick = {
+                calendarDaysModifier.intValue -= 1
+                onLoadPreviousCalendarDays.invoke(calendarDaysModifier.intValue, segment.value)
+            },
+        )
+        DefaultStatistic(
+            statistic = StatisticInfo.CompletedStatistic("31"),
+            statisticSegment = segment.value,
             color = state.color
         )
+        ProgressChart(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(220.dp)
+                .padding(top = 15.dp)
+                .padding(horizontal = 24.dp),
+            segment = segment.value,
+            values = when (segment.value) {
+                WEEK -> state.weeklyChartValues
+                MONTH -> state.monthlyChartValues
+                YEAR -> state.yearChartValues
+            },
+            color = state.color
+        )
+        DefaultStatistic(
+            statistic = StatisticInfo.PomodoroStatistic("1h:25m"),
+            statisticSegment = segment.value,
+            color = state.color
+        )
+        Spacer(modifier = Modifier.height(100.dp))
     }
 }
 
@@ -117,15 +185,87 @@ private fun NameStatistic(
             modifier = Modifier.padding(end = 16.dp)
         )
         AdviceText(
-            text = habitDescription ,
+            text = habitDescription,
             modifier = Modifier.padding(top = 5.dp, end = 16.dp),
             color = color.accent.pureColor
         )
     }
 }
 
+@Composable
+private fun DefaultStatistic(
+    statistic: StatisticInfo,
+    statisticSegment: StatisticSegment = WEEK,
+    color: CategoryMainColor = CategoryMainColor.Purple,
+) {
+    IconColumn(
+        modifier = Modifier.padding(top = 5.dp),
+        icon = R.drawable.ic_accept,
+        color = color,
+    ) {
+        val week = stringResource(id = R.string.statistic_segment_week_completed)
+        val month = stringResource(id = R.string.statistic_segment_month_completed)
+        val year = stringResource(id = R.string.statistic_segment_year_completed)
+
+        @Composable
+        fun getValueBySegment(): String {
+            return when (statisticSegment) {
+                WEEK -> week
+                MONTH -> month
+                YEAR -> year
+            }
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 30.dp)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                CategoryTitle(
+                    text = when (statistic) {
+                        is StatisticInfo.CompletedStatistic -> stringResource(R.string.completed_statistic)
+                        is StatisticInfo.PomodoroStatistic -> stringResource(R.string.pomodoro_statistic)
+                    },
+                    color = color.accent.pureColor,
+                    modifier = Modifier.padding(end = 16.dp)
+                )
+                AdviceText(
+                    text = when (statistic) {
+                        is StatisticInfo.CompletedStatistic ->
+                            stringResource(
+                                id = R.string.description_completed_in_one_s,
+                                getValueBySegment()
+                            )
+
+                        is StatisticInfo.PomodoroStatistic ->
+                            stringResource(
+                                id = R.string.pomodoro_statistic_description,
+                                getValueBySegment()
+                            )
+                    },
+                    modifier = Modifier.padding(end = 16.dp),
+                    color = color.accent.pureColor
+                )
+            }
+            Text(
+                text = statistic.info,
+                color = color.accent.pureColor,
+                style = MaterialTheme.typography.bodyMedium, fontSize = 32.sp
+            )
+        }
+    }
+}
+
 @Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
-    DetailedStatisticContent(state = DetailedStatisticState())
+    DetailedStatisticContent(
+        state = DetailedStatisticState(),
+        onLoadPreviousCalendarDays = { _, _ -> },
+        onLoadNextCalendarDays = { _, _ -> } )
 }

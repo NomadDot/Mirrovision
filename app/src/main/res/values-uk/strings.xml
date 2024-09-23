@@ -50,10 +50,22 @@
     <string name="label_weekly_statistics">Тижнева</string>
     <string name="label_detailed_statistics">Детальна</string>
 
-    <string name="chart_segment_week">Тиждень</string>
-    <string name="chart_segment_month">Місяць</string>
-    <string name="chart_segment_year">Рік</string>
+    <string name="statistic_segment_week">Тиждень</string>
+    <string name="statistic_segment_month">Місяць</string>
+    <string name="statistic_segment_year">Рік</string>
 
+    <string name="statistic_segment_week_completed">тижня</string>
+    <string name="statistic_segment_month_completed">місяця</string>
+    <string name="statistic_segment_year_completed">року</string>
+
+    <string name="completed_statistic">Виконано</string>
+    <string name="description_completed_in_one_s">Виконано протягом %s</string>
+
+    <string name="pomodoro_statistic">Pomodoro</string>
+    <string name="pomodoro_statistic_description">Відпрацьовано протягом %s</string>
+
+    <string name="statistic_label_months">Місяці</string>
+    <string name="statistic_label_days">Дні</string>
 
     <string-array name="categories">
         <item>Спорт</item>
@@ -73,5 +85,20 @@
         <item>Пт</item>
         <item>Сб</item>
         <item>Нд</item>
+    </string-array>
+
+    <string-array name="monthly_days">
+        <item>Січ</item>
+        <item>Лют</item>
+        <item>Бер</item>
+        <item>Кві</item>
+        <item>Тра</item>
+        <item>Чер</item>
+        <item>Лип</item>
+        <item>Сер</item>
+        <item>Вер</item>
+        <item>Жов</item>
+        <item>Лис</item>
+        <item>Гру</item>
     </string-array>
 </resources>

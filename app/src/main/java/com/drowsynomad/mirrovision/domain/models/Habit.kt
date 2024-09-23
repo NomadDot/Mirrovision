@@ -4,6 +4,8 @@ import com.drowsynomad.mirrovision.core.emptyString
 import com.drowsynomad.mirrovision.data.database.entities.HabitEntity
 import com.drowsynomad.mirrovision.data.database.entities.HabitRegularity
 import com.drowsynomad.mirrovision.data.database.entities.HabitUpdate
+import com.drowsynomad.mirrovision.presentation.core.components.models.HabitUI
+import com.drowsynomad.mirrovision.presentation.core.components.models.StrokeAmountState
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
 
 /**
@@ -29,6 +31,22 @@ data class Habit(
             icon = icon,
             bgColor = backgroundColor.toString(),
             amount = HabitEntity.Amount(cellAmount, filledCellAmount)
+        )
+    }
+
+    fun toUI(): HabitUI {
+        return HabitUI(
+            id = id,
+            attachedCategoryId = attachedCategoryId,
+            name = name,
+            description = description,
+            icon = icon,
+            backgroundColor = backgroundColor,
+            stroke = StrokeAmountState(
+                cellAmount = cellAmount,
+                prefilledCellAmount = filledCellAmount,
+                filledColor = backgroundColor.accent
+            )
         )
     }
 

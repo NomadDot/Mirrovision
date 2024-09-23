@@ -91,7 +91,7 @@ class CategoryRepository(
                         val recording = it.second
                         val strokeAmount = recording?.amount
 
-                        val habitUI = habit?.toUI()
+                        val habitUI = habit?.toDomain()?.toUI()
                         habitUI
                             ?.copy(
                                 stroke = StrokeAmountState(

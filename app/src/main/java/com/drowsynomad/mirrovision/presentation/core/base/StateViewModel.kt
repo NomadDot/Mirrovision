@@ -35,7 +35,7 @@ abstract class StateViewModel<S: UiState, E: UiEvent, SE: SideEffect>(
     abstract fun handleUiEvent(uiEvent: E)
 
     protected fun launch(
-        dispatcher: CoroutineDispatcher = Dispatchers.Main,
+        dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
         block: suspend CoroutineScope.() -> Unit
     ) = viewModelScope.launch(context = dispatcher + SupervisorJob(), block = block)
 }

@@ -30,8 +30,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -40,15 +43,23 @@ import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.getMonthSegmentTitle
 import com.drowsynomad.mirrovision.core.getWeekSegmentTitle
 import com.drowsynomad.mirrovision.core.getYearSegmentTitle
+import com.drowsynomad.mirrovision.presentation.core.components.models.AxisXLabels
+import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode
 import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode.Monthly
 import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode.Weekly
-import com.drowsynomad.mirrovision.presentation.core.components.models.ChartSegment
+import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode.Yearly
+import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment
+import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment.MONTH
+import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment.WEEK
+import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment.YEAR
 import com.drowsynomad.mirrovision.presentation.theme.CategoryMainColor
+import com.drowsynomad.mirrovision.presentation.theme.ChartLineColor
 import com.drowsynomad.mirrovision.presentation.theme.GradientMain
 import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 import com.drowsynomad.mirrovision.presentation.utils.defaultTween
 import com.drowsynomad.mirrovision.presentation.utils.gradient
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
+import ir.ehsannarmani.compose_charts.models.GridProperties
 import kotlin.random.Random
 
 /**
@@ -58,7 +69,7 @@ import kotlin.random.Random
 @Composable
 fun WeeklyChart(
     modifier: Modifier = Modifier,
-    chartData: List<CategoryChartData> = emptyList()
+    chartData: List<CategoryChartData> = emptyList(),
 ) {
     Column(
         modifier = modifier
@@ -83,16 +94,17 @@ fun WeeklyChart(
             )
         }
         Spacer(modifier = Modifier.height(15.dp))
-        
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .height(190.dp)
-            .roundBox(color = Color.White)
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(190.dp)
+                .roundBox(color = Color.White)
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                for(percent in 100 downTo 0 step 25) {
+                for (percent in 100 downTo 0 step 25) {
                     PercentageLine(percent = percent)
                 }
             }
@@ -110,7 +122,7 @@ fun WeeklyChart(
 @Composable
 private fun PercentageLine(
     percent: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
@@ -124,7 +136,8 @@ private fun PercentageLine(
             fontSize = 10.sp,
             color = MaterialTheme.colorScheme.primary,
             style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.width(28.dp))
+            modifier = Modifier.width(28.dp)
+        )
         HorizontalDivider(color = MaterialTheme.colorScheme.primary)
     }
 }
@@ -133,13 +146,13 @@ data class CategoryChartData(
     val id: Int = Random.nextInt(),
     val percent: Float,
     val categoryColor: CategoryMainColor,
-    @DrawableRes val categoryIcon: Int
+    @DrawableRes val categoryIcon: Int,
 )
 
 @Composable
 private fun CategoryChart(
     modifier: Modifier = Modifier,
-    chartData: List<CategoryChartData>
+    chartData: List<CategoryChartData>,
 ) {
     val maxLineHeight = remember { 113.dp }
 
@@ -157,12 +170,12 @@ private fun CategoryChart(
 @Composable
 private fun IconLine(
     chartData: CategoryChartData,
-    maxLineHeight: Dp
+    maxLineHeight: Dp,
 ) {
     val showed = rememberSaveable { mutableStateOf(false) }
 
     val percent = animateFloatAsState(
-        targetValue = if(showed.value) chartData.percent else 0f,
+        targetValue = if (showed.value) chartData.percent else 0f,
         label = "widthProgress",
         animationSpec = defaultTween(600)
     )
@@ -196,10 +209,10 @@ private fun IconLine(
 fun ChartSelector(
     modifier: Modifier = Modifier,
     color: CategoryMainColor,
-    onSegmentChanged: (ChartSegment) -> Unit
+    onSegmentChanged: (StatisticSegment) -> Unit,
 ) {
     val (getSegment, setSegment) = remember {
-        mutableStateOf(ChartSegment.MONTH)
+        mutableStateOf(WEEK)
     }
 
     Row(
@@ -231,14 +244,14 @@ fun ChartSelector(
                 .height(40.dp)
         }
 
-        ChartSegment.entries.forEach {
+        StatisticSegment.entries.forEach {
             DefaultButton(
                 text = stringResource(it.stringResource),
                 isButtonSelected = getSegment == it,
                 color = color,
-                modifier = if(getSegment == it) activeModifier else unselectedModifier
+                modifier = if (getSegment == it) activeModifier else unselectedModifier
             ) {
-                if(getSegment != it) {
+                if (getSegment != it) {
                     setSegment.invoke(it)
                     onSegmentChanged.invoke(it)
                 }
@@ -248,18 +261,18 @@ fun ChartSelector(
 }
 
 @Composable
-fun StatisticSegmentChart(
+fun StatisticCalendar(
     modifier: Modifier = Modifier,
-    segment: ChartSegment,
+    segment: StatisticSegment,
     weeklyData: Weekly,
     monthlyData: Monthly,
-    color: CategoryMainColor
+    yearlyData: Yearly,
+    color: CategoryMainColor,
+    onShowPreviousCalendarDaysClick: () -> Unit,
+    onShowNextCalendarDaysClick: () -> Unit,
 ) {
-    val weeklyDaysSegment = remember { getWeekSegmentTitle() }
-    val monthlySegment = remember { getMonthSegmentTitle() }
-    val yearlySegment = remember { getYearSegmentTitle() }
-
     IconColumn(
+        modifier = modifier,
         icon = R.drawable.ic_calendar,
         color = color
     ) {
@@ -272,34 +285,115 @@ fun StatisticSegmentChart(
         ) {
             IconButton(
                 icon = R.drawable.ic_back_arrow,
-                tint = color.accent.pureColor
-            ) {
-
-            }
+                tint = color.accent.pureColor,
+                onClick = onShowPreviousCalendarDaysClick
+            )
             CategoryTitle(
-                text = when(segment) {
-                    ChartSegment.WEEK -> weeklyDaysSegment
-                    ChartSegment.MONTH -> monthlySegment
-                    ChartSegment.YEAR -> yearlySegment
+                text = when (segment) {
+                    WEEK -> weeklyData.actualPeriod
+                    MONTH -> monthlyData.actualPeriod
+                    YEAR -> yearlyData.actualPeriod
                 },
                 color = color.accent.pureColor
             )
             IconButton(
                 icon = R.drawable.ic_arrow_next,
-                tint = color.accent.pureColor
-            ) {
-
-            }
+                tint = color.accent.pureColor,
+                onClick = onShowNextCalendarDaysClick
+            )
         }
-        Box(modifier = Modifier
-            .padding(top = 16.dp)
-            .roundBox(color = Color.White)
+        Box(
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .roundBox(color = Color.White)
         ) {
             StatisticCalendar(
-                mode = if(segment == ChartSegment.WEEK) weeklyData else monthlyData,
+                mode = when (segment) {
+                    WEEK -> weeklyData
+                    MONTH -> monthlyData
+                    YEAR -> yearlyData
+                },
                 color = color
             )
         }
+    }
+}
+
+@Composable
+fun ProgressChart(
+    modifier: Modifier = Modifier,
+    segment: StatisticSegment,
+    values: List<Double>,
+    color: CategoryMainColor,
+) {
+    val maxValue = remember {
+        if (values.isNotEmpty())
+            values.max() + 1
+        else 1.0
+    }
+    val minValue = remember { 0.0 }
+    val gridProperties =
+        GridProperties.AxisProperties(
+            color = SolidColor(ChartLineColor),
+            thickness = 1.dp,
+        )
+
+    val weeklyAxisXLabels = remember {
+        AxisXLabels.create(WEEK)
+    }.map { stringArrayResource(id = it) }
+        .first().toList()
+    val monthlyAxisXLabels = remember {
+        AxisXLabels.create(MONTH)
+    }.map { if (it % 2.0 != 0.0 || it == 1) "$it" else " " }
+    val yearlyAxisXLabels = remember {
+        AxisXLabels.create(YEAR)
+    }.map { stringArrayResource(id = it) }
+        .first().toList()
+
+    Box(
+        modifier = modifier
+            .height(200.dp)
+            .roundBox(color.pureColor)
+    ) {
+        val textStyle = TextStyle(
+            color = color.accent.pureColor,
+            fontStyle = MaterialTheme.typography.titleSmall.fontStyle,
+            fontSize = 10.sp
+        )
+        /* LineChart(
+             modifier = Modifier
+                 .fillMaxSize()
+                 .roundBox(color = Color.White),
+             labelHelperProperties = LabelHelperProperties(false),
+             labelProperties = LabelProperties(
+                  enabled = true,
+                  textStyle = textStyle,
+                  labels = when(segment) {
+                      WEEK -> weeklyAxisXLabels
+                      MONTH -> monthlyAxisXLabels
+                      YEAR -> yearlyAxisXLabels
+                  }
+             ),
+             data = AnimatedLine.create(color, values),
+             gridProperties = GridProperties(
+                 xAxisProperties = gridProperties,
+                 yAxisProperties = gridProperties
+                         .copy(lineCount = AxisXLabels.getLineCount(segment)),
+             ),
+             indicatorProperties = HorizontalIndicatorProperties(
+                 textStyle = textStyle,
+                 contentBuilder = {
+                     if(it == maxValue || it == 0.0) ""
+                     else "$it".take(1)
+                 }
+             ),
+             dividerProperties = DividerProperties(enabled = false),
+             animationMode = AnimationMode.Together(
+                 delayBuilder = { it * 200L }
+             ),
+             maxValue = maxValue,
+             minValue = minValue
+         )*/
     }
 }
 
@@ -308,9 +402,14 @@ fun StatisticSegmentChart(
 private fun Preview() {
     Column(
         verticalArrangement = Arrangement.spacedBy(25.dp)
-    ){
+    ) {
         WeeklyChart(modifier = Modifier.fillMaxWidth())
         ChartSelector(color = CategoryMainColor.Green) {}
+        ProgressChart(
+            segment = WEEK,
+            color = CategoryMainColor.Green,
+            values = listOf()
+        )
 //        StatisticSegmentChart(segment = ChartSegment.WEEK, color = CategoryMainColor.Green)
     }
 }
