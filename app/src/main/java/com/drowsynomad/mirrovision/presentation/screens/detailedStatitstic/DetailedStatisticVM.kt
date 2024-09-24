@@ -12,10 +12,9 @@ import com.drowsynomad.mirrovision.domain.habit.IHabitRecordingRepository
 import com.drowsynomad.mirrovision.domain.habit.IHabitRepository
 import com.drowsynomad.mirrovision.presentation.core.base.StateViewModel
 import com.drowsynomad.mirrovision.presentation.core.common.SideEffect
-import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode
 import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode.Weekly
 import com.drowsynomad.mirrovision.presentation.core.components.models.CellProgress
-import com.drowsynomad.mirrovision.presentation.core.components.models.DayCell
+import com.drowsynomad.mirrovision.presentation.core.components.models.ChartProgress
 import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment
 import com.drowsynomad.mirrovision.presentation.screens.detailedStatitstic.model.DetailedStatisticEvent
 import com.drowsynomad.mirrovision.presentation.screens.detailedStatitstic.model.DetailedStatisticState
@@ -45,7 +44,7 @@ class DetailedStatisticVM @Inject constructor(
                 uiEvent.habitId, uiEvent.segment, uiEvent.nextCount, CalendarLoading.NEXT
             )
 
-            is DetailedStatisticEvent.LoadPreviousCalendarDays -> loadCalendarDays(
+            is DetailedStatisticEvent.LoadCalendarDays -> loadCalendarDays(
                 uiEvent.habitId, uiEvent.segment, uiEvent.previousCount, CalendarLoading.PREVIOUS
             )
         }
@@ -67,9 +66,7 @@ class DetailedStatisticVM @Inject constructor(
                         color = statistic.color,
                         habitIcon = R.drawable.ic_self_education_books,
                         isLoading = false,
-                        weeklyCalendar = weeklyCalendar,
-//                    monthlyProgressValues = monthlyProgressValues,
-//                    yearProgressValues = yearProgressValues
+                        weekly = weeklyCalendar
                     )
                 }
             }
@@ -90,7 +87,7 @@ class DetailedStatisticVM @Inject constructor(
                 recordingMap[it.date] = it
             }
 
-            if(lastRecord == 0L)
+            if (lastRecord == 0L)
                 lastRecord = foundRecordings.last().date
 
             val lastRecordedDay =
@@ -113,8 +110,30 @@ class DetailedStatisticVM @Inject constructor(
                     isDayInFuture = it.dayId > lastRecordedDay
                 )
             }
+            val completedTimes = payload.filter { it.progress == CellProgress.FINISHED }.size
 
-            Weekly(label, payload)
+            val maxValueOnChart =
+                if (recordingMap.values.isNotEmpty())
+                    recordingMap.values.maxOf { it.amount.cellAmount }.toDouble()
+                else 0.0
+
+            val chartValues = if (recordingMap.values.isNotEmpty()) {
+                recordingMap.values.map { it.amount.prefilledCellAmount }
+                    .toMutableList()
+                    .also { list ->
+                        repeat(7 - recordingMap.values.size) {
+                            list.add(0)
+                        }
+                    }
+            } else listOf(0, 0, 0, 0, 0, 0, 0)
+
+            val chartProgress =
+                ChartProgress(
+                    values = chartValues,
+                    maxValue = if (maxValueOnChart == 0.0) 1.0 else maxValueOnChart
+                )
+
+            Weekly(label, payload, completedTimes, chartProgress)
         }
     }
 
@@ -125,24 +144,22 @@ class DetailedStatisticVM @Inject constructor(
         calendarLoading: CalendarLoading,
     ) {
         launch(Dispatchers.IO) {
-            val defferedStatistic = when (segment) {
+            val deferredStatistic = when (segment) {
                 StatisticSegment.WEEK -> {
                     val period = generateCalendarWeekPeriodId(count, calendarLoading)
                     calculateWeeklyStatistics(period.start, period.end, habitId)
                 }
 
-                else -> {
+                else -> { // TODO: attach remaining branches
                     val period = generateCalendarWeekPeriodId(count, calendarLoading)
                     calculateWeeklyStatistics(period.start, period.end, habitId)
                 }
             }
 
-            val payload = defferedStatistic.await()
+            val payload = deferredStatistic.await()
             withContext(Dispatchers.Main.immediate) {
                 updateState {
-                    it.copy(
-                        weeklyCalendar = payload
-                    )
+                    it.copy(weekly = payload)
                 }
             }
         }

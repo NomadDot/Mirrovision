@@ -312,7 +312,6 @@ fun StatisticCalendar(
 @Preview(showSystemUi = true)
 @Composable
 private fun Preview() {
-   // MonthlyDays(modifier = Modifier.fillMaxSize())
     MonthlyDaysRows(color = CategoryMainColor.Green, days = emptyList()) {}
 
     Box(modifier = Modifier

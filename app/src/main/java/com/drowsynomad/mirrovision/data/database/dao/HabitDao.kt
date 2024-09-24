@@ -64,8 +64,7 @@ interface HabitDao {
 
     @Transaction
     @Query("SELECT * FROM habit_record AS record" +
-            " WHERE record.day_date >= :start" +
-            " AND record.day_date <= :end" +
+            " WHERE record.day_date BETWEEN :start AND :end" +
             " AND record.habit_id = :habitId")
     suspend fun getRecordingsOnPeriod(start: Long, end: Long, habitId: Long): List<HabitRecord>
 

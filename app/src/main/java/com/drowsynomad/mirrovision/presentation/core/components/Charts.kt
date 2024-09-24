@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -43,11 +44,13 @@ import com.drowsynomad.mirrovision.R
 import com.drowsynomad.mirrovision.core.getMonthSegmentTitle
 import com.drowsynomad.mirrovision.core.getWeekSegmentTitle
 import com.drowsynomad.mirrovision.core.getYearSegmentTitle
+import com.drowsynomad.mirrovision.presentation.core.components.models.AnimatedLine
 import com.drowsynomad.mirrovision.presentation.core.components.models.AxisXLabels
 import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode
 import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode.Monthly
 import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode.Weekly
 import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode.Yearly
+import com.drowsynomad.mirrovision.presentation.core.components.models.ChartProgress
 import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment
 import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment.MONTH
 import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment.WEEK
@@ -59,7 +62,14 @@ import com.drowsynomad.mirrovision.presentation.utils.bounceClick
 import com.drowsynomad.mirrovision.presentation.utils.defaultTween
 import com.drowsynomad.mirrovision.presentation.utils.gradient
 import com.drowsynomad.mirrovision.presentation.utils.roundBox
+import ir.ehsannarmani.compose_charts.LineChart
+import ir.ehsannarmani.compose_charts.models.AnimationMode
+import ir.ehsannarmani.compose_charts.models.DividerProperties
 import ir.ehsannarmani.compose_charts.models.GridProperties
+import ir.ehsannarmani.compose_charts.models.HorizontalIndicatorProperties
+import ir.ehsannarmani.compose_charts.models.IndicatorPosition
+import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
+import ir.ehsannarmani.compose_charts.models.LabelProperties
 import kotlin.random.Random
 
 /**
@@ -323,14 +333,9 @@ fun StatisticCalendar(
 fun ProgressChart(
     modifier: Modifier = Modifier,
     segment: StatisticSegment,
-    values: List<Double>,
+    progress: ChartProgress,
     color: CategoryMainColor,
 ) {
-    val maxValue = remember {
-        if (values.isNotEmpty())
-            values.max() + 1
-        else 1.0
-    }
     val minValue = remember { 0.0 }
     val gridProperties =
         GridProperties.AxisProperties(
@@ -360,40 +365,45 @@ fun ProgressChart(
             fontStyle = MaterialTheme.typography.titleSmall.fontStyle,
             fontSize = 10.sp
         )
-        /* LineChart(
-             modifier = Modifier
-                 .fillMaxSize()
-                 .roundBox(color = Color.White),
-             labelHelperProperties = LabelHelperProperties(false),
-             labelProperties = LabelProperties(
-                  enabled = true,
-                  textStyle = textStyle,
-                  labels = when(segment) {
-                      WEEK -> weeklyAxisXLabels
-                      MONTH -> monthlyAxisXLabels
-                      YEAR -> yearlyAxisXLabels
-                  }
-             ),
-             data = AnimatedLine.create(color, values),
-             gridProperties = GridProperties(
-                 xAxisProperties = gridProperties,
-                 yAxisProperties = gridProperties
-                         .copy(lineCount = AxisXLabels.getLineCount(segment)),
-             ),
-             indicatorProperties = HorizontalIndicatorProperties(
-                 textStyle = textStyle,
-                 contentBuilder = {
-                     if(it == maxValue || it == 0.0) ""
-                     else "$it".take(1)
-                 }
-             ),
-             dividerProperties = DividerProperties(enabled = false),
-             animationMode = AnimationMode.Together(
-                 delayBuilder = { it * 200L }
-             ),
-             maxValue = maxValue,
-             minValue = minValue
-         )*/
+        LineChart(
+            modifier = Modifier
+                .fillMaxSize()
+                .roundBox(color = Color.White),
+            labelHelperProperties = LabelHelperProperties(false),
+            labelProperties = LabelProperties(
+                enabled = true,
+                textStyle = textStyle,
+                labels = when (segment) {
+                    WEEK -> weeklyAxisXLabels
+                    MONTH -> monthlyAxisXLabels
+                    YEAR -> yearlyAxisXLabels
+                }
+            ),
+            data = AnimatedLine.create(
+                color,
+                if (progress.values.isNotEmpty()) progress.values.map { it.toDouble() }
+                else listOf(0.0)
+            ),
+            gridProperties = GridProperties(
+                xAxisProperties = gridProperties
+                    .copy(lineCount = (progress.maxValue + 1).toInt()),
+                yAxisProperties = gridProperties
+                    .copy(lineCount = AxisXLabels.getLineCount(segment)),
+            ),
+            indicatorProperties = HorizontalIndicatorProperties(
+                textStyle = textStyle,
+                contentBuilder = {
+                    "$it".take(1)
+                },
+                count = progress.maxValue.toInt() + 1
+            ),
+            dividerProperties = DividerProperties(enabled = false),
+            animationMode = AnimationMode.Together(
+                delayBuilder = { it * 200L }
+            ),
+            maxValue = progress.maxValue,
+            minValue = minValue
+        )
     }
 }
 
@@ -408,7 +418,7 @@ private fun Preview() {
         ProgressChart(
             segment = WEEK,
             color = CategoryMainColor.Green,
-            values = listOf()
+            progress = ChartProgress()
         )
 //        StatisticSegmentChart(segment = ChartSegment.WEEK, color = CategoryMainColor.Green)
     }

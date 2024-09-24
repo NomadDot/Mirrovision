@@ -9,7 +9,7 @@ import com.voloshynroman.zirkon.presentation.core.common.UiEvent
 
 sealed class DetailedStatisticEvent : UiEvent {
     data class LoadStatistic(val habitId: Long) : DetailedStatisticEvent()
-    data class LoadPreviousCalendarDays(
+    data class LoadCalendarDays(
         val habitId: Long,
         val previousCount: Int,
         val segment: StatisticSegment,

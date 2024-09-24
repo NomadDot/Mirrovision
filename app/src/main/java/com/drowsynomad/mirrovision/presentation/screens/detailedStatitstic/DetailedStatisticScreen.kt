@@ -34,10 +34,6 @@ import com.drowsynomad.mirrovision.presentation.core.components.DefaultProgress
 import com.drowsynomad.mirrovision.presentation.core.components.IconColumn
 import com.drowsynomad.mirrovision.presentation.core.components.ProgressChart
 import com.drowsynomad.mirrovision.presentation.core.components.StatisticCalendar
-import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode
-import com.drowsynomad.mirrovision.presentation.core.components.models.CalendarMode.Monthly
-import com.drowsynomad.mirrovision.presentation.core.components.models.CellProgress
-import com.drowsynomad.mirrovision.presentation.core.components.models.DayCell
 import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment
 import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment.MONTH
 import com.drowsynomad.mirrovision.presentation.core.components.models.StatisticSegment.WEEK
@@ -70,17 +66,10 @@ fun DetailedStatisticScreen(
             LaunchedEffect(key1 = Unit) { onChangeAppBarColor.invoke(it.color.accent) }
             DetailedStatisticContent(
                 state = it,
-                onLoadPreviousCalendarDays = { previousCount, segment ->
+                onLoadCalendarDays = { previousCount, segment ->
                     viewModel.handleUiEvent(
-                        DetailedStatisticEvent.LoadPreviousCalendarDays(
+                        DetailedStatisticEvent.LoadCalendarDays(
                             habitId, previousCount, segment
-                        )
-                    )
-                },
-                onLoadNextCalendarDays = { nextCount, segment ->
-                    viewModel.handleUiEvent(
-                        DetailedStatisticEvent.LoadNextCalendarDays(
-                            habitId, nextCount, segment
                         )
                     )
                 }
@@ -96,8 +85,7 @@ fun DetailedStatisticScreen(
 @Composable
 private fun DetailedStatisticContent(
     state: DetailedStatisticState,
-    onLoadPreviousCalendarDays: (previousCount: Int, segment: StatisticSegment) -> Unit,
-    onLoadNextCalendarDays: (nextCount: Int, segment: StatisticSegment) -> Unit,
+    onLoadCalendarDays: (count: Int, segment: StatisticSegment) -> Unit,
 ) {
     val segment = rememberSaveable {
         mutableStateOf(WEEK)
@@ -127,21 +115,27 @@ private fun DetailedStatisticContent(
         StatisticCalendar(
             modifier = Modifier.padding(top = 5.dp),
             segment = segment.value,
-            weeklyData = state.weeklyCalendar,
-            monthlyData = state.monthlyCalendar,
-            yearlyData = state.yearCalendar,
+            weeklyData = state.weekly,
+            monthlyData = state.monthly,
+            yearlyData = state.year,
             color = state.color,
             onShowPreviousCalendarDaysClick = {
                 calendarDaysModifier.intValue += 1
-                onLoadPreviousCalendarDays.invoke(calendarDaysModifier.intValue, segment.value)
+                onLoadCalendarDays.invoke(calendarDaysModifier.intValue, segment.value)
             },
             onShowNextCalendarDaysClick = {
                 calendarDaysModifier.intValue -= 1
-                onLoadPreviousCalendarDays.invoke(calendarDaysModifier.intValue, segment.value)
+                onLoadCalendarDays.invoke(calendarDaysModifier.intValue, segment.value)
             },
         )
         DefaultStatistic(
-            statistic = StatisticInfo.CompletedStatistic("31"),
+            statistic = StatisticInfo.CompletedStatistic(
+                times = when(segment.value) {
+                    WEEK -> state.weekly.completedTime
+                    MONTH -> state.monthly.completedTime
+                    YEAR ->  state.year.completedTime
+                }.toString()
+            ),
             statisticSegment = segment.value,
             color = state.color
         )
@@ -152,10 +146,10 @@ private fun DetailedStatisticContent(
                 .padding(top = 15.dp)
                 .padding(horizontal = 24.dp),
             segment = segment.value,
-            values = when (segment.value) {
-                WEEK -> state.weeklyChartValues
-                MONTH -> state.monthlyChartValues
-                YEAR -> state.yearChartValues
+            progress = when (segment.value) {
+                WEEK -> state.weekly.chartProgress
+                MONTH -> state.monthly.chartProgress
+                YEAR -> state.year.chartProgress
             },
             color = state.color
         )
@@ -266,6 +260,5 @@ private fun DefaultStatistic(
 private fun Preview() {
     DetailedStatisticContent(
         state = DetailedStatisticState(),
-        onLoadPreviousCalendarDays = { _, _ -> },
-        onLoadNextCalendarDays = { _, _ -> } )
+        onLoadCalendarDays = { _, _ -> })
 }
